@@ -751,11 +751,28 @@ document.addEventListener('DOMContentLoaded', () => {
     currentUpdatingItemId = id;
     document.getElementById('updateInvTitle').textContent = `Update: ${item.item_name}`;
     document.getElementById('updateInvDesc').textContent = `Current Quantity: ${item.quantity}`;
+    document.getElementById('invUpdateAction').value = 'add';
     document.getElementById('invUpdateAmount').value = '1';
     document.getElementById('invUpdateRemarks').value = '';
     
+    // Purchase details reset
+    document.getElementById('invSupplier').value = '';
+    document.getElementById('invCost').value = '';
+    document.getElementById('invBillFile').value = '';
+    document.getElementById('purchaseDetailsContainer').style.display = 'block';
+
     updateInventoryModal.classList.add('visible');
   }
+
+  // Toggle purchase details container
+  document.getElementById('invUpdateAction')?.addEventListener('change', (e) => {
+    const container = document.getElementById('purchaseDetailsContainer');
+    if (e.target.value === 'add') {
+      container.style.display = 'block';
+    } else {
+      container.style.display = 'none';
+    }
+  });
 
   document.getElementById('invUpdateCloseBtn')?.addEventListener('click', () => {
     updateInventoryModal.classList.remove('visible');
@@ -793,6 +810,35 @@ document.addEventListener('DOMContentLoaded', () => {
       .eq('id', currentUpdatingItemId);
 
     // 2. Insert into Stock Log
+    let billUrl = null;
+    let supplierName = null;
+    let purchaseCost = null;
+
+    if (action === 'add') {
+      supplierName = document.getElementById('invSupplier').value.trim();
+      purchaseCost = parseFloat(document.getElementById('invCost').value) || null;
+      
+      const fileInput = document.getElementById('invBillFile');
+      if (fileInput && fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        
+        btn.textContent = 'Uploading Bill...';
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('bills')
+          .upload(fileName, file);
+          
+        if (!uploadError) {
+          const { data: publicUrlData } = supabase.storage.from('bills').getPublicUrl(fileName);
+          billUrl = publicUrlData.publicUrl;
+        } else {
+          console.error('File upload error:', uploadError);
+          // We will continue even if upload fails
+        }
+      }
+    }
+
     const remarks = document.getElementById('invUpdateRemarks').value.trim();
     if (!invError) {
       await supabase.from('stock_log').insert([{
@@ -800,7 +846,10 @@ document.addEventListener('DOMContentLoaded', () => {
         item_name: item.item_name,
         action: action.toUpperCase(),
         amount: amount,
-        remarks: remarks
+        remarks: remarks,
+        supplier_name: supplierName,
+        purchase_cost: purchaseCost,
+        bill_photo_url: billUrl
       }]);
     }
 
@@ -839,7 +888,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (!data || data.length === 0) {
-      listBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1rem;">No movement history found.</td></tr>`;
+      listBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding: 1rem;">No movement history found.</td></tr>`;
       return;
     }
 
@@ -852,13 +901,25 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch(e) {}
       
       const badgeColor = log.action === 'ADD' ? 'resolved' : 'open';
+      
+      let purchaseHtml = '-';
+      if (log.action === 'ADD' && (log.supplier_name || log.purchase_cost || log.bill_photo_url)) {
+        purchaseHtml = `
+          <div style="font-size: 0.8rem;">
+            ${log.supplier_name ? `<strong>Supplier:</strong> ${log.supplier_name}<br>` : ''}
+            ${log.purchase_cost ? `<strong>Cost:</strong> ₹${log.purchase_cost}<br>` : ''}
+            ${log.bill_photo_url ? `<a href="${log.bill_photo_url}" target="_blank" style="color: var(--accent-primary); text-decoration: none;"><i data-lucide="image" style="width: 14px; height: 14px; vertical-align: middle;"></i> View Bill</a>` : ''}
+          </div>
+        `;
+      }
 
       return `
         <tr style="border-bottom: 1px solid var(--border-color);">
-          <td style="padding: 0.75rem 0; color: var(--text-primary);">${dateString}</td>
-          <td style="padding: 0.75rem 0;"><span class="badge badge-${badgeColor}">${log.action}</span></td>
-          <td style="padding: 0.75rem 0; font-weight: 600;">${log.amount}</td>
-          <td style="padding: 0.75rem 0; color: var(--text-secondary);">${log.remarks || '-'}</td>
+          <td style="padding: 0.75rem 0; color: var(--text-primary); vertical-align: top;">${dateString}</td>
+          <td style="padding: 0.75rem 0; vertical-align: top;"><span class="badge badge-${badgeColor}">${log.action}</span></td>
+          <td style="padding: 0.75rem 0; font-weight: 600; vertical-align: top;">${log.amount}</td>
+          <td style="padding: 0.75rem 0; color: var(--text-secondary); vertical-align: top;">${log.remarks || '-'}</td>
+          <td style="padding: 0.75rem 0; color: var(--text-secondary); vertical-align: top;">${purchaseHtml}</td>
         </tr>
       `;
     }).join('');

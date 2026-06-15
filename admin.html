@@ -518,6 +518,18 @@
         
         <label>Remarks / Issued To</label>
         <input type="text" id="invUpdateRemarks" placeholder="e.g. Student Name, Dept, or Vendor" style="margin-bottom: 1rem;">
+
+        <!-- Purchase Details (Hidden on Subtract) -->
+        <div id="purchaseDetailsContainer">
+          <label>Supplier / Vendor Name</label>
+          <input type="text" id="invSupplier" placeholder="e.g. Amazon, Dell" style="margin-bottom: 1rem;">
+          
+          <label>Total Cost (₹)</label>
+          <input type="number" id="invCost" placeholder="e.g. 5000" min="0" style="margin-bottom: 1rem;">
+          
+          <label>Upload Bill / Invoice Photo</label>
+          <input type="file" id="invBillFile" accept="image/*,application/pdf" style="margin-bottom: 1rem; padding: 0.5rem; background: rgba(0,0,0,0.05); color: var(--text-primary);">
+        </div>
       </div>
       
       <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
@@ -541,6 +553,7 @@
               <th style="padding-bottom: 0.5rem; color: var(--text-secondary);">Action</th>
               <th style="padding-bottom: 0.5rem; color: var(--text-secondary);">Amount</th>
               <th style="padding-bottom: 0.5rem; color: var(--text-secondary);">Remarks</th>
+              <th style="padding-bottom: 0.5rem; color: var(--text-secondary);">Purchase Details</th>
             </tr>
           </thead>
           <tbody id="historyInvList">
