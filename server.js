@@ -33,9 +33,10 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/iibs')
-  .then(() => console.log('Connected to MongoDB local database'))
+// MongoDB Connection
+const mongoUri = 'mongodb+srv://iibs:BcOUKVzKL0doMFlR@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
+mongoose.connect(mongoUri)
+  .then(() => console.log('Connected to MongoDB Atlas'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 // =======================
