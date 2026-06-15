@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IIBS Service Request Portal</title>
-  <meta name="description" content="IIBS Service Request Portal — Raise and track IT support, facilities, and infrastructure service requests easily.">
+  <title>IIBS – Service Ticketing System</title>
+  <meta name="description" content="IIBS Service Ticketing System — Raise IT and infrastructure service tickets for quick resolution.">
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,8 +31,8 @@
       </div>
       <nav id="navLinks">
         <a href="#" class="active" data-tab="home"><i data-lucide="home" class="nav-icon"></i> Home</a>
-        <a href="#" data-tab="newrequest"><i data-lucide="plus-circle" class="nav-icon"></i> Raise Request</a>
-        <a href="#" data-tab="track"><i data-lucide="search" class="nav-icon"></i> Track Requests</a>
+        <a href="#" data-tab="newticket"><i data-lucide="plus-circle" class="nav-icon"></i> Raise Ticket</a>
+        <a href="#" data-tab="track"><i data-lucide="search" class="nav-icon"></i> Track Tickets</a>
         <a href="#" data-tab="help"><i data-lucide="life-buoy" class="nav-icon"></i> Help</a>
       </nav>
       <button class="mobile-menu-btn" id="mobileMenuBtn">
@@ -44,23 +44,23 @@
   <!-- Main Content -->
   <main>
 
-    <!-- TAB: HOME / HERO -->
+    <!-- TAB: HOME -->
     <div id="home" class="tab-content active">
 
       <!-- Hero Section -->
       <section class="hero">
         <div class="hero-badge">
           <i data-lucide="zap"></i>
-          <span>Fast & Reliable Support</span>
+          <span>IIBS – International Institute of Business</span>
         </div>
-        <h1>IIBS Service Request <span class="gradient-text">Portal</span></h1>
-        <p class="hero-subtitle">Raise IT support and facilities requests in seconds. Track progress in real-time. Get issues resolved faster.</p>
+        <h1>Service Ticketing <span class="gradient-text">System</span></h1>
+        <p class="hero-subtitle">Submit IT and infrastructure service tickets instantly. Track status in real-time. Get issues resolved faster.</p>
         <div class="hero-actions">
           <button class="btn-primary btn-lg" id="heroRaiseBtn">
-            <i data-lucide="plus-circle"></i> Raise a Request
+            <i data-lucide="plus-circle"></i> Raise a Ticket
           </button>
           <button class="btn-secondary btn-lg" id="heroTrackBtn">
-            <i data-lucide="search"></i> Track My Requests
+            <i data-lucide="search"></i> Track My Tickets
           </button>
         </div>
       </section>
@@ -71,7 +71,7 @@
           <div class="stat-icon si-total"><i data-lucide="clipboard-list"></i></div>
           <div class="stat-content">
             <div class="stat-value" id="statTotal">0</div>
-            <div class="stat-label">Total Requests</div>
+            <div class="stat-label">Total Tickets</div>
           </div>
         </div>
         <div class="stat-card">
@@ -97,200 +97,181 @@
         </div>
       </div>
 
-      <!-- Service Categories -->
+      <!-- Service Categories Quick Access -->
       <section class="categories-section">
-        <h2 class="section-title">What do you need help with?</h2>
+        <h2 class="section-title">Common Service Requests</h2>
         <div class="categories-grid">
-          <div class="category-card" data-category="Hardware">
-            <div class="cat-icon ci-hardware"><i data-lucide="monitor"></i></div>
-            <h3>Hardware Issue</h3>
-            <p>Computer, monitor, printer, keyboard, mouse or any device malfunction</p>
+          <div class="category-card" data-ticket-type="Laptop With Charger">
+            <div class="cat-icon ci-hardware"><i data-lucide="laptop"></i></div>
+            <h3>Laptop With Charger</h3>
+            <p>Request a laptop with charger for work or presentations</p>
           </div>
-          <div class="category-card" data-category="Software">
-            <div class="cat-icon ci-software"><i data-lucide="code-2"></i></div>
-            <h3>Software Issue</h3>
-            <p>OS errors, application crashes, license problems, installation requests</p>
+          <div class="category-card" data-ticket-type="DESKTOP not working">
+            <div class="cat-icon ci-software"><i data-lucide="monitor-x"></i></div>
+            <h3>Desktop Not Working</h3>
+            <p>Desktop PC malfunction, display issues, or startup failures</p>
           </div>
-          <div class="category-card" data-category="Network">
-            <div class="cat-icon ci-network"><i data-lucide="wifi"></i></div>
-            <h3>Network / Internet</h3>
-            <p>WiFi connectivity, LAN issues, VPN access, slow internet speeds</p>
+          <div class="category-card" data-ticket-type="WIFI not connecting">
+            <div class="cat-icon ci-network"><i data-lucide="wifi-off"></i></div>
+            <h3>WiFi Not Connecting</h3>
+            <p>WiFi connectivity issues, unable to connect to campus network</p>
           </div>
-          <div class="category-card" data-category="Email">
-            <div class="cat-icon ci-email"><i data-lucide="mail"></i></div>
-            <h3>Email / Account</h3>
-            <p>Email access, password resets, account lockouts, new account creation</p>
+          <div class="category-card" data-ticket-type="Printer Not working">
+            <div class="cat-icon ci-email"><i data-lucide="printer"></i></div>
+            <h3>Printer Not Working</h3>
+            <p>Printer malfunction, paper jam, or connectivity issues</p>
           </div>
-          <div class="category-card" data-category="Electrical">
-            <div class="cat-icon ci-electrical"><i data-lucide="plug-zap"></i></div>
-            <h3>Electrical</h3>
-            <p>Power outlet, lighting, UPS, generator, wiring or switchboard issues</p>
+          <div class="category-card" data-ticket-type="System Slow">
+            <div class="cat-icon ci-electrical"><i data-lucide="gauge"></i></div>
+            <h3>System Slow</h3>
+            <p>Computer running slow, lagging, or performance issues</p>
           </div>
-          <div class="category-card" data-category="Plumbing">
-            <div class="cat-icon ci-plumbing"><i data-lucide="droplets"></i></div>
-            <h3>Plumbing</h3>
-            <p>Water leakage, blocked drains, tap repairs, washroom issues</p>
+          <div class="category-card" data-ticket-type="System Not Powering ON">
+            <div class="cat-icon ci-hvac"><i data-lucide="power-off"></i></div>
+            <h3>System Not Powering ON</h3>
+            <p>System won't start, no power, or boot failure</p>
           </div>
-          <div class="category-card" data-category="AC/HVAC">
-            <div class="cat-icon ci-hvac"><i data-lucide="thermometer-snowflake"></i></div>
-            <h3>AC / HVAC</h3>
-            <p>Air conditioning not working, temperature control, ventilation problems</p>
+          <div class="category-card" data-ticket-type="Network">
+            <div class="cat-icon ci-plumbing"><i data-lucide="cable"></i></div>
+            <h3>Network Issue</h3>
+            <p>LAN, ethernet, or network connectivity problems</p>
           </div>
-          <div class="category-card" data-category="Furniture">
-            <div class="cat-icon ci-furniture"><i data-lucide="armchair"></i></div>
-            <h3>Furniture / Infrastructure</h3>
-            <p>Broken chairs, desks, doors, windows, civil work, painting</p>
+          <div class="category-card" data-ticket-type="Request for Other">
+            <div class="cat-icon ci-furniture"><i data-lucide="settings"></i></div>
+            <h3>Other Request</h3>
+            <p>Any other IT or infrastructure service request</p>
           </div>
         </div>
       </section>
 
-      <!-- Recent Activity -->
+      <!-- Recent Tickets -->
       <section class="recent-section">
-        <h2 class="section-title">Recent Requests</h2>
+        <h2 class="section-title">Recent Tickets</h2>
         <div class="recent-list" id="recentList">
           <!-- Populated dynamically -->
         </div>
       </section>
     </div>
 
-    <!-- TAB: RAISE NEW REQUEST -->
-    <div id="newrequest" class="tab-content">
+    <!-- TAB: RAISE NEW TICKET -->
+    <div id="newticket" class="tab-content">
       <div class="form-container">
         <div class="form-header">
-          <div class="form-header-icon"><i data-lucide="file-plus-2"></i></div>
-          <h2>Raise a New Service Request</h2>
-          <p>Fill in the details below and our team will get back to you shortly.</p>
+          <div class="form-header-icon"><i data-lucide="ticket"></i></div>
+          <h2>IIBS – Service Ticketing System</h2>
+          <p>Fill in the details below to raise a new service ticket. All fields marked * are required.</p>
         </div>
 
         <form id="serviceForm">
+          <!-- SECTION 1: Personal Details -->
+          <div class="form-section-label">
+            <i data-lucide="user-circle"></i>
+            <span>Section 1 — Personal Information</span>
+          </div>
+
           <div class="form-grid">
-            <!-- Left Column -->
             <div class="form-column">
               <div class="form-group">
-                <label for="requesterName">
-                  <i data-lucide="user" class="label-icon"></i> Full Name *
+                <label for="userName">
+                  <i data-lucide="user" class="label-icon"></i> Name *
                 </label>
-                <input type="text" id="requesterName" placeholder="Enter your full name" required>
+                <input type="text" id="userName" placeholder="Enter your full name" required>
               </div>
 
               <div class="form-group">
-                <label for="requesterEmail">
-                  <i data-lucide="mail" class="label-icon"></i> Email Address *
+                <label for="userIdNumber">
+                  <i data-lucide="id-card" class="label-icon"></i> IIBS ID Number (Student/Staff ID) *
                 </label>
-                <input type="email" id="requesterEmail" placeholder="your.email@iibs.org" required>
+                <input type="text" id="userIdNumber" placeholder="e.g. IIBS2024001" required>
               </div>
 
               <div class="form-group">
-                <label for="requesterDept">
+                <label for="userRole">
+                  <i data-lucide="users" class="label-icon"></i> Student / Faculty / Staff *
+                </label>
+                <select id="userRole" required>
+                  <option value="">Select Role...</option>
+                  <option value="Student">Student</option>
+                  <option value="Faculty">Faculty</option>
+                  <option value="Staff">Staff</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-column">
+              <div class="form-group">
+                <label for="userDepartment">
                   <i data-lucide="building-2" class="label-icon"></i> Department *
                 </label>
-                <select id="requesterDept" required>
-                  <option value="">Select Department...</option>
-                  <option value="Administration">Administration</option>
-                  <option value="Finance">Finance</option>
-                  <option value="HR">Human Resources</option>
-                  <option value="IT">IT Department</option>
-                  <option value="Marketing">Marketing</option>
-                  <option value="Operations">Operations</option>
-                  <option value="Academic">Academic / Faculty</option>
-                  <option value="Library">Library</option>
-                  <option value="Hostel">Hostel</option>
-                  <option value="Other">Other</option>
-                </select>
+                <input type="text" id="userDepartment" placeholder="e.g. Computer Science, Admin, HR" required>
               </div>
 
               <div class="form-group">
-                <label for="requesterPhone">
-                  <i data-lucide="phone" class="label-icon"></i> Phone Number
+                <label for="userContact">
+                  <i data-lucide="phone" class="label-icon"></i> Contact Number *
                 </label>
-                <input type="tel" id="requesterPhone" placeholder="Mobile or extension number">
-              </div>
-            </div>
-
-            <!-- Right Column -->
-            <div class="form-column">
-              <div class="form-group">
-                <label for="serviceCategory">
-                  <i data-lucide="tag" class="label-icon"></i> Service Category *
-                </label>
-                <select id="serviceCategory" required>
-                  <option value="">Select Category...</option>
-                  <optgroup label="IT Support">
-                    <option value="Hardware">Hardware Issue</option>
-                    <option value="Software">Software Issue</option>
-                    <option value="Network">Network / Internet</option>
-                    <option value="Email">Email / Account Access</option>
-                  </optgroup>
-                  <optgroup label="Facilities">
-                    <option value="Electrical">Electrical</option>
-                    <option value="Plumbing">Plumbing</option>
-                    <option value="AC/HVAC">AC / HVAC</option>
-                    <option value="Furniture">Furniture / Infrastructure</option>
-                  </optgroup>
-                  <optgroup label="Other">
-                    <option value="Security">Security / CCTV</option>
-                    <option value="Housekeeping">Housekeeping / Cleaning</option>
-                    <option value="Transport">Transport</option>
-                    <option value="Other">Other</option>
-                  </optgroup>
-                </select>
+                <input type="tel" id="userContact" placeholder="e.g. 9876543210" required>
               </div>
 
               <div class="form-group">
-                <label for="priorityLevel">
-                  <i data-lucide="flag" class="label-icon"></i> Priority Level *
+                <label for="userEmail">
+                  <i data-lucide="mail" class="label-icon"></i> Email Address *
                 </label>
-                <select id="priorityLevel" required>
-                  <option value="low">Low — Minor inconvenience</option>
-                  <option value="medium" selected>Medium — Affecting work</option>
-                  <option value="high">High — Urgent, work blocked</option>
-                  <option value="critical">Critical — Emergency / Safety</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="location">
-                  <i data-lucide="map-pin" class="label-icon"></i> Location / Room *
-                </label>
-                <input type="text" id="location" placeholder="e.g. Block A, Room 203" required>
-              </div>
-
-              <div class="form-group">
-                <label for="preferredDate">
-                  <i data-lucide="calendar" class="label-icon"></i> Preferred Date (optional)
-                </label>
-                <input type="date" id="preferredDate">
+                <input type="email" id="userEmail" placeholder="your.email@iibs.org" required>
               </div>
             </div>
           </div>
 
-          <!-- Full Width -->
-          <div class="form-group">
-            <label for="issueSubject">
-              <i data-lucide="type" class="label-icon"></i> Subject *
-            </label>
-            <input type="text" id="issueSubject" placeholder="Brief summary of your request" required>
+          <!-- SECTION 2: Ticket Details -->
+          <div class="form-section-label">
+            <i data-lucide="clipboard-list"></i>
+            <span>Section 2 — Ticket Details</span>
           </div>
 
           <div class="form-group">
-            <label for="issueDescription">
-              <i data-lucide="align-left" class="label-icon"></i> Description *
+            <label for="ticketType">
+              <i data-lucide="tag" class="label-icon"></i> Service Request Type *
             </label>
-            <textarea id="issueDescription" rows="5" placeholder="Describe your issue in detail. Include any error messages, what you've already tried, and when the problem started..." required></textarea>
+            <select id="ticketType" required>
+              <option value="">Select Service Request...</option>
+              <option value="Laptop With Charger">Laptop With Charger</option>
+              <option value="DESKTOP not working">DESKTOP not working</option>
+              <option value="PANEL BOARD">PANEL BOARD</option>
+              <option value="WIFI not connecting">WIFI not connecting</option>
+              <option value="Network">Network</option>
+              <option value="Printer Not working">Printer Not working</option>
+              <option value="Colour Ink Refill">Colour Ink Refill</option>
+              <option value="Tonner Replacement">Tonner Replacement</option>
+              <option value="System not Working">System not Working</option>
+              <option value="HDMI cable request">HDMI cable request</option>
+              <option value="Laptop without Charger">Laptop without Charger</option>
+              <option value="Request for Keyboard and Mouse Replacement">Request for Keyboard and Mouse Replacement</option>
+              <option value="Request for Wireless Mouse">Request for Wireless Mouse</option>
+              <option value="System Not Powering ON">System Not Powering ON</option>
+              <option value="System Slow">System Slow</option>
+              <option value="Request for Other">Request for Other</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="otherRequestGroup" style="display: none;">
+            <label for="otherRequest">
+              <i data-lucide="align-left" class="label-icon"></i> For Other Request (Please specify)
+            </label>
+            <textarea id="otherRequest" rows="4" placeholder="Describe your request in detail..."></textarea>
           </div>
 
           <button type="submit" class="btn-primary btn-lg btn-submit" id="submitBtn">
-            <i data-lucide="send"></i> Submit Service Request
+            <i data-lucide="send"></i> Submit Service Ticket
           </button>
         </form>
       </div>
     </div>
 
-    <!-- TAB: TRACK REQUESTS -->
+    <!-- TAB: TRACK TICKETS -->
     <div id="track" class="tab-content">
       <div class="track-header">
-        <h2><i data-lucide="search" class="section-icon"></i> Track Your Service Requests</h2>
-        <p>View the status and history of all submitted service requests.</p>
+        <h2><i data-lucide="search" class="section-icon"></i> Track Your Service Tickets</h2>
+        <p>View the status and history of all submitted service tickets.</p>
       </div>
 
       <!-- Search & Filter Bar -->
@@ -306,27 +287,30 @@
             <option value="progress">In Progress</option>
             <option value="resolved">Resolved</option>
           </select>
-          <select id="filterCategory">
-            <option value="all">All Categories</option>
-            <option value="Hardware">Hardware</option>
-            <option value="Software">Software</option>
+          <select id="filterType">
+            <option value="all">All Types</option>
+            <option value="Laptop With Charger">Laptop With Charger</option>
+            <option value="DESKTOP not working">Desktop Not Working</option>
+            <option value="PANEL BOARD">Panel Board</option>
+            <option value="WIFI not connecting">WiFi Not Connecting</option>
             <option value="Network">Network</option>
-            <option value="Email">Email / Account</option>
-            <option value="Electrical">Electrical</option>
-            <option value="Plumbing">Plumbing</option>
-            <option value="AC/HVAC">AC / HVAC</option>
-            <option value="Furniture">Furniture</option>
-            <option value="Security">Security</option>
-            <option value="Housekeeping">Housekeeping</option>
-            <option value="Transport">Transport</option>
-            <option value="Other">Other</option>
+            <option value="Printer Not working">Printer Not Working</option>
+            <option value="Colour Ink Refill">Colour Ink Refill</option>
+            <option value="Tonner Replacement">Tonner Replacement</option>
+            <option value="System not Working">System Not Working</option>
+            <option value="HDMI cable request">HDMI Cable Request</option>
+            <option value="Laptop without Charger">Laptop Without Charger</option>
+            <option value="Request for Keyboard and Mouse Replacement">Keyboard & Mouse</option>
+            <option value="Request for Wireless Mouse">Wireless Mouse</option>
+            <option value="System Not Powering ON">System Not Powering ON</option>
+            <option value="System Slow">System Slow</option>
+            <option value="Request for Other">Other</option>
           </select>
-          <select id="filterPriority">
-            <option value="all">All Priority</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="critical">Critical</option>
+          <select id="filterRole">
+            <option value="all">All Roles</option>
+            <option value="Student">Student</option>
+            <option value="Faculty">Faculty</option>
+            <option value="Staff">Staff</option>
           </select>
         </div>
       </div>
@@ -343,76 +327,67 @@
         <div class="help-header">
           <i data-lucide="life-buoy" class="help-header-icon"></i>
           <h2>Help & FAQs</h2>
-          <p>Find answers to common questions about raising and tracking service requests.</p>
+          <p>Find answers to common questions about the IIBS Service Ticketing System.</p>
         </div>
 
         <div class="faq-list">
           <div class="faq-item">
             <button class="faq-question" data-faq="faq1">
-              <span>How do I raise a new service request?</span>
+              <span>How do I raise a new service ticket?</span>
               <i data-lucide="chevron-down" class="faq-chevron"></i>
             </button>
             <div class="faq-answer" id="faq1">
-              <p>Click on <strong>"Raise Request"</strong> in the navigation bar or the <strong>"Raise a Request"</strong> button on the home page. Fill in your details, select the service category, describe the issue, and click Submit. You'll receive a ticket ID for tracking.</p>
+              <p>Click on <strong>"Raise Ticket"</strong> in the navigation bar or the <strong>"Raise a Ticket"</strong> button on the home page. Fill in your personal details (Name, IIBS ID, Role, Department, Contact, Email), select the service request type, and click Submit.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question" data-faq="faq2">
-              <span>How can I track my existing request?</span>
+              <span>What types of service requests can I raise?</span>
               <i data-lucide="chevron-down" class="faq-chevron"></i>
             </button>
             <div class="faq-answer" id="faq2">
-              <p>Go to the <strong>"Track Requests"</strong> tab. You can search by your ticket ID, name, or keyword. Use filters to narrow down by status, category, or priority.</p>
+              <p>You can raise tickets for: <strong>Laptop With/Without Charger, Desktop Not Working, Panel Board, WiFi Not Connecting, Network Issues, Printer Not Working, Colour Ink Refill, Tonner Replacement, System Not Working/Powering ON/Slow, HDMI Cable Request, Keyboard & Mouse Replacement, Wireless Mouse,</strong> and <strong>Other Requests</strong>.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question" data-faq="faq3">
-              <span>What are the different priority levels?</span>
+              <span>How can I track my ticket?</span>
               <i data-lucide="chevron-down" class="faq-chevron"></i>
             </button>
             <div class="faq-answer" id="faq3">
-              <p><strong>Low:</strong> Minor inconvenience, not urgent.<br>
-              <strong>Medium:</strong> Affecting your work but you can continue.<br>
-              <strong>High:</strong> Work is blocked, needs urgent attention.<br>
-              <strong>Critical:</strong> Emergency or safety issue requiring immediate response.</p>
+              <p>Go to the <strong>"Track Tickets"</strong> tab. You can search by ticket ID, name, or keyword. Use the filters to narrow results by status, service type, or role.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question" data-faq="faq4">
-              <span>What categories of service requests are available?</span>
+              <span>What should I select for "Request for Other"?</span>
               <i data-lucide="chevron-down" class="faq-chevron"></i>
             </button>
             <div class="faq-answer" id="faq4">
-              <p><strong>IT Support:</strong> Hardware, Software, Network/Internet, Email/Account Access<br>
-              <strong>Facilities:</strong> Electrical, Plumbing, AC/HVAC, Furniture/Infrastructure<br>
-              <strong>Other:</strong> Security/CCTV, Housekeeping, Transport, and more</p>
+              <p>If your issue doesn't match any of the predefined categories, select <strong>"Request for Other"</strong>. A text box will appear where you can describe your specific requirement in detail.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question" data-faq="faq5">
-              <span>How long does it take to resolve a request?</span>
+              <span>How long does it take to resolve a ticket?</span>
               <i data-lucide="chevron-down" class="faq-chevron"></i>
             </button>
             <div class="faq-answer" id="faq5">
-              <p>Response times vary by priority:<br>
-              <strong>Critical:</strong> Within 1 hour<br>
-              <strong>High:</strong> Within 4 hours<br>
-              <strong>Medium:</strong> Within 24 hours<br>
-              <strong>Low:</strong> Within 48 hours</p>
+              <p>Resolution times depend on the type and complexity of the request. Simple requests like laptop/charger are typically handled within <strong>2-4 hours</strong>. Hardware repairs may take <strong>24-48 hours</strong>. You can track real-time status updates in the Track Tickets section.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question" data-faq="faq6">
-              <span>Who do I contact for urgent issues?</span>
+              <span>Who should I contact for urgent issues?</span>
               <i data-lucide="chevron-down" class="faq-chevron"></i>
             </button>
             <div class="faq-answer" id="faq6">
-              <p>For critical emergencies, please contact the IIBS Admin Office directly or raise a request with <strong>"Critical"</strong> priority. The support team monitors critical tickets on priority.</p>
+              <p>For urgent or critical issues, please contact the <strong>IIBS IT Helpdesk</strong> directly at the numbers listed below, or raise a ticket through this portal for tracking purposes.</p>
             </div>
           </div>
         </div>
@@ -420,21 +395,21 @@
         <!-- Contact Info -->
         <div class="contact-cards">
           <div class="contact-card">
-            <div class="contact-icon"><i data-lucide="phone"></i></div>
+            <div class="contact-icon"><i data-lucide="headset"></i></div>
             <h3>IT Helpdesk</h3>
-            <p>Ext: 1234</p>
+            <p>For all IT related queries</p>
             <p>it.support@iibs.org</p>
           </div>
           <div class="contact-card">
             <div class="contact-icon"><i data-lucide="wrench"></i></div>
-            <h3>Facilities Desk</h3>
-            <p>Ext: 5678</p>
-            <p>facilities@iibs.org</p>
+            <h3>Infrastructure</h3>
+            <p>Electrical, network, facilities</p>
+            <p>infra@iibs.org</p>
           </div>
           <div class="contact-card">
             <div class="contact-icon"><i data-lucide="shield"></i></div>
             <h3>Admin Office</h3>
-            <p>Ext: 9000</p>
+            <p>General administration</p>
             <p>admin@iibs.org</p>
           </div>
         </div>
@@ -447,11 +422,11 @@
   <div class="modal-overlay" id="successModal">
     <div class="modal-content">
       <div class="modal-icon"><i data-lucide="check-circle-2"></i></div>
-      <h2>Request Submitted!</h2>
-      <p class="modal-ticket-id" id="modalTicketId">SR-0001</p>
-      <p class="modal-desc">Your service request has been raised successfully. You can track the progress using the ticket ID above.</p>
+      <h2>Ticket Submitted!</h2>
+      <p class="modal-ticket-id" id="modalTicketId">TKT-0001</p>
+      <p class="modal-desc">Your service ticket has been raised successfully. The IT team has been notified. You can track the progress using the ticket ID above.</p>
       <div class="modal-actions">
-        <button class="btn-primary" id="modalTrackBtn"><i data-lucide="search"></i> Track Request</button>
+        <button class="btn-primary" id="modalTrackBtn"><i data-lucide="search"></i> Track Ticket</button>
         <button class="btn-secondary" id="modalCloseBtn"><i data-lucide="x"></i> Close</button>
       </div>
     </div>
@@ -460,7 +435,7 @@
   <!-- Footer -->
   <footer>
     <div class="footer-content">
-      <p>&copy; 2026 IIBS ServiceDesk. All rights reserved.</p>
+      <p>&copy; 2026 IIBS – International Institute of Business. All rights reserved.</p>
     </div>
   </footer>
 
