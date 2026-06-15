@@ -594,6 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let inventoryItems = [];
   const addInventoryModal = document.getElementById('addInventoryModal');
   const updateInventoryModal = document.getElementById('updateInventoryModal');
+  const historyInventoryModal = document.getElementById('historyInventoryModal');
   let currentUpdatingItemId = null;
 
   async function fetchInventoryFromSupabase() {
@@ -670,6 +671,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="text-align: right;">
             <div style="font-size: 2rem; font-weight: 700; color: var(--text-primary); line-height: 1;">${item.quantity}</div>
             <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem;">Total Available</div>
+            <button class="btn-secondary btn-history-stock" data-id="${item.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin-right: 0.25rem;">
+              <i data-lucide="clock"></i> History
+            </button>
             <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
               <i data-lucide="edit-3"></i> Update
             </button>
@@ -685,6 +689,14 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
         openUpdateInventoryModal(id);
+      });
+    });
+
+    // Attach history listeners
+    document.querySelectorAll('.btn-history-stock').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        openHistoryInventoryModal(id);
       });
     });
   }
@@ -740,6 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('updateInvTitle').textContent = `Update: ${item.item_name}`;
     document.getElementById('updateInvDesc').textContent = `Current Quantity: ${item.quantity}`;
     document.getElementById('invUpdateAmount').value = '1';
+    document.getElementById('invUpdateRemarks').value = '';
     
     updateInventoryModal.classList.add('visible');
   }
@@ -773,24 +786,90 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.textContent = 'Updating...';
     btn.disabled = true;
 
-    const { error } = await supabase
+    // 1. Update Inventory Table
+    const { error: invError } = await supabase
       .from('inventory')
       .update({ quantity: newQty, last_updated: new Date().toISOString() })
       .eq('id', currentUpdatingItemId);
 
+    // 2. Insert into Stock Log
+    const remarks = document.getElementById('invUpdateRemarks').value.trim();
+    if (!invError) {
+      await supabase.from('stock_log').insert([{
+        item_id: item.id,
+        item_name: item.item_name,
+        action: action.toUpperCase(),
+        amount: amount,
+        remarks: remarks
+      }]);
+    }
+
     btn.textContent = 'Update Quantity';
     btn.disabled = false;
 
-    if (error) {
-      alert("Error updating stock: " + error.message);
+    if (invError) {
+      alert("Error updating stock: " + invError.message);
     } else {
       updateInventoryModal.classList.remove('visible');
       fetchInventoryFromSupabase();
     }
   });
 
+  // History Modal Logic
+  async function openHistoryInventoryModal(id) {
+    const item = inventoryItems.find(i => i.id === id);
+    if (!item) return;
+
+    document.getElementById('historyInvTitle').textContent = `History: ${item.item_name}`;
+    const listBody = document.getElementById('historyInvList');
+    listBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 1rem;"><i data-lucide="loader" class="spin"></i> Loading logs...</td></tr>`;
+    lucide.createIcons();
+    
+    historyInventoryModal.classList.add('visible');
+
+    const { data, error } = await supabase
+      .from('stock_log')
+      .select('*')
+      .eq('item_id', id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      listBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--accent-rose); padding: 1rem;">Failed to load history</td></tr>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      listBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1rem;">No movement history found.</td></tr>`;
+      return;
+    }
+
+    listBody.innerHTML = data.map(log => {
+      let dateString = log.created_at;
+      try {
+        dateString = new Date(log.created_at).toLocaleString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+      } catch(e) {}
+      
+      const badgeColor = log.action === 'ADD' ? 'resolved' : 'open';
+
+      return `
+        <tr style="border-bottom: 1px solid var(--border-color);">
+          <td style="padding: 0.75rem 0; color: var(--text-primary);">${dateString}</td>
+          <td style="padding: 0.75rem 0;"><span class="badge badge-${badgeColor}">${log.action}</span></td>
+          <td style="padding: 0.75rem 0; font-weight: 600;">${log.amount}</td>
+          <td style="padding: 0.75rem 0; color: var(--text-secondary);">${log.remarks || '-'}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('historyCloseBtn')?.addEventListener('click', () => {
+    historyInventoryModal.classList.remove('visible');
+  });
+
   // Close modals on overlay click
-  [addInventoryModal, updateInventoryModal].forEach(modal => {
+  [addInventoryModal, updateInventoryModal, historyInventoryModal].forEach(modal => {
     if (modal) {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.classList.remove('visible');
