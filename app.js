@@ -269,6 +269,34 @@ document.addEventListener('DOMContentLoaded', () => {
         date: new Date().toISOString()
       };
 
+      // Submit to Google Form / Google Sheet
+      const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTPziyjUkdN3AW9eVl56wWcmFcIIimNf32d-ZAtWN7A1YcQ/formResponse';
+      const formData = new URLSearchParams();
+      formData.append('entry.1687135953', newTicket.name);
+      formData.append('entry.632749992', newTicket.iibsId);
+      formData.append('entry.887531768', newTicket.role);
+      formData.append('entry.1298781396', newTicket.department);
+      formData.append('entry.1892291400', newTicket.contact);
+      formData.append('entry.1357677634', newTicket.email);
+      formData.append('entry.921783959', newTicket.ticketType);
+      
+      if (newTicket.otherRequest) {
+        formData.append('entry.893389411', newTicket.otherRequest);
+      }
+
+      fetch(formUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData.toString()
+      }).then(() => {
+        console.log('Successfully synced to Google Sheet');
+      }).catch(err => {
+        console.error('Error syncing to Google Sheet:', err);
+      });
+
       tickets.push(newTicket);
       saveData();
       form.reset();
