@@ -37,7 +37,7 @@ const upload = multer({ storage });
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
-const mongoUri = 'mongodb+srv://iibs:BcOUKVzKL0doMFlR@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
+const mongoUri = 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
 mongoose.connect(mongoUri)
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch(err => console.error('MongoDB connection error:', err));

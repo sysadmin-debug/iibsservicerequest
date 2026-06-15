@@ -6,8 +6,11 @@ const supabaseUrl = 'https://ttfpstdetevgkjnkqcxf.supabase.co';
 const supabaseKey = 'sb_publishable_MXV3EFM0dxohHYcieiptdA_p7UhMePb';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// MongoDB Connection (Standard string to bypass DNS SRV issues)
-const mongoUri = 'mongodb://iibs:BcOUKVzKL0doMFlR@ac-rfizocd-shard-00-00.tx3p15k.mongodb.net:27017,ac-rfizocd-shard-00-01.tx3p15k.mongodb.net:27017,ac-rfizocd-shard-00-02.tx3p15k.mongodb.net:27017/iibs?ssl=true&replicaSet=atlas-rfizocd-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0';
+// MongoDB Connection (Force Google DNS to bypass Windows SRV bug)
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
+const mongoUri = 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
 
 // Mongoose Models
 const ticketSchema = new mongoose.Schema({
