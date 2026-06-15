@@ -5,9 +5,71 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Email Configuration
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
+  }
+});
+
+// Function to send resolution email
+async function sendResolutionEmail(ticket) {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+    console.warn('Email credentials not set. Skipping email notification.');
+    return;
+  }
+  
+  if (!ticket.email) {
+    console.warn('Ticket has no email address. Skipping email notification.');
+    return;
+  }
+
+  const mailOptions = {
+    from: `"IIBS IT Helpdesk" <${process.env.GMAIL_USER}>`,
+    to: ticket.email,
+    subject: `Ticket Resolved: ${ticket.ticket_id} - ${ticket.ticket_type}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+        <div style="background-color: #0f172a; padding: 20px; text-align: center;">
+          <h2 style="color: #fff; margin: 0;">IIBS IT Helpdesk</h2>
+        </div>
+        <div style="padding: 20px;">
+          <h3 style="color: #10b981; margin-top: 0;">Your Ticket has been Resolved!</h3>
+          <p>Dear <strong>${ticket.name}</strong>,</p>
+          <p>We are pleased to inform you that your service request has been marked as resolved by our IT Admin team.</p>
+          
+          <div style="background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 4px;">
+            <p style="margin: 0 0 10px 0;"><strong>Ticket ID:</strong> ${ticket.ticket_id}</p>
+            <p style="margin: 0 0 10px 0;"><strong>Category:</strong> ${ticket.ticket_type}</p>
+            <p style="margin: 0;"><strong>Resolution Notes:</strong><br/> ${ticket.resolution || 'No specific notes provided.'}</p>
+          </div>
+          
+          <h4 style="color: #334155; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">We Value Your Feedback!</h4>
+          <p style="font-size: 0.95rem;">Please reply directly to this email to let us know if the issue is completely resolved to your satisfaction, or if you need any further assistance regarding this matter.</p>
+          
+          <p style="margin-top: 30px; font-size: 0.9rem; color: #64748b;">
+            Best Regards,<br/>
+            <strong>IIBS IT Department</strong>
+          </p>
+        </div>
+      </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(\`Resolution email sent to \${ticket.email} for ticket \${ticket.ticket_id}\`);
+  } catch (err) {
+    console.error('Error sending resolution email:', err);
+  }
+}
 
 // Middleware
 app.use(cors());
@@ -97,11 +159,22 @@ app.get(['/api/tickets', '/tickets'], async (req, res) => {
 
 app.put(['/api/tickets/:ticket_id', '/tickets/:ticket_id'], async (req, res) => {
   try {
+    // Check existing ticket status before updating
+    const existingTicket = await Ticket.findOne({ ticket_id: req.params.ticket_id });
+    const wasResolved = existingTicket && existingTicket.status === 'resolved';
+
     const updated = await Ticket.findOneAndUpdate(
       { ticket_id: req.params.ticket_id }, 
       req.body, 
       { new: true }
     );
+
+    // If it wasn't resolved before, but is resolved now, trigger the email
+    if (!wasResolved && updated.status === 'resolved') {
+      // Run asynchronously without awaiting so the API responds instantly
+      sendResolutionEmail(updated).catch(console.error);
+    }
+
     res.json([updated]);
   } catch (error) {
     res.status(500).json({ error: error.message });
