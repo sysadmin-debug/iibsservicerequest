@@ -349,6 +349,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // --- SEND TELEGRAM NOTIFICATION ---
+      const botToken = '8723690135:AAEwhJhc5xZ5-_Q4OstXJcEDjxeMVR71L3I';
+      const chatId = '1031181850';
+      const message = `🚨 *New IT Service Request*\n\n` +
+                      `*ID:* ${tempId}\n` +
+                      `*From:* ${newTicket.name} (${newTicket.department})\n` +
+                      `*Type:* ${newTicket.ticket_type}\n` +
+                      `*Contact:* ${newTicket.contact}\n\n` +
+                      `[View Portal](https://sysadmin-debug.github.io/iibsservicerequest/)`;
+      
+      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: 'Markdown'
+        })
+      }).catch(err => console.error('Telegram notification failed:', err));
+
       // Success
       form.reset();
       otherRequestGroup.style.display = 'none';
