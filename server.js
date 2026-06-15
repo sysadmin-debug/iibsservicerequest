@@ -25,9 +25,7 @@ if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
 }
 
 const mongoUri = 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
-mongoose.connect(mongoUri)
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch(err => console.error('MongoDB connection error:', err));
+let cachedDb = null; async function connectToDatabase() { if (cachedDb) return cachedDb; const uri = 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0'; const client = await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 }); cachedDb = client; return cachedDb; } app.use(async (req, res, next) => { try { await connectToDatabase(); next(); } catch(err) { res.status(500).json({ error: 'Database connection failed', details: err.message }); } });
 
 // =======================
 // MONGOOSE MODELS
