@@ -21,50 +21,45 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== State =====
   let tickets = [];
   
-  // Initialize Supabase
-  const supabaseUrl = 'https://ttfpstdetevgkjnkqcxf.supabase.co';
-  const supabaseKey = 'sb_publishable_MXV3EFM0dxohHYcieiptdA_p7UhMePb';
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+  // Supabase has been replaced with Local MongoDB Server
 
-  // ===== Fetch Data from Supabase =====
-  async function fetchTicketsFromSupabase() {
-    const { data, error } = await supabase
-      .from('tickets')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching Supabase:', error);
+  // ===== Fetch Data from Backend =====
+  async function fetchTicketsFromSupabase() { // Keeping function name to prevent breaking other logic
+    try {
+      const res = await fetch('/api/tickets');
+      if (!res.ok) throw new Error('API failed');
+      const data = await res.json();
+      
+      tickets = data.map(row => ({
+        dbId: row.ticket_id,
+        id: row.ticket_id,
+        date: row.created_at,
+        name: row.name,
+        iibsId: row.iibs_id,
+        role: row.role,
+        department: row.department,
+        contact: row.contact,
+        email: row.email,
+        ticketType: row.ticket_type,
+        otherRequest: row.other_request || '',
+        status: row.status,
+        resolution: row.resolution || ''
+      }));
+      
+      renderStats();
+      renderRecentList();
+      renderTickets();
+    } catch (error) {
+      console.error('Error fetching Tickets:', error);
       document.getElementById('ticketList').innerHTML = `
         <div class="empty-state">
           <i data-lucide="wifi-off"></i>
           <p>Unable to connect to database</p>
-          <small>Please check your internet connection or database configuration.</small>
+          <small>Please check your backend server configuration.</small>
         </div>
       `;
       lucide.createIcons();
-      return;
     }
-
-    tickets = data.map(row => ({
-      dbId: row.id,
-      id: row.ticket_id,
-      date: row.created_at,
-      name: row.name,
-      iibsId: row.iibs_id,
-      role: row.role,
-      department: row.department,
-      contact: row.contact,
-      email: row.email,
-      ticketType: row.ticket_type,
-      otherRequest: row.other_request || '',
-      status: row.status,
-      resolution: row.resolution || ''
-    }));
-    
-    renderStats();
-    renderRecentList();
-    renderTickets();
   }
 
   // ===== Render Stats =====
@@ -276,19 +271,19 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const ticket = tickets.find(t => t.id === currentEditingTicketId);
       if (ticket) {
-        // Update Supabase Database!
+        // Update Backend Database!
         detailSaveBtn.textContent = 'Saving...';
         detailSaveBtn.disabled = true;
 
-        const { error } = await supabase
-          .from('tickets')
-          .update({ status: newStatus, resolution: newRes })
-          .eq('id', ticket.dbId);
+        try {
+          const res = await fetch(`/api/tickets/${ticket.dbId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus, resolution: newRes })
+          });
 
-        if (error) {
-          console.error('Error updating ticket in Supabase:', error);
-          alert("Failed to save. Please try again.");
-        } else {
+          if (!res.ok) throw new Error('API failed');
+          
           // Success! Update local state
           ticket.status = newStatus;
           ticket.resolution = newRes;
@@ -296,6 +291,10 @@ document.addEventListener('DOMContentLoaded', () => {
           renderRecentList();
           renderTickets();
           detailModal.classList.remove('visible');
+
+        } catch (error) {
+          console.error('Error updating ticket:', error);
+          alert("Failed to save. Please try again.");
         }
 
         detailSaveBtn.textContent = 'Save Updates';
@@ -349,13 +348,17 @@ document.addEventListener('DOMContentLoaded', () => {
         resolution: ''
       };
 
-      // Insert directly into Supabase!
-      const { error } = await supabase
-        .from('tickets')
-        .insert([newTicket]);
+      // Insert via API!
+      try {
+        const res = await fetch('/api/tickets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newTicket)
+        });
 
-      if (error) {
-        console.error('Error inserting to Supabase:', error);
+        if (!res.ok) throw new Error('API failed');
+      } catch (error) {
+        console.error('Error inserting to DB:', error);
         alert('Failed to submit ticket. Please check your connection.');
         if (submitBtn) {
           submitBtn.textContent = 'Submit Service Ticket';
@@ -599,12 +602,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function fetchInventoryFromSupabase() {
     try {
-      const { data, error } = await supabase
-        .from('inventory')
-        .select('*')
-        .order('item_name', { ascending: true });
+      const res = await fetch('/api/inventory');
+      if (!res.ok) throw new Error('API failed');
+      const data = await res.json();
 
-      if (error) throw error;
       inventoryItems = data || [];
       renderInventory();
     } catch (err) {
@@ -713,13 +714,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm(`Are you sure you want to permanently delete "${item.item_name}"?\nThis will also delete all of its history logs.`)) {
           btn.textContent = 'Deleting...';
           btn.disabled = true;
-          const { error } = await supabase.from('inventory').delete().eq('id', id);
-          if (error) {
-            alert("Error deleting item: " + error.message);
+          try {
+            const res = await fetch(`/api/inventory/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('API failed');
+            fetchInventoryFromSupabase();
+          } catch (error) {
+            alert("Error deleting item. Please try again.");
             btn.textContent = 'Delete';
             btn.disabled = false;
-          } else {
-            fetchInventoryFromSupabase();
           }
         }
       });
@@ -751,21 +753,27 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.textContent = 'Saving...';
     btn.disabled = true;
 
-    const { error } = await supabase.from('inventory').insert([{
-      item_name: name,
-      category: category,
-      quantity: qty
-    }]);
+    try {
+      const res = await fetch('/api/inventory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          item_name: name,
+          category: category,
+          quantity: qty
+        })
+      });
+
+      if (!res.ok) throw new Error('API failed');
+
+      addInventoryModal.classList.remove('visible');
+      fetchInventoryFromSupabase();
+    } catch (error) {
+      alert("Error adding item. Please try again.");
+    }
 
     btn.textContent = 'Save Item';
     btn.disabled = false;
-
-    if (error) {
-      alert("Error adding item: " + error.message);
-    } else {
-      addInventoryModal.classList.remove('visible');
-      fetchInventoryFromSupabase();
-    }
   });
 
   // Update Stock Modal
@@ -829,64 +837,71 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.disabled = true;
 
     // 1. Update Inventory Table
-    const { error: invError } = await supabase
-      .from('inventory')
-      .update({ quantity: newQty, last_updated: new Date().toISOString() })
-      .eq('id', currentUpdatingItemId);
+    try {
+      const resInv = await fetch(`/api/inventory/${currentUpdatingItemId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: newQty })
+      });
+      if (!resInv.ok) throw new Error('Failed to update inventory');
 
-    // 2. Insert into Stock Log
-    let billUrl = null;
-    let supplierName = null;
-    let purchaseCost = null;
+      // 2. Upload File (if present)
+      let billUrl = null;
+      let supplierName = null;
+      let purchaseCost = null;
 
-    if (action === 'add') {
-      supplierName = document.getElementById('invSupplier').value.trim();
-      purchaseCost = parseFloat(document.getElementById('invCost').value) || null;
-      
-      const fileInput = document.getElementById('invBillFile');
-      if (fileInput && fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+      if (action === 'add') {
+        supplierName = document.getElementById('invSupplier').value.trim();
+        purchaseCost = parseFloat(document.getElementById('invCost').value) || null;
         
-        btn.textContent = 'Uploading Bill...';
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('bills')
-          .upload(fileName, file);
+        const fileInput = document.getElementById('invBillFile');
+        if (fileInput && fileInput.files.length > 0) {
+          const file = fileInput.files[0];
           
-        if (!uploadError) {
-          const { data: publicUrlData } = supabase.storage.from('bills').getPublicUrl(fileName);
-          billUrl = publicUrlData.publicUrl;
-        } else {
-          console.error('File upload error:', uploadError);
-          // We will continue even if upload fails
+          btn.textContent = 'Uploading Bill...';
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            billUrl = uploadData.publicUrl;
+          } else {
+            console.error('File upload failed');
+          }
         }
       }
-    }
 
-    const remarks = document.getElementById('invUpdateRemarks').value.trim();
-    if (!invError) {
-      await supabase.from('stock_log').insert([{
-        item_id: item.id,
-        item_name: item.item_name,
-        action: action.toUpperCase(),
-        amount: amount,
-        remarks: remarks,
-        supplier_name: supplierName,
-        purchase_cost: purchaseCost,
-        bill_photo_url: billUrl
-      }]);
+      // 3. Insert into Stock Log
+      const remarks = document.getElementById('invUpdateRemarks').value.trim();
+      await fetch('/api/stock_log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          item_id: item.id,
+          item_name: item.item_name,
+          action: action.toUpperCase(),
+          amount: amount,
+          remarks: remarks,
+          supplier_name: supplierName,
+          purchase_cost: purchaseCost,
+          bill_photo_url: billUrl
+        })
+      });
+
+      updateInventoryModal.classList.remove('visible');
+      fetchInventoryFromSupabase();
+    } catch (error) {
+      console.error(error);
+      alert("Error updating stock. Please try again.");
     }
 
     btn.textContent = 'Update Quantity';
     btn.disabled = false;
-
-    if (invError) {
-      alert("Error updating stock: " + invError.message);
-    } else {
-      updateInventoryModal.classList.remove('visible');
-      fetchInventoryFromSupabase();
-    }
   });
 
   // History Modal Logic
@@ -901,16 +916,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     historyInventoryModal.classList.add('visible');
 
-    const { data, error } = await supabase
-      .from('stock_log')
-      .select('*')
-      .eq('item_id', id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      listBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--accent-rose); padding: 1rem;">Failed to load history</td></tr>`;
-      return;
-    }
+    try {
+      const res = await fetch(`/api/stock_log?item_id=${id}`);
+      if (!res.ok) throw new Error('API failed');
+      const data = await res.json();
 
     if (!data || data.length === 0) {
       listBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding: 1rem;">No movement history found.</td></tr>`;
@@ -948,6 +957,11 @@ document.addEventListener('DOMContentLoaded', () => {
         </tr>
       `;
     }).join('');
+
+    } catch (err) {
+      console.error(err);
+      listBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--accent-rose); padding: 1rem;">Failed to load history</td></tr>`;
+    }
   }
 
   document.getElementById('historyCloseBtn')?.addEventListener('click', () => {

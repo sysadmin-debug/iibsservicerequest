@@ -5,11 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== State =====
   let tickets = [];
-  
-  // Initialize Supabase
-  const supabaseUrl = 'https://ttfpstdetevgkjnkqcxf.supabase.co';
-  const supabaseKey = 'sb_publishable_MXV3EFM0dxohHYcieiptdA_p7UhMePb';
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
   // ===== Remove Fetch All for Privacy =====
   // We no longer fetch all tickets on the public page.
@@ -28,16 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
       statusSearchBtn.disabled = true;
       statusResultBox.style.display = 'none';
 
-      const { data, error } = await supabase
-        .from('tickets')
-        .select('*')
-        .eq('ticket_id', queryId)
-        .single();
+      try {
+        const res = await fetch('/api/tickets');
+        const allTickets = await res.json();
+        const data = allTickets.find(t => t.ticket_id === queryId);
+        
+        statusSearchBtn.textContent = 'Check';
+        statusSearchBtn.disabled = false;
 
-      statusSearchBtn.textContent = 'Check';
-      statusSearchBtn.disabled = false;
-
-      if (error || !data) {
+        if (!data) throw new Error('Not found');
         statusResultBox.style.display = 'block';
         statusResultBox.innerHTML = `
           <div class="empty-state" style="padding: 2rem;">
@@ -84,6 +78,20 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
       lucide.createIcons();
+      
+      } catch (err) {
+        statusSearchBtn.textContent = 'Check';
+        statusSearchBtn.disabled = false;
+        statusResultBox.style.display = 'block';
+        statusResultBox.innerHTML = `
+          <div class="empty-state" style="padding: 2rem;">
+            <i data-lucide="search-x"></i>
+            <p>Ticket not found</p>
+            <small>Please check the ID and try again (e.g. TKT-12345).</small>
+          </div>
+        `;
+        lucide.createIcons();
+      }
     });
   }
 
@@ -162,13 +170,16 @@ document.addEventListener('DOMContentLoaded', () => {
         resolution: ''
       };
 
-      // Insert directly into Supabase!
-      const { error } = await supabase
-        .from('tickets')
-        .insert([newTicket]);
+      try {
+        const res = await fetch('/api/tickets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newTicket)
+        });
 
-      if (error) {
-        console.error('Error inserting to Supabase:', error);
+        if (!res.ok) throw new Error('Failed to save to database');
+      } catch (err) {
+        console.error('Error inserting to DB:', err);
         alert('Failed to submit ticket. Please check your connection.');
         if (submitBtn) {
           submitBtn.textContent = 'Submit Service Ticket';
@@ -202,8 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (otherRequestGroup) otherRequestGroup.style.display = 'none';
       if (cctvGroup) cctvGroup.style.display = 'none';
 
-      // Re-fetch all to get accurate IDs
-      fetchTicketsFromSupabase();
+      // Re-fetch removed for privacy
 
       if (submitBtn) {
         submitBtn.textContent = 'Submit Service Ticket';
@@ -254,10 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close mobile menu
     document.getElementById('navLinks')?.classList.remove('open');
 
-    // Refresh tickets from supabase when tracking tab is opened
-    if (tabId === 'track') {
-      fetchTicketsFromSupabase();
-    }
+    // Refresh logic removed
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
