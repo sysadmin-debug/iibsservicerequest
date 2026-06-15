@@ -65,7 +65,7 @@ async function sendResolutionEmail(ticket) {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log(\`Resolution email sent to \${ticket.email} for ticket \${ticket.ticket_id}\`);
+    console.log(`Resolution email sent to ${ticket.email} for ticket ${ticket.ticket_id}`);
   } catch (err) {
     console.error('Error sending resolution email:', err);
   }
