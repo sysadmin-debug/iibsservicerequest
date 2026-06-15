@@ -1,325 +1,420 @@
-// Lab Control Portal Logic
+// IIBS Service Request Portal — Application Logic
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize Lucide Icons
   lucide.createIcons();
 
-  // State Management
-  const TOTAL_STATIONS = 24;
-  let workstations = [];
-  let tickets = [];
+  // ===== State =====
+  let requests = [];
+  let ticketCounter = 1000;
 
-  // Default Workstations data setup
+  // ===== Init Data =====
   function initData() {
-    // Try to load from LocalStorage
-    const storedWS = localStorage.getItem('ws_status');
-    const storedTickets = localStorage.getItem('ws_tickets');
+    const stored = localStorage.getItem('iibs_requests');
+    const storedCounter = localStorage.getItem('iibs_counter');
 
-    if (storedWS) {
-      workstations = JSON.parse(storedWS);
+    if (stored) {
+      requests = JSON.parse(stored);
     } else {
-      // Create initial 24 workstations
-      for (let i = 1; i <= TOTAL_STATIONS; i++) {
-        // Preset two workstations with initial warning/danger status for demonstration
-        let status = 'working';
-        if (i === 5) status = 'warning';
-        if (i === 12) status = 'danger';
-
-        workstations.push({
-          id: `WS-${i.toString().padStart(2, '0')}`,
-          number: i,
-          status: status
-        });
-      }
-      saveToStorage();
-    }
-
-    if (storedTickets) {
-      tickets = JSON.parse(storedTickets);
-    } else {
-      // Default demo tickets
-      tickets = [
+      // Demo data
+      requests = [
         {
-          id: 'TKT-1001',
-          workstationId: 'WS-05',
-          category: 'Software',
-          reporter: 'Alex Mercer',
-          priority: 'medium',
-          status: 'open',
-          description: 'Photoshop license expired on this device.',
-          date: new Date(Date.now() - 3600000 * 4).toISOString() // 4 hours ago
+          id: 'SR-1001',
+          name: 'Rajesh Kumar',
+          email: 'rajesh.k@iibs.org',
+          department: 'IT',
+          phone: '9876543210',
+          category: 'Network',
+          priority: 'high',
+          location: 'Block A, Room 102',
+          subject: 'WiFi not working in Conference Room',
+          description: 'The WiFi connectivity in Conference Room A has been down since morning. Multiple staff members are unable to connect. This is affecting ongoing meetings and presentations.',
+          status: 'progress',
+          date: new Date(Date.now() - 3600000 * 3).toISOString()
         },
         {
-          id: 'TKT-1002',
-          workstationId: 'WS-12',
+          id: 'SR-1002',
+          name: 'Priya Sharma',
+          email: 'priya.s@iibs.org',
+          department: 'Finance',
+          phone: '9876543211',
+          category: 'AC/HVAC',
+          priority: 'medium',
+          location: 'Block B, Finance Dept, 3rd Floor',
+          subject: 'AC not cooling properly',
+          description: 'The split AC unit in the Finance department is running but not cooling. The temperature display shows 28°C even at the lowest setting. Needs servicing or gas refill.',
+          status: 'open',
+          date: new Date(Date.now() - 3600000 * 8).toISOString()
+        },
+        {
+          id: 'SR-1003',
+          name: 'Dr. Meena Reddy',
+          email: 'meena.r@iibs.org',
+          department: 'Academic',
+          phone: '9876543212',
           category: 'Hardware',
-          reporter: 'Sarah Connor',
+          priority: 'medium',
+          location: 'Computer Lab 2, Desk 15',
+          subject: 'Desktop PC not booting',
+          description: 'The desktop computer at workstation 15 in Lab 2 shows a blank screen on startup. The power LED turns on but nothing appears on the monitor. Tried a different monitor, same issue.',
+          status: 'open',
+          date: new Date(Date.now() - 3600000 * 24).toISOString()
+        },
+        {
+          id: 'SR-1004',
+          name: 'Amit Patel',
+          email: 'amit.p@iibs.org',
+          department: 'Administration',
+          phone: '9876543213',
+          category: 'Plumbing',
           priority: 'high',
-          status: 'progress',
-          description: 'PC does not power on. Power button feels loose.',
-          date: new Date(Date.now() - 3600000 * 24).toISOString() // 24 hours ago
+          location: 'Ground Floor Washroom, Block A',
+          subject: 'Water leakage in washroom',
+          description: 'There is a significant water leak from the ceiling of the ground floor washroom in Block A. Water is dripping continuously and the floor is slippery, creating a safety hazard.',
+          status: 'resolved',
+          date: new Date(Date.now() - 3600000 * 48).toISOString()
         }
       ];
-      saveToStorage();
+      saveData();
+    }
+
+    if (storedCounter) {
+      ticketCounter = parseInt(storedCounter);
+    } else {
+      ticketCounter = 1004;
+      localStorage.setItem('iibs_counter', ticketCounter);
     }
   }
 
-  function saveToStorage() {
-    localStorage.setItem('ws_status', JSON.stringify(workstations));
-    localStorage.setItem('ws_tickets', JSON.stringify(tickets));
+  function saveData() {
+    localStorage.setItem('iibs_requests', JSON.stringify(requests));
+    localStorage.setItem('iibs_counter', ticketCounter);
   }
 
-  // --- Rendering Functions ---
-
-  // Render Workstation Map
-  function renderLabGrid() {
-    const grid = document.getElementById('labGrid');
-    if (!grid) return;
-    grid.innerHTML = '';
-
-    workstations.forEach(ws => {
-      const wsEl = document.createElement('div');
-      wsEl.className = `workstation status-${ws.status}`;
-      wsEl.innerHTML = `
-        <i data-lucide="monitor" class="ws-icon" style="margin-bottom: 0.25rem;"></i>
-        <div class="ws-number">${ws.id}</div>
-        <div class="ws-status">${ws.status === 'working' ? 'Operational' : ws.status === 'warning' ? 'Issue' : 'Repairing'}</div>
-      `;
-
-      wsEl.addEventListener('click', () => {
-        // Direct to report tab with this WS selected
-        const select = document.getElementById('wsSelector');
-        if (select) {
-          select.value = ws.id;
-          switchTab('report');
-        }
-      });
-
-      grid.appendChild(wsEl);
-    });
-
-    // Re-trigger icon rendering
-    lucide.createIcons();
-  }
-
-  // Populate Dropdown selector
-  function populateSelector() {
-    const select = document.getElementById('wsSelector');
-    if (!select) return;
-    select.innerHTML = '<option value="">Choose workstation...</option>';
-
-    workstations.forEach(ws => {
-      const opt = document.createElement('option');
-      opt.value = ws.id;
-      opt.textContent = `${ws.id} (${ws.status.toUpperCase()})`;
-      select.appendChild(opt);
-    });
-  }
-
-  // Render Stats Counts
+  // ===== Render Stats =====
   function renderStats() {
-    document.getElementById('statTotal').textContent = TOTAL_STATIONS;
-    document.getElementById('statWorking').textContent = workstations.filter(w => w.status === 'working').length;
-    document.getElementById('statMaintenance').textContent = workstations.filter(w => w.status === 'danger').length;
-    document.getElementById('statPending').textContent = tickets.filter(t => t.status !== 'resolved').length;
+    document.getElementById('statTotal').textContent = requests.length;
+    document.getElementById('statOpen').textContent = requests.filter(r => r.status === 'open').length;
+    document.getElementById('statProgress').textContent = requests.filter(r => r.status === 'progress').length;
+    document.getElementById('statResolved').textContent = requests.filter(r => r.status === 'resolved').length;
+
+    // Animate stat numbers
+    document.querySelectorAll('.stat-value').forEach(el => {
+      el.style.animation = 'none';
+      el.offsetHeight; // trigger reflow
+      el.style.animation = 'statPop 0.4s ease-out';
+    });
   }
 
-  // Render Tickets list
-  function renderTickets() {
-    const list = document.getElementById('ticketList');
+  // ===== Render Recent List (Home) =====
+  function renderRecentList() {
+    const list = document.getElementById('recentList');
     if (!list) return;
-    list.innerHTML = '';
 
-    if (tickets.length === 0) {
-      list.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">No active maintenance logs found.</div>';
+    if (requests.length === 0) {
+      list.innerHTML = '<div class="recent-empty"><p>No service requests yet. Raise your first request to get started!</p></div>';
       return;
     }
 
-    // Render tickets, sorting open/in-progress first
-    const sortedTickets = [...tickets].sort((a, b) => {
-      if (a.status === 'resolved' && b.status !== 'resolved') return 1;
-      if (a.status !== 'resolved' && b.status === 'resolved') return -1;
+    // Show last 5 requests
+    const recent = [...requests].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+
+    list.innerHTML = recent.map(r => {
+      const timeAgo = getTimeAgo(r.date);
+      return `
+        <div class="recent-item">
+          <div class="recent-left">
+            <span class="recent-id">${r.id}</span>
+            <span class="recent-subject">${r.subject}</span>
+          </div>
+          <div class="recent-meta">
+            <span class="badge badge-${r.status}">${formatStatus(r.status)}</span>
+            <span class="badge badge-${r.priority}">${r.priority}</span>
+            <span>${timeAgo}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ===== Render Tickets (Track Tab) =====
+  function renderTickets() {
+    const list = document.getElementById('ticketList');
+    if (!list) return;
+
+    const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
+    const filterStatus = document.getElementById('filterStatus')?.value || 'all';
+    const filterCategory = document.getElementById('filterCategory')?.value || 'all';
+    const filterPriority = document.getElementById('filterPriority')?.value || 'all';
+
+    let filtered = [...requests];
+
+    // Apply filters
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(r => r.status === filterStatus);
+    }
+    if (filterCategory !== 'all') {
+      filtered = filtered.filter(r => r.category === filterCategory);
+    }
+    if (filterPriority !== 'all') {
+      filtered = filtered.filter(r => r.priority === filterPriority);
+    }
+    if (searchTerm) {
+      filtered = filtered.filter(r =>
+        r.id.toLowerCase().includes(searchTerm) ||
+        r.name.toLowerCase().includes(searchTerm) ||
+        r.subject.toLowerCase().includes(searchTerm) ||
+        r.description.toLowerCase().includes(searchTerm) ||
+        r.category.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Sort: open/progress first, then by date
+    filtered.sort((a, b) => {
+      const statusOrder = { open: 0, progress: 1, resolved: 2 };
+      if (statusOrder[a.status] !== statusOrder[b.status]) {
+        return statusOrder[a.status] - statusOrder[b.status];
+      }
       return new Date(b.date) - new Date(a.date);
     });
 
-    sortedTickets.forEach(tkt => {
-      const item = document.createElement('div');
-      item.className = 'ticket-item';
-      
-      const formattedDate = new Date(tkt.date).toLocaleString('en-IN', {
-        day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
-      });
-
-      item.innerHTML = `
-        <div class="ticket-info">
-          <div class="ticket-header">
-            <span class="ticket-id">${tkt.id}</span>
-            <span class="ticket-ws">${tkt.workstationId}</span>
-            <span class="badge badge-${tkt.priority}">${tkt.priority}</span>
-            <span class="badge badge-${tkt.status}">${tkt.status === 'progress' ? 'In Progress' : tkt.status}</span>
-          </div>
-          <div class="ticket-desc">${tkt.description}</div>
-          <div class="ticket-footer">
-            <span><strong>By:</strong> ${tkt.reporter}</span>
-            <span><strong>Cat:</strong> ${tkt.category}</span>
-            <span><strong>Time:</strong> ${formattedDate}</span>
-          </div>
-        </div>
-        <div class="ticket-actions">
-          <select class="status-updater" data-id="${tkt.id}">
-            <option value="open" ${tkt.status === 'open' ? 'selected' : ''}>Open</option>
-            <option value="progress" ${tkt.status === 'progress' ? 'selected' : ''}>In Progress</option>
-            <option value="resolved" ${tkt.status === 'resolved' ? 'selected' : ''}>Resolved</option>
-          </select>
+    if (filtered.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <i data-lucide="inbox"></i>
+          <p>No service requests found</p>
+          <small>Try adjusting your filters or raise a new request</small>
         </div>
       `;
+      lucide.createIcons();
+      return;
+    }
 
-      list.appendChild(item);
-    });
+    list.innerHTML = filtered.map(r => {
+      const formattedDate = new Date(r.date).toLocaleString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
 
-    // Add event listeners for status updates
+      return `
+        <div class="ticket-item priority-${r.priority}">
+          <div class="ticket-top">
+            <div class="ticket-top-left">
+              <span class="ticket-id">${r.id}</span>
+              <span class="badge badge-${r.status}">${formatStatus(r.status)}</span>
+              <span class="badge badge-${r.priority}">${r.priority}</span>
+              <span class="badge badge-category">${r.category}</span>
+            </div>
+            <select class="status-updater" data-id="${r.id}" aria-label="Update status for ${r.id}">
+              <option value="open" ${r.status === 'open' ? 'selected' : ''}>Open</option>
+              <option value="progress" ${r.status === 'progress' ? 'selected' : ''}>In Progress</option>
+              <option value="resolved" ${r.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+            </select>
+          </div>
+          <div class="ticket-subject">${r.subject}</div>
+          <div class="ticket-desc">${r.description}</div>
+          <div class="ticket-meta">
+            <span><i data-lucide="user"></i> ${r.name}</span>
+            <span><i data-lucide="building-2"></i> ${r.department}</span>
+            <span><i data-lucide="map-pin"></i> ${r.location}</span>
+            <span><i data-lucide="clock"></i> ${formattedDate}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    lucide.createIcons();
+
+    // Status updater events
     document.querySelectorAll('.status-updater').forEach(select => {
       select.addEventListener('change', (e) => {
-        const ticketId = e.target.getAttribute('data-id');
+        const id = e.target.getAttribute('data-id');
         const newStatus = e.target.value;
-        updateTicketStatus(ticketId, newStatus);
+        const req = requests.find(r => r.id === id);
+        if (req) {
+          req.status = newStatus;
+          saveData();
+          renderStats();
+          renderTickets();
+          renderRecentList();
+        }
       });
     });
   }
 
-  function updateTicketStatus(ticketId, newStatus) {
-    const tkt = tickets.find(t => t.id === ticketId);
-    if (!tkt) return;
-
-    tkt.status = newStatus;
-
-    // Update the corresponding workstation status
-    const ws = workstations.find(w => w.id === tkt.workstationId);
-    if (ws) {
-      if (newStatus === 'resolved') {
-        // If there are no other active tickets for this workstation, set it back to working
-        const otherActive = tickets.some(t => t.workstationId === tkt.workstationId && t.id !== ticketId && t.status !== 'resolved');
-        if (!otherActive) {
-          ws.status = 'working';
-        }
-      } else if (newStatus === 'progress') {
-        ws.status = 'danger'; // Under active repair
-      } else if (newStatus === 'open') {
-        ws.status = 'warning'; // Issue registered
-      }
-    }
-
-    saveToStorage();
-    renderStats();
-    renderLabGrid();
-    renderTickets();
-    populateSelector();
-  }
-
-  // --- Form submission ---
-  const form = document.getElementById('issueForm');
+  // ===== Form Submission =====
+  const form = document.getElementById('serviceForm');
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      
-      const wsId = document.getElementById('wsSelector').value;
-      const category = document.getElementById('issueCategory').value;
-      const reporter = document.getElementById('reporterName').value;
-      const priority = document.getElementById('priorityLevel').value;
-      const details = document.getElementById('issueDetails').value;
 
-      if (!wsId || !reporter || !details) return;
+      ticketCounter++;
+      const ticketId = `SR-${ticketCounter}`;
 
-      const ticketId = `TKT-${(1001 + tickets.length).toString()}`;
-      
-      const newTicket = {
+      const newRequest = {
         id: ticketId,
-        workstationId: wsId,
-        category: category,
-        reporter: reporter,
-        priority: priority,
+        name: document.getElementById('requesterName').value.trim(),
+        email: document.getElementById('requesterEmail').value.trim(),
+        department: document.getElementById('requesterDept').value,
+        phone: document.getElementById('requesterPhone').value.trim(),
+        category: document.getElementById('serviceCategory').value,
+        priority: document.getElementById('priorityLevel').value,
+        location: document.getElementById('location').value.trim(),
+        subject: document.getElementById('issueSubject').value.trim(),
+        description: document.getElementById('issueDescription').value.trim(),
         status: 'open',
-        description: details,
         date: new Date().toISOString()
       };
 
-      tickets.push(newTicket);
-
-      // Update workstation status to warning initially
-      const ws = workstations.find(w => w.id === wsId);
-      if (ws) {
-        ws.status = 'warning';
-      }
-
-      saveToStorage();
-      
-      // Reset form and refresh UI
+      requests.push(newRequest);
+      saveData();
       form.reset();
+
+      // Show success modal
+      document.getElementById('modalTicketId').textContent = ticketId;
+      document.getElementById('successModal').classList.add('visible');
+
       renderStats();
-      renderLabGrid();
+      renderRecentList();
       renderTickets();
-      populateSelector();
-
-      // Redirect to tickets tab
-      switchTab('tickets');
     });
   }
 
-  // --- Tab Navigation logic ---
-  const navContainer = document.getElementById('navLinks');
-  
+  // ===== Modal Handlers =====
+  const modalTrackBtn = document.getElementById('modalTrackBtn');
+  const modalCloseBtn = document.getElementById('modalCloseBtn');
+  const successModal = document.getElementById('successModal');
+
+  if (modalTrackBtn) {
+    modalTrackBtn.addEventListener('click', () => {
+      successModal.classList.remove('visible');
+      switchTab('track');
+    });
+  }
+
+  if (modalCloseBtn) {
+    modalCloseBtn.addEventListener('click', () => {
+      successModal.classList.remove('visible');
+    });
+  }
+
+  if (successModal) {
+    successModal.addEventListener('click', (e) => {
+      if (e.target === successModal) {
+        successModal.classList.remove('visible');
+      }
+    });
+  }
+
+  // ===== Tab Navigation =====
   function switchTab(tabId) {
-    // Update active tab buttons
     document.querySelectorAll('#navLinks a').forEach(link => {
-      if (link.getAttribute('data-tab') === tabId) {
-        link.classList.add('active');
-      } else {
-        link.classList.remove('active');
-      }
+      link.classList.toggle('active', link.getAttribute('data-tab') === tabId);
+    });
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.toggle('active', content.id === tabId);
     });
 
-    // Update active tab contents
-    document.querySelectorAll('.tab-content').forEach(content => {
-      if (content.id === tabId) {
-        content.classList.add('active');
-      } else {
-        content.classList.remove('active');
-      }
-    });
+    // Close mobile menu
+    document.getElementById('navLinks')?.classList.remove('open');
+
+    // Refresh tickets when switching to track
+    if (tabId === 'track') {
+      renderTickets();
+    }
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  const navContainer = document.getElementById('navLinks');
   if (navContainer) {
     navContainer.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
-        const tabId = link.getAttribute('data-tab');
-        switchTab(tabId);
+        switchTab(link.getAttribute('data-tab'));
       });
     });
   }
 
-  // Quick report button on dashboard
-  const quickBtn = document.getElementById('quickReportBtn');
-  if (quickBtn) {
-    quickBtn.addEventListener('click', () => {
-      switchTab('report');
+  // Mobile menu toggle
+  const mobileBtn = document.getElementById('mobileMenuBtn');
+  if (mobileBtn) {
+    mobileBtn.addEventListener('click', () => {
+      document.getElementById('navLinks')?.classList.toggle('open');
     });
   }
 
-  // Clear resolved tickets
-  const clearBtn = document.getElementById('clearResolvedBtn');
-  if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
-      tickets = tickets.filter(t => t.status !== 'resolved');
-      saveToStorage();
-      renderStats();
-      renderTickets();
+  // ===== Hero Buttons =====
+  document.getElementById('heroRaiseBtn')?.addEventListener('click', () => switchTab('newrequest'));
+  document.getElementById('heroTrackBtn')?.addEventListener('click', () => switchTab('track'));
+
+  // ===== Category Cards (go to form with category pre-selected) =====
+  document.querySelectorAll('.category-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const category = card.getAttribute('data-category');
+      switchTab('newrequest');
+      const catSelect = document.getElementById('serviceCategory');
+      if (catSelect) {
+        catSelect.value = category;
+      }
     });
+  });
+
+  // ===== Filters =====
+  document.getElementById('searchInput')?.addEventListener('input', () => renderTickets());
+  document.getElementById('filterStatus')?.addEventListener('change', () => renderTickets());
+  document.getElementById('filterCategory')?.addEventListener('change', () => renderTickets());
+  document.getElementById('filterPriority')?.addEventListener('change', () => renderTickets());
+
+  // ===== FAQ Accordion =====
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+
+      // Close all
+      document.querySelectorAll('.faq-item').forEach(faq => faq.classList.remove('open'));
+
+      // Toggle current
+      if (!isOpen) {
+        item.classList.add('open');
+      }
+    });
+  });
+
+  // ===== Header scroll effect =====
+  window.addEventListener('scroll', () => {
+    const header = document.getElementById('mainHeader');
+    if (header) {
+      header.classList.toggle('scrolled', window.scrollY > 20);
+    }
+  });
+
+  // ===== Logo click -> home =====
+  document.getElementById('mainLogo')?.addEventListener('click', () => switchTab('home'));
+
+  // ===== Utility: Time Ago =====
+  function getTimeAgo(dateStr) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    const hrs = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    if (hrs < 24) return `${hrs}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
   }
 
-  // Initialize and first render
+  // ===== Utility: Format Status =====
+  function formatStatus(status) {
+    const map = { open: 'Open', progress: 'In Progress', resolved: 'Resolved' };
+    return map[status] || status;
+  }
+
+  // ===== Init =====
   initData();
   renderStats();
-  renderLabGrid();
-  populateSelector();
+  renderRecentList();
   renderTickets();
 });
