@@ -78,7 +78,7 @@ const StockLog = mongoose.model('StockLog', stockLogSchema);
 
 // --- TICKETS ---
 
-app.post('/api/tickets', async (req, res) => {
+app.post(['/api/tickets', '/tickets'], async (req, res) => {
   try {
     const newTicket = new Ticket(req.body);
     await newTicket.save();
@@ -88,7 +88,7 @@ app.post('/api/tickets', async (req, res) => {
   }
 });
 
-app.get('/api/tickets', async (req, res) => {
+app.get(['/api/tickets', '/tickets'], async (req, res) => {
   try {
     const tickets = await Ticket.find().sort({ date: -1 });
     res.json(tickets);
@@ -97,7 +97,7 @@ app.get('/api/tickets', async (req, res) => {
   }
 });
 
-app.put('/api/tickets/:ticket_id', async (req, res) => {
+app.put(['/api/tickets/:ticket_id', '/tickets/:ticket_id'], async (req, res) => {
   try {
     const updated = await Ticket.findOneAndUpdate(
       { ticket_id: req.params.ticket_id }, 
@@ -112,7 +112,7 @@ app.put('/api/tickets/:ticket_id', async (req, res) => {
 
 // --- INVENTORY ---
 
-app.post('/api/inventory', async (req, res) => {
+app.post(['/api/inventory', '/inventory'], async (req, res) => {
   try {
     const newItem = new Inventory({ ...req.body, last_updated: new Date() });
     await newItem.save();
@@ -122,7 +122,7 @@ app.post('/api/inventory', async (req, res) => {
   }
 });
 
-app.get('/api/inventory', async (req, res) => {
+app.get(['/api/inventory', '/inventory'], async (req, res) => {
   try {
     const items = await Inventory.find().sort({ item_name: 1 });
     res.json(items);
@@ -131,7 +131,7 @@ app.get('/api/inventory', async (req, res) => {
   }
 });
 
-app.put('/api/inventory/:id', async (req, res) => {
+app.put(['/api/inventory/:id', '/inventory/:id'], async (req, res) => {
   try {
     const updated = await Inventory.findOneAndUpdate(
       { id: req.params.id }, 
@@ -180,7 +180,7 @@ app.get('/api/stock_log', async (req, res) => {
 
 // --- FILE UPLOAD ---
 
-app.post('/api/upload', upload.single('file'), (req, res) => {
+app.post(['/api/upload', '/upload'], upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
