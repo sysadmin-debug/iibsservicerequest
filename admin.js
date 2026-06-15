@@ -440,9 +440,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close mobile menu
     document.getElementById('navLinks')?.classList.remove('open');
 
-    // Refresh tickets from supabase when tracking tab is opened
+    // Refresh data when tabs are opened
     if (tabId === 'track') {
       fetchTicketsFromSupabase();
+    } else if (tabId === 'inventory') {
+      fetchInventoryFromSupabase();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -587,6 +589,214 @@ document.addEventListener('DOMContentLoaded', () => {
     const map = { open: 'Open', progress: 'In Progress', resolved: 'Resolved' };
     return map[status] || status;
   }
+
+  // ===== INVENTORY (STOCK REGISTER) LOGIC =====
+  let inventoryItems = [];
+  const addInventoryModal = document.getElementById('addInventoryModal');
+  const updateInventoryModal = document.getElementById('updateInventoryModal');
+  let currentUpdatingItemId = null;
+
+  async function fetchInventoryFromSupabase() {
+    try {
+      const { data, error } = await supabase
+        .from('inventory')
+        .select('*')
+        .order('item_name', { ascending: true });
+
+      if (error) throw error;
+      inventoryItems = data || [];
+      renderInventory();
+    } catch (err) {
+      console.error('Error fetching inventory:', err);
+      // Fails silently if table doesn't exist yet, showing empty list
+      document.getElementById('inventoryList').innerHTML = `
+        <div class="empty-state">
+          <i data-lucide="alert-triangle" style="color: var(--accent-rose);"></i>
+          <p>Unable to load inventory.</p>
+          <small>Did you create the "inventory" table in Supabase?</small>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+  }
+
+  function renderInventory() {
+    const list = document.getElementById('inventoryList');
+    if (!list) return;
+
+    if (inventoryItems.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <i data-lucide="box"></i>
+          <p>No inventory items found</p>
+          <small>Click "Add New Item" to start tracking stock</small>
+        </div>
+      `;
+      lucide.createIcons();
+      return;
+    }
+
+    list.innerHTML = inventoryItems.map(item => {
+      let dateString = item.last_updated;
+      try {
+        dateString = new Date(item.last_updated).toLocaleString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+      } catch(e) {}
+
+      // Calculate health badge
+      let badgeClass = 'resolved'; // green
+      let healthText = 'In Stock';
+      if (item.quantity === 0) {
+        badgeClass = 'critical';
+        healthText = 'Out of Stock';
+      } else if (item.quantity <= 5) {
+        badgeClass = 'open'; // yellow
+        healthText = 'Low Stock';
+      }
+
+      return `
+        <div class="ticket-item" style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div class="ticket-top-left" style="margin-bottom: 0.5rem;">
+              <span class="badge badge-${badgeClass}">${healthText}</span>
+              <span class="badge badge-category">${item.category}</span>
+            </div>
+            <div class="ticket-subject" style="font-size: 1.2rem;">${item.item_name}</div>
+            <div class="ticket-meta" style="margin-top: 0.5rem;">
+              <span><i data-lucide="clock"></i> Last updated: ${dateString}</span>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 2rem; font-weight: 700; color: var(--text-primary); line-height: 1;">${item.quantity}</div>
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem;">Total Available</div>
+            <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+              <i data-lucide="edit-3"></i> Update
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    lucide.createIcons();
+
+    // Attach update listeners
+    document.querySelectorAll('.btn-update-stock').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        openUpdateInventoryModal(id);
+      });
+    });
+  }
+
+  // Add Item Modal
+  document.getElementById('addStockBtn')?.addEventListener('click', () => {
+    document.getElementById('invNewItemName').value = '';
+    document.getElementById('invNewQuantity').value = '0';
+    addInventoryModal.classList.add('visible');
+  });
+
+  document.getElementById('invAddCloseBtn')?.addEventListener('click', () => {
+    addInventoryModal.classList.remove('visible');
+  });
+
+  document.getElementById('invAddSaveBtn')?.addEventListener('click', async () => {
+    const name = document.getElementById('invNewItemName').value.trim();
+    const category = document.getElementById('invNewCategory').value;
+    const qty = parseInt(document.getElementById('invNewQuantity').value) || 0;
+
+    if (!name) {
+      alert("Please enter an Item Name.");
+      return;
+    }
+
+    const btn = document.getElementById('invAddSaveBtn');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+
+    const { error } = await supabase.from('inventory').insert([{
+      item_name: name,
+      category: category,
+      quantity: qty
+    }]);
+
+    btn.textContent = 'Save Item';
+    btn.disabled = false;
+
+    if (error) {
+      alert("Error adding item: " + error.message);
+    } else {
+      addInventoryModal.classList.remove('visible');
+      fetchInventoryFromSupabase();
+    }
+  });
+
+  // Update Stock Modal
+  function openUpdateInventoryModal(id) {
+    const item = inventoryItems.find(i => i.id === id);
+    if (!item) return;
+
+    currentUpdatingItemId = id;
+    document.getElementById('updateInvTitle').textContent = `Update: ${item.item_name}`;
+    document.getElementById('updateInvDesc').textContent = `Current Quantity: ${item.quantity}`;
+    document.getElementById('invUpdateAmount').value = '1';
+    
+    updateInventoryModal.classList.add('visible');
+  }
+
+  document.getElementById('invUpdateCloseBtn')?.addEventListener('click', () => {
+    updateInventoryModal.classList.remove('visible');
+  });
+
+  document.getElementById('invUpdateSaveBtn')?.addEventListener('click', async () => {
+    if (!currentUpdatingItemId) return;
+    
+    const item = inventoryItems.find(i => i.id === currentUpdatingItemId);
+    const action = document.getElementById('invUpdateAction').value;
+    const amount = parseInt(document.getElementById('invUpdateAmount').value) || 0;
+    
+    if (amount <= 0) {
+      alert("Amount must be greater than 0");
+      return;
+    }
+
+    let newQty = item.quantity;
+    if (action === 'add') newQty += amount;
+    else if (action === 'subtract') newQty -= amount;
+
+    if (newQty < 0) {
+      alert("Cannot reduce stock below 0.");
+      return;
+    }
+
+    const btn = document.getElementById('invUpdateSaveBtn');
+    btn.textContent = 'Updating...';
+    btn.disabled = true;
+
+    const { error } = await supabase
+      .from('inventory')
+      .update({ quantity: newQty, last_updated: new Date().toISOString() })
+      .eq('id', currentUpdatingItemId);
+
+    btn.textContent = 'Update Quantity';
+    btn.disabled = false;
+
+    if (error) {
+      alert("Error updating stock: " + error.message);
+    } else {
+      updateInventoryModal.classList.remove('visible');
+      fetchInventoryFromSupabase();
+    }
+  });
+
+  // Close modals on overlay click
+  [addInventoryModal, updateInventoryModal].forEach(modal => {
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('visible');
+      });
+    }
+  });
 
   // ===== Init =====
   fetchTicketsFromSupabase();
