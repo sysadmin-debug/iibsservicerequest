@@ -674,8 +674,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="btn-secondary btn-history-stock" data-id="${item.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin-right: 0.25rem;">
               <i data-lucide="clock"></i> History
             </button>
-            <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+            <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin-right: 0.25rem;">
               <i data-lucide="edit-3"></i> Update
+            </button>
+            <button class="btn-secondary btn-delete-stock" data-id="${item.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);">
+              <i data-lucide="trash-2"></i> Delete
             </button>
           </div>
         </div>
@@ -697,6 +700,28 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
         openHistoryInventoryModal(id);
+      });
+    });
+
+    // Attach delete listeners
+    document.querySelectorAll('.btn-delete-stock').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const item = inventoryItems.find(i => i.id === id);
+        if (!item) return;
+        
+        if (confirm(`Are you sure you want to permanently delete "${item.item_name}"?\nThis will also delete all of its history logs.`)) {
+          btn.textContent = 'Deleting...';
+          btn.disabled = true;
+          const { error } = await supabase.from('inventory').delete().eq('id', id);
+          if (error) {
+            alert("Error deleting item: " + error.message);
+            btn.textContent = 'Delete';
+            btn.disabled = false;
+          } else {
+            fetchInventoryFromSupabase();
+          }
+        }
       });
     });
   }
