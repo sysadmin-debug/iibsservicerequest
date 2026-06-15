@@ -33,8 +33,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// MongoDB Connection
-const mongoUri = 'mongodb+srv://iibs:BcOUKVzKL0doMFlR@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
+// MongoDB Connection (Standard string to bypass DNS SRV issues)
+const mongoUri = 'mongodb://iibs:BcOUKVzKL0doMFlR@ac-rfizocd-shard-00-00.tx3p15k.mongodb.net:27017,ac-rfizocd-shard-00-01.tx3p15k.mongodb.net:27017,ac-rfizocd-shard-00-02.tx3p15k.mongodb.net:27017/iibs?ssl=true&replicaSet=atlas-rfizocd-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0';
 mongoose.connect(mongoUri)
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch(err => console.error('MongoDB connection error:', err));
