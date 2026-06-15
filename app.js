@@ -5,85 +5,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== State =====
   let tickets = [];
-  let ticketCounter = 1000;
+  
+  // Google Sheets CSV Export URL
+  const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1_jd5yNLlb52U28WTolxwFLWcWSA2hMeznIdD8WKwbH0/export?format=csv&gid=1802082833';
 
-  // ===== Init Data =====
-  function initData() {
-    const stored = localStorage.getItem('iibs_tickets');
-    const storedCounter = localStorage.getItem('iibs_ticket_counter');
+  // ===== Fetch Data from Google Sheets =====
+  function fetchTicketsFromSheet() {
+    fetch(SHEET_CSV_URL)
+      .then(response => response.text())
+      .then(csvText => {
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: function(results) {
+            const data = results.data;
+            tickets = data.map((row, index) => {
+              // Map Google Sheet columns to ticket object
+              // Generating a pseudo-ID based on row index
+              const pseudoId = `TKT-${1000 + index}`;
+              
+              // Normalize status string (Google sheet has 'Completed', 'Process', empty)
+              const rawStatus = (row['Status '] || '').trim().toLowerCase();
+              let normalizedStatus = 'open';
+              if (rawStatus === 'completed') normalizedStatus = 'resolved';
+              if (rawStatus === 'process') normalizedStatus = 'progress';
 
-    if (stored) {
-      tickets = JSON.parse(stored);
-    } else {
-      // Demo tickets
-      tickets = [
-        {
-          id: 'TKT-1001',
-          name: 'Rajesh Kumar',
-          iibsId: 'IIBS2024035',
-          role: 'Student',
-          department: 'Computer Science',
-          contact: '9876543210',
-          email: 'rajesh.k@iibs.org',
-          ticketType: 'WIFI not connecting',
-          otherRequest: '',
-          status: 'progress',
-          date: new Date(Date.now() - 3600000 * 3).toISOString()
-        },
-        {
-          id: 'TKT-1002',
-          name: 'Dr. Priya Sharma',
-          iibsId: 'IIBS-FAC-012',
-          role: 'Faculty',
-          department: 'MBA',
-          contact: '9876543211',
-          email: 'priya.s@iibs.org',
-          ticketType: 'Printer Not working',
-          otherRequest: '',
-          status: 'open',
-          date: new Date(Date.now() - 3600000 * 8).toISOString()
-        },
-        {
-          id: 'TKT-1003',
-          name: 'Amit Patel',
-          iibsId: 'IIBS-STF-045',
-          role: 'Staff',
-          department: 'Administration',
-          contact: '9876543212',
-          email: 'amit.p@iibs.org',
-          ticketType: 'System Slow',
-          otherRequest: '',
-          status: 'open',
-          date: new Date(Date.now() - 3600000 * 24).toISOString()
-        },
-        {
-          id: 'TKT-1004',
-          name: 'Sneha Reddy',
-          iibsId: 'IIBS2024102',
-          role: 'Student',
-          department: 'BBA',
-          contact: '9876543213',
-          email: 'sneha.r@iibs.org',
-          ticketType: 'Laptop With Charger',
-          otherRequest: '',
-          status: 'resolved',
-          date: new Date(Date.now() - 3600000 * 48).toISOString()
-        }
-      ];
-      saveData();
-    }
-
-    if (storedCounter) {
-      ticketCounter = parseInt(storedCounter);
-    } else {
-      ticketCounter = 1004;
-      localStorage.setItem('iibs_ticket_counter', ticketCounter);
-    }
-  }
-
-  function saveData() {
-    localStorage.setItem('iibs_tickets', JSON.stringify(tickets));
-    localStorage.setItem('iibs_ticket_counter', ticketCounter);
+              return {
+                id: pseudoId,
+                date: row['Timestamp'] || new Date().toISOString(),
+                name: row['Name'] || 'Unknown',
+                iibsId: row['IIBS ID Number (Student/Staff ID)\n'] || row['IIBS ID Number'] || row['IIBS ID Number (Student/Staff ID)'] || '-',
+                role: row['Student / Faculty /Staff'] || '-',
+                department: row['Department \n'] || row['Department'] || '-',
+                contact: row['Contact Number \n'] || row['Contact Number'] || '-',
+                email: row['Email Address\n'] || row['Email Address'] || '-',
+                ticketType: row['SECTION 2 - TICKET DETAILS\n'] || row['SECTION 2 - TICKET DETAILS'] || '-',
+                otherRequest: row['For Other Request '] || row['For Other Request'] || '',
+                status: normalizedStatus,
+                resolution: row['Action Taken (Resolution )'] || row['Action Taken (Resolution)'] || ''
+              };
+            });
+            
+            // Re-render UI after data is loaded
+            renderStats();
+            renderRecentList();
+            renderTickets();
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching Google Sheet:', error);
+        // Fallback or show error
+        document.getElementById('ticketList').innerHTML = `
+          <div class="empty-state">
+            <i data-lucide="wifi-off"></i>
+            <p>Unable to sync with Google Sheets</p>
+            <small>Please check your internet connection and try refreshing.</small>
+          </div>
+        `;
+        lucide.createIcons();
+      });
   }
 
   // ===== Render Stats =====
@@ -104,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Sort by timestamp descending
     const recent = [...tickets].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
     list.innerHTML = recent.map(t => {
@@ -156,14 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     }
 
-    // Sort: open/progress first, then by date
-    filtered.sort((a, b) => {
-      const statusOrder = { open: 0, progress: 1, resolved: 2 };
-      if (statusOrder[a.status] !== statusOrder[b.status]) {
-        return statusOrder[a.status] - statusOrder[b.status];
-      }
-      return new Date(b.date) - new Date(a.date);
-    });
+    // Sort: newest first
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     if (filtered.length === 0) {
       list.innerHTML = `
@@ -178,13 +154,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     list.innerHTML = filtered.map(t => {
-      const formattedDate = new Date(t.date).toLocaleString('en-IN', {
-        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-      });
+      let dateString = t.date;
+      try {
+        dateString = new Date(t.date).toLocaleString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+      } catch(e) {}
 
       const descriptionText = t.ticketType === 'Request for Other' && t.otherRequest
         ? t.otherRequest
         : t.ticketType;
+
+      const resolutionBlock = t.resolution ? `<div class="ticket-resolution"><strong>Resolution:</strong> ${t.resolution}</div>` : '';
 
       return `
         <div class="ticket-item priority-${t.status === 'open' ? 'medium' : t.status === 'progress' ? 'high' : 'low'}">
@@ -194,42 +175,26 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="badge badge-${t.status}">${formatStatus(t.status)}</span>
               <span class="badge badge-category">${t.ticketType}</span>
             </div>
-            <select class="status-updater" data-id="${t.id}" aria-label="Update status for ${t.id}">
-              <option value="open" ${t.status === 'open' ? 'selected' : ''}>Open</option>
-              <option value="progress" ${t.status === 'progress' ? 'selected' : ''}>In Progress</option>
-              <option value="resolved" ${t.status === 'resolved' ? 'selected' : ''}>Resolved</option>
-            </select>
+            <!-- Status is read-only since it is synced from Google Sheets -->
+            <div class="status-readonly status-readonly-${t.status}">
+              ${formatStatus(t.status)}
+            </div>
           </div>
           <div class="ticket-subject">${descriptionText}</div>
+          ${resolutionBlock}
           <div class="ticket-meta">
             <span><i data-lucide="user"></i> ${t.name}</span>
             <span><i data-lucide="id-card"></i> ${t.iibsId}</span>
             <span><i data-lucide="users"></i> ${t.role}</span>
             <span><i data-lucide="building-2"></i> ${t.department}</span>
             <span><i data-lucide="phone"></i> ${t.contact}</span>
-            <span><i data-lucide="clock"></i> ${formattedDate}</span>
+            <span><i data-lucide="clock"></i> ${dateString}</span>
           </div>
         </div>
       `;
     }).join('');
 
     lucide.createIcons();
-
-    // Status updater events
-    document.querySelectorAll('.status-updater').forEach(select => {
-      select.addEventListener('change', (e) => {
-        const id = e.target.getAttribute('data-id');
-        const newStatus = e.target.value;
-        const ticket = tickets.find(t => t.id === id);
-        if (ticket) {
-          ticket.status = newStatus;
-          saveData();
-          renderStats();
-          renderTickets();
-          renderRecentList();
-        }
-      });
-    });
   }
 
   // ===== "Other Request" toggle =====
@@ -252,11 +217,11 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      ticketCounter++;
-      const ticketId = `TKT-${ticketCounter}`;
+      // We can't generate the final exact ID synchronously as it depends on Google Sheets row
+      // We will generate a temporary one for the UI
+      const tempId = `TKT-NEW-${Math.floor(Math.random()*10000)}`;
 
       const newTicket = {
-        id: ticketId,
         name: document.getElementById('userName').value.trim(),
         iibsId: document.getElementById('userIdNumber').value.trim(),
         role: document.getElementById('userRole').value,
@@ -264,9 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contact: document.getElementById('userContact').value.trim(),
         email: document.getElementById('userEmail').value.trim(),
         ticketType: document.getElementById('ticketType').value,
-        otherRequest: document.getElementById('otherRequest')?.value.trim() || '',
-        status: 'open',
-        date: new Date().toISOString()
+        otherRequest: document.getElementById('otherRequest')?.value.trim() || ''
       };
 
       // Submit to Google Form / Google Sheet
@@ -284,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('entry.893389411', newTicket.otherRequest);
       }
 
+      // We show success immediately to avoid waiting for no-cors
       fetch(formUrl, {
         method: 'POST',
         mode: 'no-cors',
@@ -292,23 +256,20 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         body: formData.toString()
       }).then(() => {
-        console.log('Successfully synced to Google Sheet');
+        // After submission, fetch latest data from sheets to update UI
+        setTimeout(() => {
+          fetchTicketsFromSheet();
+        }, 2000);
       }).catch(err => {
         console.error('Error syncing to Google Sheet:', err);
       });
 
-      tickets.push(newTicket);
-      saveData();
       form.reset();
       otherRequestGroup.style.display = 'none';
 
       // Show success modal
-      document.getElementById('modalTicketId').textContent = ticketId;
+      document.getElementById('modalTicketId').textContent = "Submitted successfully!";
       document.getElementById('successModal').classList.add('visible');
-
-      renderStats();
-      renderRecentList();
-      renderTickets();
     });
   }
 
@@ -350,8 +311,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close mobile menu
     document.getElementById('navLinks')?.classList.remove('open');
 
+    // Refresh tickets from sheet when tracking tab is opened
     if (tabId === 'track') {
-      renderTickets();
+      fetchTicketsFromSheet();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -423,16 +385,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== Utilities =====
   function getTimeAgo(dateStr) {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    const hrs = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
+    if (!dateStr) return '';
+    try {
+      const diff = Date.now() - new Date(dateStr).getTime();
+      const mins = Math.floor(diff / 60000);
+      const hrs = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
 
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins}m ago`;
-    if (hrs < 24) return `${hrs}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+      if (mins < 1) return 'Just now';
+      if (mins < 60) return `${mins}m ago`;
+      if (hrs < 24) return `${hrs}h ago`;
+      if (days < 7) return `${days}d ago`;
+      return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+    } catch(e) {
+      return dateStr;
+    }
   }
 
   function formatStatus(status) {
@@ -441,8 +408,5 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ===== Init =====
-  initData();
-  renderStats();
-  renderRecentList();
-  renderTickets();
+  fetchTicketsFromSheet();
 });
