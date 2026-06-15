@@ -89,16 +89,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== Modal Handlers (Detail modal logic removed for public) =====
 
-  // ===== "Other Request" toggle =====
+  // ===== Category Toggles =====
   const ticketTypeSelect = document.getElementById('ticketType');
   const otherRequestGroup = document.getElementById('otherRequestGroup');
+  const cctvGroup = document.getElementById('cctvGroup');
 
   if (ticketTypeSelect) {
     ticketTypeSelect.addEventListener('change', () => {
+      // Toggle Other
       if (ticketTypeSelect.value === 'Request for Other') {
-        otherRequestGroup.style.display = 'block';
+        if (otherRequestGroup) otherRequestGroup.style.display = 'block';
       } else {
-        otherRequestGroup.style.display = 'none';
+        if (otherRequestGroup) otherRequestGroup.style.display = 'none';
+      }
+      
+      // Toggle CCTV
+      if (ticketTypeSelect.value === 'CCTV Footage Checking') {
+        if (cctvGroup) cctvGroup.style.display = 'block';
+        document.getElementById('cctvTime').required = true;
+        document.getElementById('cctvDate').required = true;
+        document.getElementById('cctvPlace').required = true;
+      } else {
+        if (cctvGroup) cctvGroup.style.display = 'none';
+        const t = document.getElementById('cctvTime');
+        const d = document.getElementById('cctvDate');
+        const p = document.getElementById('cctvPlace');
+        if (t) t.required = false;
+        if (d) d.required = false;
+        if (p) p.required = false;
       }
     });
   }
@@ -120,6 +138,16 @@ document.addEventListener('DOMContentLoaded', () => {
       // Generate a nice TKT id using timestamp
       const tempId = `TKT-${dateStr.getTime().toString().substring(5)}`;
 
+      let otherReqText = document.getElementById('otherRequest')?.value.trim() || '';
+      
+      // If CCTV, concatenate the details
+      if (document.getElementById('ticketType').value === 'CCTV Footage Checking') {
+        const cTime = document.getElementById('cctvTime')?.value || 'N/A';
+        const cDate = document.getElementById('cctvDate')?.value || 'N/A';
+        const cPlace = document.getElementById('cctvPlace')?.value || 'N/A';
+        otherReqText = `Date: ${cDate} | Time: ${cTime} | Place: ${cPlace}`;
+      }
+
       const newTicket = {
         ticket_id: tempId,
         name: document.getElementById('userName').value.trim(),
@@ -129,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contact: document.getElementById('userContact').value.trim(),
         email: document.getElementById('userEmail').value.trim(),
         ticket_type: document.getElementById('ticketType').value,
-        other_request: document.getElementById('otherRequest')?.value.trim() || '',
+        other_request: otherReqText,
         status: 'open',
         resolution: ''
       };
@@ -171,7 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Success
       form.reset();
-      otherRequestGroup.style.display = 'none';
+      if (otherRequestGroup) otherRequestGroup.style.display = 'none';
+      if (cctvGroup) cctvGroup.style.display = 'none';
 
       // Re-fetch all to get accurate IDs
       fetchTicketsFromSupabase();
