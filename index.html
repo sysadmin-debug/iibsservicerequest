@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Computer Lab Maintenance Hub | Office Portal</title>
+  <!-- Google Fonts Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Premium Navigation Header -->
+  <header>
+    <div class="nav-container">
+      <div class="logo" id="mainLogo">
+        <i data-lucide="monitor"></i>
+        <span>LabControl Portal</span>
+      </div>
+      <nav id="navLinks">
+        <a href="#" class="active" data-tab="dashboard">Dashboard</a>
+        <a href="#" data-tab="report">Report Issue</a>
+        <a href="#" data-tab="tickets">Maintenance Tickets</a>
+        <a href="#" data-tab="schedule">Preventive Schedule</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main>
+    
+    <!-- Quick Lab Metrics -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-value" id="statTotal">24</div>
+        <div class="stat-label">Total Workstations</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statWorking" style="color: var(--status-working);">22</div>
+        <div class="stat-label">Operational</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statMaintenance" style="color: var(--status-warning);">2</div>
+        <div class="stat-label">In Maintenance</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statPending" style="color: var(--status-danger);">1</div>
+        <div class="stat-label">Open Issues</div>
+      </div>
+    </div>
+
+    <!-- TAB 1: Dashboard & Interactive Lab Map -->
+    <div id="dashboard" class="tab-content active">
+      <div class="dashboard-grid">
+        
+        <!-- Lab Grid Visualizer -->
+        <div class="card">
+          <div class="card-title">
+            <span>Computer Lab Floor Map Layout</span>
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Click on a computer to report an issue</span>
+          </div>
+          <div class="lab-grid" id="labGrid">
+            <!-- Programmatic workstations will go here -->
+          </div>
+        </div>
+
+        <!-- Sidebar Actions & Legend -->
+        <div>
+          <div class="card">
+            <div class="card-title">Status Legend</div>
+            <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.9rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="width: 12px; height: 12px; border-radius: 50%; background: var(--status-working);"></span>
+                <span>Working (Ready for Office tasks)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="width: 12px; height: 12px; border-radius: 50%; background: var(--status-warning);"></span>
+                <span>Warning (Minor issue / Under investigation)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="width: 12px; height: 12px; border-radius: 50%; background: var(--status-danger);"></span>
+                <span>Out of Order (Under Active Repair)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Quick Actions</div>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <button id="quickReportBtn" style="width: 100%;">
+                <i data-lucide="alert-triangle"></i> Report Workstation Fault
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: Issue Report Form -->
+    <div id="report" class="tab-content">
+      <div class="card" style="max-width: 700px; margin: 0 auto;">
+        <div class="card-title">Log Workstation Maintenance Issue</div>
+        <form id="issueForm">
+          <div class="form-group">
+            <label for="wsSelector">Workstation ID *</label>
+            <select id="wsSelector" required>
+              <option value="">Choose workstation...</option>
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="issueCategory">Issue Category *</label>
+            <select id="issueCategory" required>
+              <option value="Hardware">Hardware Failure (Monitor, Mouse, Keyboard, Component)</option>
+              <option value="Software">Software Issue (OS Crash, Missing Software, License Error)</option>
+              <option value="Network">Internet / WiFi / Port Disconnect</option>
+              <option value="Peripherals">Printer / Intercom Connection</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="reporterName">Reported By *</label>
+            <input type="text" id="reporterName" placeholder="Your name / employee ID" required>
+          </div>
+
+          <div class="form-group">
+            <label for="priorityLevel">Priority Level</label>
+            <select id="priorityLevel">
+              <option value="low">Low (Device usable, minor bug)</option>
+              <option value="medium" selected>Medium (Standard request)</option>
+              <option value="high">High (Blocked workstation)</option>
+              <option value="urgent">Urgent (Entire lab affected)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="issueDetails">Problem Description *</label>
+            <textarea id="issueDetails" rows="5" placeholder="Please describe the fault in detail (e.g. computer turns on but screen is blank, blue screen error on boot...)" required></textarea>
+          </div>
+
+          <button type="submit" style="width: 100%;">
+            <i data-lucide="send"></i> Submit Ticket
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 3: Maintenance Tickets Log -->
+    <div id="tickets" class="tab-content">
+      <div class="card">
+        <div class="card-title">
+          <span>Active Maintenance Tickets & Logs</span>
+          <button id="clearResolvedBtn" style="background: rgba(239, 68, 68, 0.1); color: var(--status-danger); padding: 0.4rem 1rem;">
+            <i data-lucide="trash-2"></i> Clear Resolved
+          </button>
+        </div>
+        
+        <div class="ticket-list" id="ticketList">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: Preventive Maintenance Schedule -->
+    <div id="schedule" class="tab-content">
+      <div class="card">
+        <div class="card-title">Preventive Lab Audits & Maintenance Timeline</div>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Scheduled audits and regular cleaning routines to ensure minimal workstation disruption.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div style="display: flex; gap: 1.5rem; border-left: 3px solid var(--accent-cyan); padding-left: 1.5rem; position: relative;">
+            <div style="position: absolute; left: -8px; top: 0; width: 13px; height: 13px; border-radius: 50%; background: var(--accent-cyan);"></div>
+            <div>
+              <div style="font-weight: 700; font-size: 1.1rem;">Weekly Dust Cleaning & Air Flow Check</div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">Next: Next Monday, 9:00 AM</div>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">Clean workstation CPU cabinets, verify fan ventilation, and sanitize monitors and input devices.</p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1.5rem; border-left: 3px solid var(--accent-blue); padding-left: 1.5rem; position: relative;">
+            <div style="position: absolute; left: -8px; top: 0; width: 13px; height: 13px; border-radius: 50%; background: var(--accent-blue);"></div>
+            <div>
+              <div style="font-weight: 700; font-size: 1.1rem;">Monthly OS Patching & Antivirus Updates</div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">Next: 1st of Next Month, 6:00 PM</div>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">Run automated software update scripts, update virus definitions, and clear workstation temporary system files.</p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1.5rem; border-left: 3px solid var(--status-working); padding-left: 1.5rem; position: relative;">
+            <div style="position: absolute; left: -8px; top: 0; width: 13px; height: 13px; border-radius: 50%; background: var(--status-working);"></div>
+            <div>
+              <div style="font-weight: 700; font-size: 1.1rem;">Quarterly Network and Port Audit</div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">Next: July 15, 2026</div>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">Inspect Ethernet cabling connections, test port speeds, optimize switch routing, and audit server logs.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Load logic code -->
+  <script src="app.js"></script>
+</body>
+</html>
