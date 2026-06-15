@@ -15,38 +15,47 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(response => response.text())
       .then(csvText => {
         Papa.parse(csvText, {
-          header: true,
+          header: false,
           skipEmptyLines: true,
           complete: function(results) {
             const data = results.data;
+            const localOverrides = JSON.parse(localStorage.getItem('iibs_ticket_overrides')) || {};
+
             tickets = data.map((row, index) => {
-              // Map Google Sheet columns to ticket object
-              // Generating a pseudo-ID based on row index
-              const pseudoId = `TKT-${1000 + index}`;
+              // Generate a stable ID based on Timestamp to avoid shifts
+              let rawTimestamp = row[0] || '';
+              let timeNum = rawTimestamp.replace(/[^0-9]/g, '');
+              const pseudoId = timeNum ? `TKT-${timeNum.substring(0, 8)}-${index}` : `TKT-1000${index}`;
               
-              // Normalize status string (Google sheet has 'Completed', 'Process', empty)
-              const rawStatus = (row['Status '] || '').trim().toLowerCase();
-              let normalizedStatus = 'open';
-              if (rawStatus === 'completed') normalizedStatus = 'resolved';
-              if (rawStatus === 'process') normalizedStatus = 'progress';
+              // Normalize status string from Google sheet
+              const rawStatus = (row[10] || '').trim().toLowerCase();
+              let sheetStatus = 'open';
+              if (rawStatus === 'completed' || rawStatus === 'closed') sheetStatus = 'resolved';
+              if (rawStatus === 'process' || rawStatus === 'in progress') sheetStatus = 'progress';
+
+              const sheetResolution = row[11] || '';
+
+              // Apply local overrides if they exist
+              const override = localOverrides[pseudoId];
+              const finalStatus = override && override.status ? override.status : sheetStatus;
+              const finalResolution = override && override.resolution !== undefined ? override.resolution : sheetResolution;
 
               return {
                 id: pseudoId,
-                date: row['Timestamp'] || new Date().toISOString(),
-                name: row['Name'] || 'Unknown',
-                iibsId: row['IIBS ID Number (Student/Staff ID)\n'] || row['IIBS ID Number'] || row['IIBS ID Number (Student/Staff ID)'] || '-',
-                role: row['Student / Faculty /Staff'] || '-',
-                department: row['Department \n'] || row['Department'] || '-',
-                contact: row['Contact Number \n'] || row['Contact Number'] || '-',
-                email: row['Email Address\n'] || row['Email Address'] || '-',
-                ticketType: row['SECTION 2 - TICKET DETAILS\n'] || row['SECTION 2 - TICKET DETAILS'] || '-',
-                otherRequest: row['For Other Request '] || row['For Other Request'] || '',
-                status: normalizedStatus,
-                resolution: row['Action Taken (Resolution )'] || row['Action Taken (Resolution)'] || ''
+                date: row[0] || new Date().toISOString(),
+                name: row[1] || 'Unknown',
+                iibsId: row[2] || '-',
+                role: row[3] || '-',
+                department: row[4] || '-',
+                contact: row[5] || '-',
+                email: row[6] || '-',
+                ticketType: row[7] || '-',
+                otherRequest: row[8] || '',
+                status: finalStatus,
+                resolution: finalResolution
               };
             });
             
-            // Re-render UI after data is loaded
             renderStats();
             renderRecentList();
             renderTickets();
@@ -55,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(error => {
         console.error('Error fetching Google Sheet:', error);
-        // Fallback or show error
         document.getElementById('ticketList').innerHTML = `
           <div class="empty-state">
             <i data-lucide="wifi-off"></i>
@@ -65,6 +73,14 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         lucide.createIcons();
       });
+  }
+
+  // Save local overrides
+  function saveOverride(id, key, value) {
+    let overrides = JSON.parse(localStorage.getItem('iibs_ticket_overrides')) || {};
+    if (!overrides[id]) overrides[id] = {};
+    overrides[id][key] = value;
+    localStorage.setItem('iibs_ticket_overrides', JSON.stringify(overrides));
   }
 
   // ===== Render Stats =====
@@ -138,8 +154,14 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     }
 
-    // Sort: newest first
-    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Sort: open/progress first, then newest
+    filtered.sort((a, b) => {
+      const statusOrder = { open: 0, progress: 1, resolved: 2 };
+      if (statusOrder[a.status] !== statusOrder[b.status]) {
+        return statusOrder[a.status] - statusOrder[b.status];
+      }
+      return new Date(b.date) - new Date(a.date);
+    });
 
     if (filtered.length === 0) {
       list.innerHTML = `
@@ -165,8 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ? t.otherRequest
         : t.ticketType;
 
-      const resolutionBlock = t.resolution ? `<div class="ticket-resolution"><strong>Resolution:</strong> ${t.resolution}</div>` : '';
-
       return `
         <div class="ticket-item priority-${t.status === 'open' ? 'medium' : t.status === 'progress' ? 'high' : 'low'}">
           <div class="ticket-top">
@@ -175,13 +195,22 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="badge badge-${t.status}">${formatStatus(t.status)}</span>
               <span class="badge badge-category">${t.ticketType}</span>
             </div>
-            <!-- Status is read-only since it is synced from Google Sheets -->
-            <div class="status-readonly status-readonly-${t.status}">
-              ${formatStatus(t.status)}
-            </div>
+            <select class="status-updater" data-id="${t.id}">
+              <option value="open" ${t.status === 'open' ? 'selected' : ''}>Open</option>
+              <option value="progress" ${t.status === 'progress' ? 'selected' : ''}>In Progress</option>
+              <option value="resolved" ${t.status === 'resolved' ? 'selected' : ''}>Resolved / Closed</option>
+            </select>
           </div>
           <div class="ticket-subject">${descriptionText}</div>
-          ${resolutionBlock}
+          
+          <div class="ticket-action-box">
+            <label>Work Details / Resolution:</label>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" class="resolution-input" data-id="${t.id}" value="${t.resolution.replace(/"/g, '&quot;')}" placeholder="Enter work details or resolution...">
+              <button class="btn-secondary resolution-save-btn" data-id="${t.id}" style="padding: 0.35rem 1rem;">Save</button>
+            </div>
+          </div>
+
           <div class="ticket-meta">
             <span><i data-lucide="user"></i> ${t.name}</span>
             <span><i data-lucide="id-card"></i> ${t.iibsId}</span>
@@ -195,6 +224,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
 
     lucide.createIcons();
+
+    // Attach event listeners for status dropdowns
+    document.querySelectorAll('.status-updater').forEach(select => {
+      select.addEventListener('change', (e) => {
+        const id = e.target.getAttribute('data-id');
+        const newStatus = e.target.value;
+        const ticket = tickets.find(t => t.id === id);
+        if (ticket) {
+          ticket.status = newStatus;
+          saveOverride(id, 'status', newStatus);
+          renderStats();
+          renderRecentList();
+          // We don't re-render entire list immediately to avoid losing focus, just update visual class
+          e.target.closest('.ticket-item').className = `ticket-item priority-${newStatus === 'open' ? 'medium' : newStatus === 'progress' ? 'high' : 'low'}`;
+          const badge = e.target.closest('.ticket-item').querySelector('.ticket-top-left .badge:nth-child(2)');
+          badge.className = `badge badge-${newStatus}`;
+          badge.textContent = formatStatus(newStatus);
+        }
+      });
+    });
+
+    // Attach event listeners for resolution saves
+    document.querySelectorAll('.resolution-save-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.target.getAttribute('data-id');
+        const input = e.target.previousElementSibling;
+        const newValue = input.value;
+        const ticket = tickets.find(t => t.id === id);
+        if (ticket) {
+          ticket.resolution = newValue;
+          saveOverride(id, 'resolution', newValue);
+          e.target.textContent = 'Saved!';
+          e.target.style.background = '#10b981';
+          e.target.style.color = '#fff';
+          setTimeout(() => {
+            e.target.textContent = 'Save';
+            e.target.style.background = '';
+            e.target.style.color = '';
+          }, 2000);
+        }
+      });
+    });
   }
 
   // ===== "Other Request" toggle =====
