@@ -1,1 +1,1 @@
-try { const app = require('../server.js'); module.exports = app; } catch (err) { module.exports = (req, res) => res.status(500).json({ error: err.message, stack: err.stack }); }
+const app = require('../server.js'); app.all('*', (req, res) => { res.status(200).json({ url: req.url, originalUrl: req.originalUrl, path: req.path }); }); module.exports = app;
