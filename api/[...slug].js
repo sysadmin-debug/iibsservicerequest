@@ -1,1 +1,0 @@
-const app = require('../server.js'); app.all('*', (req, res) => { res.status(200).json({ url: req.url, originalUrl: req.originalUrl, path: req.path }); }); module.exports = app;
