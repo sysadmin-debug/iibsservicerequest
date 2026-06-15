@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const dateStr = new Date();
       // Generate a nice TKT id using timestamp
-      const tempId = \`TKT-\${dateStr.getTime().toString().substring(5)}\`;
+      const tempId = `TKT-${dateStr.getTime().toString().substring(5)}`;
 
       const newTicket = {
         ticket_id: tempId,
@@ -487,9 +487,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const days = Math.floor(diff / 86400000);
 
       if (mins < 1) return 'Just now';
-      if (mins < 60) return \`\${mins}m ago\`;
-      if (hrs < 24) return \`\${hrs}h ago\`;
-      if (days < 7) return \`\${days}d ago\`;
+      if (mins < 60) return `${mins}m ago`;
+      if (hrs < 24) return `${hrs}h ago`;
+      if (days < 7) return `${days}d ago`;
       return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
     } catch(e) {
       return dateStr;
