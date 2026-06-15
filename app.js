@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let tickets = [];
   
   // Google Sheets CSV Export URL
-  const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1_jd5yNLlb52U28WTolxwFLWcWSA2hMeznIdD8WKwbH0/export?format=csv&gid=1802082833';
+  const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1_jd5yNLlb52U28WTolxwFLWcWSA2hMeznIdD8WKwbH0/gviz/tq?tqx=out:csv&gid=1802082833';
 
   // ===== Fetch Data from Google Sheets =====
   function fetchTicketsFromSheet() {
