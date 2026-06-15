@@ -489,6 +489,58 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('filterType')?.addEventListener('change', () => renderTickets());
   document.getElementById('filterRole')?.addEventListener('change', () => renderTickets());
 
+  // ===== Export Excel (CSV) =====
+  document.getElementById('exportExcelBtn')?.addEventListener('click', () => {
+    if (tickets.length === 0) {
+      alert("No tickets to export.");
+      return;
+    }
+    
+    // Create CSV content
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Ticket ID,Name,IIBS ID,Role,Department,Contact,Email,Ticket Type,Details/Other Request,Status,Date Submitted,Resolution\n";
+    
+    tickets.forEach(t => {
+      // Helper to escape commas, quotes, and newlines
+      const escapeCsv = (str) => {
+        if (!str) return '""';
+        const s = String(str).replace(/"/g, '""').replace(/\n/g, " ");
+        return `"${s}"`;
+      };
+      
+      let formattedDate = t.date;
+      try {
+        formattedDate = new Date(t.date).toLocaleString('en-IN');
+      } catch(e) {}
+      
+      const row = [
+        escapeCsv(t.id),
+        escapeCsv(t.name),
+        escapeCsv(t.iibsId),
+        escapeCsv(t.role),
+        escapeCsv(t.department),
+        escapeCsv(t.contact),
+        escapeCsv(t.email),
+        escapeCsv(t.ticketType),
+        escapeCsv(t.otherRequest),
+        escapeCsv(t.status),
+        escapeCsv(formattedDate),
+        escapeCsv(t.resolution)
+      ].join(",");
+      
+      csvContent += row + "\r\n";
+    });
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    const dateStr = new Date().toISOString().split('T')[0];
+    link.setAttribute("download", `IIBS_Tickets_${dateStr}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
   // ===== FAQ Accordion =====
   document.querySelectorAll('.faq-question').forEach(btn => {
     btn.addEventListener('click', () => {
