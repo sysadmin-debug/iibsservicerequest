@@ -147,7 +147,12 @@
       </section>
 
       <!-- Recent Tickets -->
-      <!-- Recent tickets removed for privacy -->
+      <section class="recent-section">
+        <h2 class="section-title">Recent Tickets</h2>
+        <div class="recent-list" id="recentList">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
     </div>
 
     <!-- TAB: RAISE NEW TICKET -->
@@ -264,23 +269,57 @@
       </div>
     </div>
 
-    <!-- TAB: CHECK TICKET STATUS -->
+    <!-- TAB: TRACK TICKETS -->
     <div id="track" class="tab-content">
-      <div class="tab-header">
-        <h2 class="tab-title">Check Ticket Status</h2>
-        <p>Enter your Ticket ID below to check its current status and resolution details.</p>
+      <div class="track-header">
+        <h2><i data-lucide="search" class="section-icon"></i> Track Your Service Tickets</h2>
+        <p>View the status and history of all submitted service tickets.</p>
       </div>
 
-      <div style="max-width: 500px; margin: 0 auto 3rem auto; background: var(--bg-surface); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); text-align: left;">
-        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Ticket ID</label>
-        <div style="display: flex; gap: 10px;">
-          <input type="text" id="statusSearchInput" placeholder="e.g. TKT-123456" style="margin-bottom: 0; flex: 1;">
-          <button class="btn-primary" id="statusSearchBtn">Check</button>
+      <!-- Search & Filter Bar -->
+      <div class="filter-bar">
+        <div class="search-box">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="searchInput" placeholder="Search by ticket ID, name, or keyword...">
+        </div>
+        <div class="filter-group">
+          <select id="filterStatus">
+            <option value="all">All Status</option>
+            <option value="open">Open</option>
+            <option value="progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <select id="filterType">
+            <option value="all">All Types</option>
+            <option value="Laptop With Charger">Laptop With Charger</option>
+            <option value="DESKTOP not working">Desktop Not Working</option>
+            <option value="PANEL BOARD">Panel Board</option>
+            <option value="WIFI not connecting">WiFi Not Connecting</option>
+            <option value="Network">Network</option>
+            <option value="Printer Not working">Printer Not Working</option>
+            <option value="Colour Ink Refill">Colour Ink Refill</option>
+            <option value="Tonner Replacement">Tonner Replacement</option>
+            <option value="System not Working">System Not Working</option>
+            <option value="HDMI cable request">HDMI Cable Request</option>
+            <option value="Laptop without Charger">Laptop Without Charger</option>
+            <option value="Request for Keyboard and Mouse Replacement">Keyboard & Mouse</option>
+            <option value="Request for Wireless Mouse">Wireless Mouse</option>
+            <option value="System Not Powering ON">System Not Powering ON</option>
+            <option value="System Slow">System Slow</option>
+            <option value="Request for Other">Other</option>
+          </select>
+          <select id="filterRole">
+            <option value="all">All Roles</option>
+            <option value="Student">Student</option>
+            <option value="Faculty">Faculty</option>
+            <option value="Staff">Staff</option>
+          </select>
         </div>
       </div>
 
-      <div id="statusResultBox" style="max-width: 600px; margin: 0 auto; text-align: left; display: none;">
-        <!-- Injected via JS -->
+      <!-- Tickets List -->
+      <div class="ticket-list" id="ticketList">
+        <!-- Populated dynamically -->
       </div>
     </div>
 
@@ -425,7 +464,6 @@
       <p>&copy; 2026 IIBS – International Institute of Business. All rights reserved.</p>
     </div>
   </footer>
-
-  <script src="app.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>
