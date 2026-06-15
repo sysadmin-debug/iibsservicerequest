@@ -32,53 +32,41 @@ document.addEventListener('DOMContentLoaded', () => {
         statusSearchBtn.disabled = false;
 
         if (!data) throw new Error('Not found');
+
+        let dateString = data.created_at;
+        try {
+          dateString = new Date(data.created_at).toLocaleString('en-IN', {
+            day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+        } catch(e) {}
+
         statusResultBox.style.display = 'block';
         statusResultBox.innerHTML = `
-          <div class="empty-state" style="padding: 2rem;">
-            <i data-lucide="search-x"></i>
-            <p>Ticket not found</p>
-            <small>Please check the ID and try again (e.g. TKT-12345).</small>
+          <div class="ticket-item priority-${data.status === 'open' ? 'medium' : data.status === 'progress' ? 'high' : 'low'}">
+            <div class="ticket-top">
+              <div class="ticket-top-left">
+                <span class="ticket-id">${data.ticket_id}</span>
+                <span class="badge badge-${data.status}">${formatStatus(data.status)}</span>
+                <span class="badge badge-category">${data.ticket_type}</span>
+              </div>
+            </div>
+            <div class="ticket-subject">${data.other_request || data.ticket_type}</div>
+            
+            <div class="ticket-meta" style="margin-top: 1rem;">
+              <span><i data-lucide="user"></i> ${data.name}</span>
+              <span><i data-lucide="building-2"></i> ${data.department}</span>
+              <span><i data-lucide="clock"></i> ${dateString}</span>
+            </div>
+
+            ${data.resolution ? `
+              <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-body); border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">Resolution / IT Notes</h4>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">${data.resolution}</p>
+              </div>
+            ` : ''}
           </div>
         `;
         lucide.createIcons();
-        return;
-      }
-
-      let dateString = data.created_at;
-      try {
-        dateString = new Date(data.created_at).toLocaleString('en-IN', {
-          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
-      } catch(e) {}
-
-      statusResultBox.style.display = 'block';
-      statusResultBox.innerHTML = `
-        <div class="ticket-item priority-${data.status === 'open' ? 'medium' : data.status === 'progress' ? 'high' : 'low'}">
-          <div class="ticket-top">
-            <div class="ticket-top-left">
-              <span class="ticket-id">${data.ticket_id}</span>
-              <span class="badge badge-${data.status}">${formatStatus(data.status)}</span>
-              <span class="badge badge-category">${data.ticket_type}</span>
-            </div>
-          </div>
-          <div class="ticket-subject">${data.other_request || data.ticket_type}</div>
-          
-          <div class="ticket-meta" style="margin-top: 1rem;">
-            <span><i data-lucide="user"></i> ${data.name}</span>
-            <span><i data-lucide="building-2"></i> ${data.department}</span>
-            <span><i data-lucide="clock"></i> ${dateString}</span>
-          </div>
-
-          ${data.resolution ? `
-            <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-body); border-radius: 8px; border-left: 4px solid var(--primary-color);">
-              <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">Resolution / IT Notes</h4>
-              <p style="color: var(--text-secondary); font-size: 0.95rem;">${data.resolution}</p>
-            </div>
-          ` : ''}
-        </div>
-      `;
-      lucide.createIcons();
-      
       } catch (err) {
         statusSearchBtn.textContent = 'Check';
         statusSearchBtn.disabled = false;
