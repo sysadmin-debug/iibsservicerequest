@@ -2,23 +2,23 @@
 
 /* --- Design Tokens --- */
 :root {
-  --bg-primary: #080C18;
-  --bg-secondary: #111827;
-  --bg-card: rgba(17, 24, 39, 0.65);
-  --bg-card-hover: rgba(22, 31, 48, 0.85);
-  --accent-primary: #6366F1;
-  --accent-secondary: #8B5CF6;
-  --accent-cyan: #06B6D4;
-  --accent-emerald: #10B981;
-  --accent-amber: #F59E0B;
-  --accent-rose: #F43F5E;
-  --text-primary: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --border-color: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(99, 102, 241, 0.35);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --glow-primary: 0 0 30px rgba(99, 102, 241, 0.15);
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #FFFFFF;
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --bg-card-hover: #FFFFFF;
+  --accent-primary: #4F46E5;
+  --accent-secondary: #7C3AED;
+  --accent-cyan: #0891B2;
+  --accent-emerald: #059669;
+  --accent-amber: #D97706;
+  --accent-rose: #E11D48;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(79, 70, 229, 0.35);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  --glow-primary: 0 0 30px rgba(79, 70, 229, 0.15);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: all 0.15s ease;
   --radius-sm: 8px;
@@ -109,7 +109,7 @@ h1, h2, h3, h4, h5, h6 {
 /* --- Navigation Header --- */
 header {
   backdrop-filter: blur(20px) saturate(180%);
-  background: rgba(8, 12, 24, 0.75);
+  background: rgba(248, 250, 252, 0.85);
   border-bottom: 1px solid var(--border-color);
   position: fixed;
   top: 0;
@@ -685,7 +685,7 @@ main {
 }
 
 .ticket-action-box {
-  background: rgba(8, 12, 24, 0.3);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   padding: 0.75rem 1rem;
   border-radius: 6px;
@@ -703,7 +703,7 @@ main {
 
 .resolution-input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   padding: 0.35rem 0.75rem;
@@ -719,7 +719,7 @@ main {
 
 input, select, textarea {
   width: 100%;
-  background: rgba(8, 12, 24, 0.6);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 0.75rem 1rem;
@@ -736,8 +736,8 @@ input::placeholder, textarea::placeholder {
 
 input:focus, select:focus, textarea:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
-  background: rgba(8, 12, 24, 0.8);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+  background: var(--bg-secondary);
 }
 
 select {
