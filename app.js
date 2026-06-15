@@ -6,81 +6,50 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== State =====
   let tickets = [];
   
-  // Google Sheets CSV Export URL
-  const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1_jd5yNLlb52U28WTolxwFLWcWSA2hMeznIdD8WKwbH0/gviz/tq?tqx=out:csv&gid=1802082833';
+  // Initialize Supabase
+  const supabaseUrl = 'https://ttfpstdetevgkjnkqcxf.supabase.co';
+  const supabaseKey = 'sb_publishable_MXV3EFM0dxohHYcieiptdA_p7UhMePb';
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-  // ===== Fetch Data from Google Sheets =====
-  function fetchTicketsFromSheet() {
-    fetch(SHEET_CSV_URL)
-      .then(response => response.text())
-      .then(csvText => {
-        Papa.parse(csvText, {
-          header: false,
-          skipEmptyLines: true,
-          complete: function(results) {
-            const data = results.data;
-            const localOverrides = JSON.parse(localStorage.getItem('iibs_ticket_overrides')) || {};
+  // ===== Fetch Data from Supabase =====
+  async function fetchTicketsFromSupabase() {
+    const { data, error } = await supabase
+      .from('tickets')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-            tickets = data.map((row, index) => {
-              // Generate a stable ID based on Timestamp to avoid shifts
-              let rawTimestamp = row[0] || '';
-              let timeNum = rawTimestamp.replace(/[^0-9]/g, '');
-              const pseudoId = timeNum ? `TKT-${timeNum.substring(0, 8)}-${index}` : `TKT-1000${index}`;
-              
-              // Normalize status string from Google sheet
-              const rawStatus = (row[10] || '').trim().toLowerCase();
-              let sheetStatus = 'open';
-              if (rawStatus === 'completed' || rawStatus === 'closed') sheetStatus = 'resolved';
-              if (rawStatus === 'process' || rawStatus === 'in progress') sheetStatus = 'progress';
+    if (error) {
+      console.error('Error fetching Supabase:', error);
+      document.getElementById('ticketList').innerHTML = `
+        <div class="empty-state">
+          <i data-lucide="wifi-off"></i>
+          <p>Unable to connect to database</p>
+          <small>Please check your internet connection or database configuration.</small>
+        </div>
+      `;
+      lucide.createIcons();
+      return;
+    }
 
-              const sheetResolution = row[11] || '';
-
-              // Apply local overrides if they exist
-              const override = localOverrides[pseudoId];
-              const finalStatus = override && override.status ? override.status : sheetStatus;
-              const finalResolution = override && override.resolution !== undefined ? override.resolution : sheetResolution;
-
-              return {
-                id: pseudoId,
-                date: row[0] || new Date().toISOString(),
-                name: row[1] || 'Unknown',
-                iibsId: row[2] || '-',
-                role: row[3] || '-',
-                department: row[4] || '-',
-                contact: row[5] || '-',
-                email: row[6] || '-',
-                ticketType: row[7] || '-',
-                otherRequest: row[8] || '',
-                status: finalStatus,
-                resolution: finalResolution
-              };
-            });
-            
-            renderStats();
-            renderRecentList();
-            renderTickets();
-          }
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching Google Sheet:', error);
-        document.getElementById('ticketList').innerHTML = `
-          <div class="empty-state">
-            <i data-lucide="wifi-off"></i>
-            <p>Unable to sync with Google Sheets</p>
-            <small>Please check your internet connection and try refreshing.</small>
-          </div>
-        `;
-        lucide.createIcons();
-      });
-  }
-
-  // Save local overrides
-  function saveOverride(id, key, value) {
-    let overrides = JSON.parse(localStorage.getItem('iibs_ticket_overrides')) || {};
-    if (!overrides[id]) overrides[id] = {};
-    overrides[id][key] = value;
-    localStorage.setItem('iibs_ticket_overrides', JSON.stringify(overrides));
+    tickets = data.map(row => ({
+      dbId: row.id,
+      id: row.ticket_id,
+      date: row.created_at,
+      name: row.name,
+      iibsId: row.iibs_id,
+      role: row.role,
+      department: row.department,
+      contact: row.contact,
+      email: row.email,
+      ticketType: row.ticket_type,
+      otherRequest: row.other_request || '',
+      status: row.status,
+      resolution: row.resolution || ''
+    }));
+    
+    renderStats();
+    renderRecentList();
+    renderTickets();
   }
 
   // ===== Render Stats =====
@@ -284,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (detailSaveBtn) {
-    detailSaveBtn.addEventListener('click', () => {
+    detailSaveBtn.addEventListener('click', async () => {
       if (!currentEditingTicketId) return;
       
       const newStatus = document.getElementById('detailStatusUpdate').value;
@@ -292,17 +261,30 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const ticket = tickets.find(t => t.id === currentEditingTicketId);
       if (ticket) {
-        ticket.status = newStatus;
-        ticket.resolution = newRes;
-        
-        saveOverride(currentEditingTicketId, 'status', newStatus);
-        saveOverride(currentEditingTicketId, 'resolution', newRes);
-        
-        renderStats();
-        renderRecentList();
-        renderTickets();
-        
-        detailModal.classList.remove('visible');
+        // Update Supabase Database!
+        detailSaveBtn.textContent = 'Saving...';
+        detailSaveBtn.disabled = true;
+
+        const { error } = await supabase
+          .from('tickets')
+          .update({ status: newStatus, resolution: newRes })
+          .eq('id', ticket.dbId);
+
+        if (error) {
+          console.error('Error updating ticket in Supabase:', error);
+          alert("Failed to save. Please try again.");
+        } else {
+          // Success! Update local state
+          ticket.status = newStatus;
+          ticket.resolution = newRes;
+          renderStats();
+          renderRecentList();
+          renderTickets();
+          detailModal.classList.remove('visible');
+        }
+
+        detailSaveBtn.textContent = 'Save Updates';
+        detailSaveBtn.disabled = false;
       }
     });
   }
@@ -323,62 +305,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== Form Submission =====
   const form = document.getElementById('serviceForm');
+  const submitBtn = form?.querySelector('button[type="submit"]');
+
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // We can't generate the final exact ID synchronously as it depends on Google Sheets row
-      // We will generate a temporary one for the UI
-      const tempId = `TKT-NEW-${Math.floor(Math.random()*10000)}`;
+      if (submitBtn) {
+        submitBtn.textContent = 'Submitting...';
+        submitBtn.disabled = true;
+      }
+
+      const dateStr = new Date();
+      // Generate a nice TKT id using timestamp
+      const tempId = \`TKT-\${dateStr.getTime().toString().substring(5)}\`;
 
       const newTicket = {
+        ticket_id: tempId,
         name: document.getElementById('userName').value.trim(),
-        iibsId: document.getElementById('userIdNumber').value.trim(),
+        iibs_id: document.getElementById('userIdNumber').value.trim(),
         role: document.getElementById('userRole').value,
         department: document.getElementById('userDepartment').value.trim(),
         contact: document.getElementById('userContact').value.trim(),
         email: document.getElementById('userEmail').value.trim(),
-        ticketType: document.getElementById('ticketType').value,
-        otherRequest: document.getElementById('otherRequest')?.value.trim() || ''
+        ticket_type: document.getElementById('ticketType').value,
+        other_request: document.getElementById('otherRequest')?.value.trim() || '',
+        status: 'open',
+        resolution: ''
       };
 
-      // Submit to Google Form / Google Sheet
-      const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSfwTPziyjUkdN3AW9eVl56wWcmFcIIimNf32d-ZAtWN7A1YcQ/formResponse';
-      const formData = new URLSearchParams();
-      formData.append('entry.1687135953', newTicket.name);
-      formData.append('entry.632749992', newTicket.iibsId);
-      formData.append('entry.887531768', newTicket.role);
-      formData.append('entry.1298781396', newTicket.department);
-      formData.append('entry.1892291400', newTicket.contact);
-      formData.append('entry.1357677634', newTicket.email);
-      formData.append('entry.921783959', newTicket.ticketType);
-      
-      if (newTicket.otherRequest) {
-        formData.append('entry.893389411', newTicket.otherRequest);
+      // Insert directly into Supabase!
+      const { error } = await supabase
+        .from('tickets')
+        .insert([newTicket]);
+
+      if (error) {
+        console.error('Error inserting to Supabase:', error);
+        alert('Failed to submit ticket. Please check your connection.');
+        if (submitBtn) {
+          submitBtn.textContent = 'Submit Service Ticket';
+          submitBtn.disabled = false;
+        }
+        return;
       }
 
-      // We show success immediately to avoid waiting for no-cors
-      fetch(formUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: formData.toString()
-      }).then(() => {
-        // After submission, fetch latest data from sheets to update UI
-        setTimeout(() => {
-          fetchTicketsFromSheet();
-        }, 2000);
-      }).catch(err => {
-        console.error('Error syncing to Google Sheet:', err);
-      });
-
+      // Success
       form.reset();
       otherRequestGroup.style.display = 'none';
 
+      // Re-fetch all to get accurate IDs
+      fetchTicketsFromSupabase();
+
+      if (submitBtn) {
+        submitBtn.textContent = 'Submit Service Ticket';
+        submitBtn.disabled = false;
+      }
+
       // Show success modal
-      document.getElementById('modalTicketId').textContent = "Submitted successfully!";
+      document.getElementById('modalTicketId').textContent = tempId;
       document.getElementById('successModal').classList.add('visible');
     });
   }
@@ -421,9 +405,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close mobile menu
     document.getElementById('navLinks')?.classList.remove('open');
 
-    // Refresh tickets from sheet when tracking tab is opened
+    // Refresh tickets from supabase when tracking tab is opened
     if (tabId === 'track') {
-      fetchTicketsFromSheet();
+      fetchTicketsFromSupabase();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -503,9 +487,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const days = Math.floor(diff / 86400000);
 
       if (mins < 1) return 'Just now';
-      if (mins < 60) return `${mins}m ago`;
-      if (hrs < 24) return `${hrs}h ago`;
-      if (days < 7) return `${days}d ago`;
+      if (mins < 60) return \`\${mins}m ago\`;
+      if (hrs < 24) return \`\${hrs}h ago\`;
+      if (days < 7) return \`\${days}d ago\`;
       return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
     } catch(e) {
       return dateStr;
@@ -518,5 +502,5 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ===== Init =====
-  fetchTicketsFromSheet();
+  fetchTicketsFromSupabase();
 });
