@@ -15,7 +15,6 @@ app.use(express.json());
 app.use(express.static(__dirname)); // --- FILE UPLOAD (Vercel Compatible) ---
 // Vercel serverless functions cannot write to the local disk permanently.
 // We use memory storage and encode to Base64 to save directly in MongoDB.
-const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
