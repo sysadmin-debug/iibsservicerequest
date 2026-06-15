@@ -12,25 +12,11 @@ const port = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname)); // Serve static files from root
-
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Multer Setup for File Uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const uniqueName = Date.now() + '_' + Math.random().toString(36).substring(7) + ext;
-    cb(null, uniqueName);
-  }
-});
+app.use(express.static(__dirname)); // --- FILE UPLOAD (Vercel Compatible) ---
+// Vercel serverless functions cannot write to the local disk permanently.
+// We use memory storage and encode to Base64 to save directly in MongoDB.
+const multer = require('multer');
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // MongoDB Connection (Force Google DNS to bypass Windows SRV bug)
@@ -197,10 +183,16 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  const publicUrl = `/public/uploads/${req.file.filename}`;
+  const base64Image = req.file.buffer.toString('base64');
+  const mimeType = req.file.mimetype;
+  const publicUrl = `data:${mimeType};base64,${base64Image}`;
   res.json({ publicUrl });
 });
 
-app.listen(port, () => {
-  console.log(`IIBS Backend running at http://localhost:${port}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`IIBS Backend running at http://localhost:${port}`);
+  });
+}
+
+module.exports = app;
