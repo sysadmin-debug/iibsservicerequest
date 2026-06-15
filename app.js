@@ -188,29 +188,18 @@ document.addEventListener('DOMContentLoaded', () => {
         : t.ticketType;
 
       return `
-        <div class="ticket-item priority-${t.status === 'open' ? 'medium' : t.status === 'progress' ? 'high' : 'low'}">
+        <div class="ticket-item priority-${t.status === 'open' ? 'medium' : t.status === 'progress' ? 'high' : 'low'}" data-id="${t.id}" style="cursor: pointer;">
           <div class="ticket-top">
             <div class="ticket-top-left">
               <span class="ticket-id">${t.id}</span>
               <span class="badge badge-${t.status}">${formatStatus(t.status)}</span>
               <span class="badge badge-category">${t.ticketType}</span>
             </div>
-            <select class="status-updater" data-id="${t.id}">
-              <option value="open" ${t.status === 'open' ? 'selected' : ''}>Open</option>
-              <option value="progress" ${t.status === 'progress' ? 'selected' : ''}>In Progress</option>
-              <option value="resolved" ${t.status === 'resolved' ? 'selected' : ''}>Resolved / Closed</option>
-            </select>
+            <!-- Visual indicator that it's clickable -->
+            <i data-lucide="chevron-right" style="color: var(--text-secondary); width: 20px; height: 20px;"></i>
           </div>
           <div class="ticket-subject">${descriptionText}</div>
           
-          <div class="ticket-action-box">
-            <label>Work Details / Resolution:</label>
-            <div style="display: flex; gap: 10px;">
-              <input type="text" class="resolution-input" data-id="${t.id}" value="${t.resolution.replace(/"/g, '&quot;')}" placeholder="Enter work details or resolution...">
-              <button class="btn-secondary resolution-save-btn" data-id="${t.id}" style="padding: 0.35rem 1rem;">Save</button>
-            </div>
-          </div>
-
           <div class="ticket-meta">
             <span><i data-lucide="user"></i> ${t.name}</span>
             <span><i data-lucide="id-card"></i> ${t.iibsId}</span>
@@ -225,46 +214,96 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lucide.createIcons();
 
-    // Attach event listeners for status dropdowns
-    document.querySelectorAll('.status-updater').forEach(select => {
-      select.addEventListener('change', (e) => {
-        const id = e.target.getAttribute('data-id');
-        const newStatus = e.target.value;
-        const ticket = tickets.find(t => t.id === id);
-        if (ticket) {
-          ticket.status = newStatus;
-          saveOverride(id, 'status', newStatus);
-          renderStats();
-          renderRecentList();
-          // We don't re-render entire list immediately to avoid losing focus, just update visual class
-          e.target.closest('.ticket-item').className = `ticket-item priority-${newStatus === 'open' ? 'medium' : newStatus === 'progress' ? 'high' : 'low'}`;
-          const badge = e.target.closest('.ticket-item').querySelector('.ticket-top-left .badge:nth-child(2)');
-          badge.className = `badge badge-${newStatus}`;
-          badge.textContent = formatStatus(newStatus);
-        }
+    // Attach event listeners for opening modals
+    document.querySelectorAll('.ticket-item').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.getAttribute('data-id');
+        openTicketDetailModal(id);
       });
     });
+  }
 
-    // Attach event listeners for resolution saves
-    document.querySelectorAll('.resolution-save-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = e.target.getAttribute('data-id');
-        const input = e.target.previousElementSibling;
-        const newValue = input.value;
-        const ticket = tickets.find(t => t.id === id);
-        if (ticket) {
-          ticket.resolution = newValue;
-          saveOverride(id, 'resolution', newValue);
-          e.target.textContent = 'Saved!';
-          e.target.style.background = '#10b981';
-          e.target.style.color = '#fff';
-          setTimeout(() => {
-            e.target.textContent = 'Save';
-            e.target.style.background = '';
-            e.target.style.color = '';
-          }, 2000);
-        }
+  // ===== Ticket Detail Modal Handling =====
+  const detailModal = document.getElementById('ticketDetailModal');
+  const detailCloseBtn = document.getElementById('detailCloseBtn');
+  const detailSaveBtn = document.getElementById('detailSaveBtn');
+  let currentEditingTicketId = null;
+
+  function openTicketDetailModal(id) {
+    const ticket = tickets.find(t => t.id === id);
+    if (!ticket) return;
+
+    currentEditingTicketId = id;
+    
+    let dateString = ticket.date;
+    try {
+      dateString = new Date(ticket.date).toLocaleString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
       });
+    } catch(e) {}
+
+    const desc = ticket.ticketType === 'Request for Other' && ticket.otherRequest
+      ? ticket.otherRequest
+      : ticket.ticketType;
+
+    document.getElementById('detailModalTitle').textContent = `Ticket ${ticket.id}`;
+    document.getElementById('detailModalBody').innerHTML = `
+      <div style="margin-bottom: 1rem;">
+        <span class="badge badge-${ticket.status}" style="margin-right: 0.5rem;">${formatStatus(ticket.status)}</span>
+        <span class="badge badge-category">${ticket.ticketType}</span>
+      </div>
+      <p style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 1rem; font-weight: 500;">${desc}</p>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+        <div><strong>Name:</strong> ${ticket.name}</div>
+        <div><strong>ID:</strong> ${ticket.iibsId}</div>
+        <div><strong>Role:</strong> ${ticket.role}</div>
+        <div><strong>Dept:</strong> ${ticket.department}</div>
+        <div><strong>Contact:</strong> ${ticket.contact}</div>
+        <div><strong>Email:</strong> ${ticket.email}</div>
+        <div style="grid-column: 1 / -1;"><strong>Submitted:</strong> ${dateString}</div>
+      </div>
+    `;
+
+    document.getElementById('detailStatusUpdate').value = ticket.status;
+    document.getElementById('detailResolutionInput').value = ticket.resolution;
+
+    if (detailModal) detailModal.classList.add('visible');
+  }
+
+  if (detailCloseBtn) {
+    detailCloseBtn.addEventListener('click', () => {
+      if (detailModal) detailModal.classList.remove('visible');
+    });
+  }
+
+  if (detailModal) {
+    detailModal.addEventListener('click', (e) => {
+      if (e.target === detailModal) detailModal.classList.remove('visible');
+    });
+  }
+
+  if (detailSaveBtn) {
+    detailSaveBtn.addEventListener('click', () => {
+      if (!currentEditingTicketId) return;
+      
+      const newStatus = document.getElementById('detailStatusUpdate').value;
+      const newRes = document.getElementById('detailResolutionInput').value;
+      
+      const ticket = tickets.find(t => t.id === currentEditingTicketId);
+      if (ticket) {
+        ticket.status = newStatus;
+        ticket.resolution = newRes;
+        
+        saveOverride(currentEditingTicketId, 'status', newStatus);
+        saveOverride(currentEditingTicketId, 'resolution', newRes);
+        
+        renderStats();
+        renderRecentList();
+        renderTickets();
+        
+        detailModal.classList.remove('visible');
+      }
     });
   }
 
