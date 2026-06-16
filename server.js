@@ -295,6 +295,15 @@ app.get('/api/laptop/search', async (req, res) => {
   }
 });
 
+app.get('/api/laptop/list', async (req, res) => {
+  try {
+    const laptops = await LaptopEligibility.find({}).sort({ course: 1, name: 1 });
+    res.json(laptops);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/laptop/update', async (req, res) => {
   try {
     const { id, status } = req.body;
