@@ -1335,35 +1335,56 @@ footer {
 
 /* --- Print Styles --- */
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  
-  #ticketDetailModal, 
-  #ticketDetailModal * {
-    visibility: visible;
-  }
-  
-  #ticketDetailModal {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: auto;
-    background: transparent;
+  /* Hide everything except the ticket detail modal */
+  body > *:not(#ticketDetailModal) {
+    display: none !important;
   }
 
-  .modal-content {
+  /* Reset body and html */
+  html, body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    color: black !important;
+  }
+
+  /* Force the modal to act as the main document */
+  #ticketDetailModal {
+    display: block !important;
+    position: static !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: white !important;
+    padding: 20px !important;
+  }
+
+  #ticketDetailModal * {
+    visibility: visible !important;
+  }
+
+  #ticketDetailModal .modal-content {
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    transform: none !important;
+    animation: none !important;
   }
 
+  /* Keep resolution inputs visible but style them like plain text */
   .ticket-action-box {
     border: none !important;
     background: transparent !important;
     padding: 0 !important;
     margin-top: 1.5rem !important;
+  }
+
+  .ticket-action-box label {
+    color: black !important;
   }
 
   .ticket-action-box input, 
@@ -1373,11 +1394,13 @@ footer {
     padding: 0 !important;
     font-size: 0.95rem !important;
     font-weight: 500 !important;
-    color: #000 !important;
+    color: black !important;
     appearance: none !important;
     -webkit-appearance: none !important;
+    pointer-events: none !important;
   }
 
+  /* Hide buttons */
   #detailCloseBtn,
   #detailSaveBtn,
   #detailPrintBtn {
