@@ -1334,6 +1334,11 @@ footer {
 }
 
 /* --- Print Styles --- */
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
 @media print {
   /* Hide everything except the ticket detail modal */
   body > *:not(#ticketDetailModal) {
