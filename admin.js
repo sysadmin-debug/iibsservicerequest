@@ -521,8 +521,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (navContainer) {
     navContainer.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', (e) => {
-        e.preventDefault();
-        switchTab(link.getAttribute('data-tab'));
+        if (link.getAttribute('data-tab')) {
+          e.preventDefault();
+          switchTab(link.getAttribute('data-tab'));
+        }
       });
     });
   }
