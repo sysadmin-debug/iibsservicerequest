@@ -148,6 +148,22 @@
       outline: none;
     }
 
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .delete-btn:hover {
+      background: #fee2e2;
+    }
+
     /* --- Print Media Query --- */
     @page {
       size: A4 portrait;
@@ -155,7 +171,7 @@
     }
 
     @media print {
-      .report-controls, .toast {
+      .report-controls, .toast, .report-controls-cell, .delete-btn {
         display: none !important;
       }
       
@@ -307,6 +323,7 @@
                   <th>Student Name</th>
                   <th style="width: 150px;">Status</th>
                   <th style="width: 180px;">Serial No.</th>
+                  <th style="width: 40px;" class="report-controls-cell"></th>
                 </tr>
               </thead>
               <tbody>
@@ -327,6 +344,11 @@
                     </select>
                   </td>
                   <td><input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" /></td>
+                  <td class="report-controls-cell">
+                    <button class="delete-btn" onclick="deleteStudent('${student._id}', '${student.name.replace(/'/g, "\\'")}')" title="Delete Record">
+                      <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                    </button>
+                  </td>
                 </tr>
           `;
         });
@@ -369,6 +391,22 @@
         showToast('Error updating data', true);
         // Revert UI on failure
         fetchLaptops(); 
+      }
+    }
+
+    async function deleteStudent(id, name) {
+      if (!confirm(`Are you sure you want to permanently delete the record for ${name}?`)) return;
+      
+      try {
+        const response = await fetch(`/api/laptop/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Failed to delete');
+        
+        allData = allData.filter(s => s._id !== id);
+        renderReport();
+        lucide.createIcons();
+        showToast('Record deleted successfully');
+      } catch (err) {
+        showToast('Error deleting record', true);
       }
     }
 

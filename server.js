@@ -338,6 +338,16 @@ app.post('/api/laptop/update', async (req, res) => {
   }
 });
 
+app.delete('/api/laptop/:id', async (req, res) => {
+  try {
+    const result = await LaptopEligibility.findByIdAndDelete(req.params.id);
+    if (!result) return res.status(404).json({ error: 'Record not found' });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 if (process.env.NODE_ENV !== 'production') {
   app.listen(port, () => {
     console.log(`IIBS Backend running at http://localhost:${port}`);
