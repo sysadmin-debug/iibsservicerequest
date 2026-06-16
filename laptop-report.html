@@ -171,14 +171,24 @@
     }
 
     @media print {
-      .report-controls, .toast, .report-controls-cell, .delete-btn {
+      .report-controls, .toast, .delete-btn {
         display: none !important;
       }
       
-      body {
+      html, body {
         background: white !important;
-        margin: 0;
-        padding: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        display: block !important;
+      }
+
+      .report-controls-cell {
+        border: none !important;
+        width: 0 !important;
+        padding: 0 !important;
       }
 
       .report-container {
