@@ -1400,6 +1400,10 @@ footer {
     pointer-events: none !important;
   }
 
+  .print-header {
+    display: flex !important;
+  }
+
   /* Hide buttons */
   #detailCloseBtn,
   #detailSaveBtn,
