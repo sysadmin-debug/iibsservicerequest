@@ -307,16 +307,24 @@ app.get('/api/laptop/list', async (req, res) => {
 
 app.post('/api/laptop/update', async (req, res) => {
   try {
-    const { id, status } = req.body;
-    if (!id || !status) return res.status(400).json({ error: 'ID and status are required' });
+    const { id, status, name, serialNo } = req.body;
+    if (!id) return res.status(400).json({ error: 'ID is required' });
     
-    if (!['Received', 'Cancel'].includes(status)) {
-      return res.status(400).json({ error: 'Invalid status' });
+    const updateData = { updatedAt: new Date() };
+
+    if (status !== undefined) {
+      if (!['Pending', 'Received', 'Cancel'].includes(status)) {
+        return res.status(400).json({ error: 'Invalid status' });
+      }
+      updateData.status = status;
     }
+
+    if (name !== undefined) updateData.name = name;
+    if (serialNo !== undefined) updateData.serialNo = serialNo;
 
     const student = await LaptopEligibility.findByIdAndUpdate(
       id,
-      { status, updatedAt: new Date() },
+      updateData,
       { new: true }
     );
     

@@ -132,6 +132,22 @@
     .status-select.Cancel { color: #dc2626; }
     .status-select.Pending { color: #d97706; }
 
+    .editable-input {
+      border: 1px solid transparent;
+      background: transparent;
+      font-family: inherit;
+      font-size: inherit;
+      padding: 0.25rem;
+      border-radius: 4px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .editable-input:hover, .editable-input:focus {
+      border-color: #cbd5e1;
+      outline: none;
+    }
+
     /* --- Print Media Query --- */
     @page {
       size: A4 portrait;
@@ -166,12 +182,13 @@
         print-color-adjust: exact;
       }
 
-      .status-select {
+      .status-select, .editable-input {
         border: none !important;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
         padding: 0;
+        background: transparent !important;
       }
     }
   </style>
@@ -301,15 +318,15 @@
           html += `
                 <tr>
                   <td>${index + 1}</td>
-                  <td style="font-weight: 500;">${student.name}</td>
+                  <td><input type="text" class="editable-input" style="font-weight: 500;" value="${student.name}" onchange="updateStudentField('${student._id}', 'name', this.value)" /></td>
                   <td>
-                    <select class="status-select ${statusClass}" onchange="updateStudentStatus('${student._id}', this)">
+                    <select class="status-select ${statusClass}" onchange="updateStudentField('${student._id}', 'status', this.value); this.className = 'status-select ' + this.value;">
                       <option value="Pending" ${student.status === 'Pending' ? 'selected' : ''}>Pending</option>
                       <option value="Received" ${student.status === 'Received' ? 'selected' : ''}>Received</option>
                       <option value="Cancel" ${student.status === 'Cancel' ? 'selected' : ''}>Cancelled</option>
                     </select>
                   </td>
-                  <td>${student.serialNo || '-'}</td>
+                  <td><input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" /></td>
                 </tr>
           `;
         });
@@ -332,17 +349,12 @@
       setTimeout(() => toast.style.transform = 'translateY(150%)', 3000);
     }
 
-    async function updateStudentStatus(id, selectElement) {
-      const newStatus = selectElement.value;
-      
-      // Update color class immediately
-      selectElement.className = \`status-select \${newStatus}\`;
-      
+    async function updateStudentField(id, field, value) {
       try {
         const response = await fetch('/api/laptop/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, status: newStatus })
+          body: JSON.stringify({ id, [field]: value })
         });
         
         const data = await response.json();
@@ -350,11 +362,11 @@
         
         // Update local data cache
         const student = allData.find(s => s._id === id);
-        if (student) student.status = newStatus;
+        if (student) student[field] = value;
         
-        showToast('Status updated successfully');
+        showToast('Updated successfully');
       } catch (err) {
-        showToast('Error updating status', true);
+        showToast('Error updating data', true);
         // Revert UI on failure
         fetchLaptops(); 
       }
