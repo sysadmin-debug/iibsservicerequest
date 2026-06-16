@@ -320,9 +320,13 @@
               <thead>
                 <tr>
                   <th style="width: 50px;">Sl.No</th>
-                  <th>Student Name</th>
-                  <th style="width: 150px;">Status</th>
-                  <th style="width: 180px;">Serial No.</th>
+                  <th>${courseKey === 'Faculty' ? 'Faculty Name' : 'Student Name'}</th>
+                  <th style="width: 120px;">Status</th>
+                  <th style="width: 150px;">Serial No.</th>
+                  ${courseKey === 'Faculty' ? `
+                    <th style="width: 120px;">Given Date</th>
+                    <th style="width: 120px;">Return Date</th>
+                  ` : ''}
                   <th style="width: 40px;" class="report-controls-cell"></th>
                 </tr>
               </thead>
@@ -344,6 +348,10 @@
                     </select>
                   </td>
                   <td><input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" /></td>
+                  ${courseKey === 'Faculty' ? `
+                    <td><input type="text" class="editable-input" value="${student.givenDate || ''}" placeholder="DD/MM/YYYY" onchange="updateStudentField('${student._id}', 'givenDate', this.value)" /></td>
+                    <td><input type="text" class="editable-input" value="${student.returnDate || ''}" placeholder="DD/MM/YYYY" onchange="updateStudentField('${student._id}', 'returnDate', this.value)" /></td>
+                  ` : ''}
                   <td class="report-controls-cell">
                     <button class="delete-btn" onclick="deleteStudent('${student._id}', '${student.name.replace(/'/g, "\\'")}')" title="Delete Record">
                       <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
