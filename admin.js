@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         studentFieldsGroup.style.display = 'block';
         userCourse.setAttribute('required', 'true');
-        userClassroom.setAttribute('required', 'true');
+        userClassroom.removeAttribute('required');
       } else if (e.target.value === 'Staff') {
         studentFieldsGroup.style.display = 'none';
         userCourse.removeAttribute('required');
