@@ -45,7 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ticketType: row.ticket_type,
         otherRequest: row.other_request || '',
         status: row.status,
-        resolution: row.resolution || ''
+        resolution: row.resolution || '',
+        attendedBy: row.attended_by || ''
       }));
       
       renderStats();
@@ -247,11 +248,20 @@ document.addEventListener('DOMContentLoaded', () => {
         <div><strong>Contact:</strong> ${ticket.contact}</div>
         <div><strong>Email:</strong> ${ticket.email}</div>
         <div style="grid-column: 1 / -1;"><strong>Submitted:</strong> ${dateString}</div>
+        ${ticket.attendedBy ? `<div style="grid-column: 1 / -1; color: #4f46e5;"><strong>Attended By:</strong> ${ticket.attendedBy}</div>` : ''}
       </div>
+      
+      ${ticket.resolution ? `
+        <div style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-left: 3px solid #10b981; border-radius: 4px;">
+          <h4 style="margin-bottom: 0.25rem; color: #10b981; font-size: 0.9rem;">Resolution</h4>
+          <p style="font-size: 0.95rem; color: var(--text-primary); white-space: pre-wrap;">${ticket.resolution}</p>
+        </div>
+      ` : ''}
     `;
 
     document.getElementById('detailStatusUpdate').value = ticket.status;
-    document.getElementById('detailResolutionInput').value = ticket.resolution;
+    document.getElementById('detailResolutionInput').value = ticket.resolution || '';
+    document.getElementById('detailAttendedBy').value = ticket.attendedBy || '';
 
     if (detailModal) detailModal.classList.add('visible');
   }
@@ -281,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const newStatus = document.getElementById('detailStatusUpdate').value;
       const newRes = document.getElementById('detailResolutionInput').value;
+      const newAttendedBy = document.getElementById('detailAttendedBy').value;
       
       const ticket = tickets.find(t => t.id === currentEditingTicketId);
       if (ticket) {
@@ -292,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const res = await fetch(`/api/tickets/${ticket.dbId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus, resolution: newRes })
+            body: JSON.stringify({ status: newStatus, resolution: newRes, attended_by: newAttendedBy })
           });
 
           if (!res.ok) throw new Error('API failed');
@@ -300,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Success! Update local state
           ticket.status = newStatus;
           ticket.resolution = newRes;
+          ticket.attendedBy = newAttendedBy;
           renderStats();
           renderRecentList();
           renderTickets();

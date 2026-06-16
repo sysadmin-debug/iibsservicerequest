@@ -107,6 +107,7 @@ const ticketSchema = new mongoose.Schema({
   other_request: String,
   status: { type: String, default: 'open' },
   resolution: String,
+  attended_by: String,
   created_at: { type: Date, default: Date.now }
 });
 const Ticket = mongoose.model('Ticket', ticketSchema);
