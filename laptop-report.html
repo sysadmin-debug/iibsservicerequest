@@ -223,6 +223,17 @@
           <option value="Pending">Pending Only</option>
         </select>
       </div>
+      <div class="filter-group" style="margin-left: 1rem;">
+        <label style="font-weight: 600;"><i data-lucide="layers"></i> Filter Batch:</label>
+        <select id="batchFilter" onchange="renderReport()">
+          <option value="All">All Batches</option>
+          <option value="PGDM">PGDM 2025-2027</option>
+          <option value="MBA">MBA 2025-2027</option>
+          <option value="UG">UG 2025-2028</option>
+          <option value="Faculty">Faculty</option>
+          <option value="Student taken Laptop with Letter">Student taken with Letter</option>
+        </select>
+      </div>
       <div>
         <button class="btn-print" onclick="window.print()"><i data-lucide="printer"></i> Print Report</button>
         <a href="admin.html" style="margin-left: 1rem; color: #4f46e5; text-decoration: none; font-weight: 500;">Back to Admin</a>
@@ -277,17 +288,22 @@
 
     function renderReport() {
       const statusFilter = document.getElementById('statusFilter').value;
+      const batchFilter = document.getElementById('batchFilter').value;
       const content = document.getElementById('reportContent');
       const subtitle = document.getElementById('reportSubtitle');
 
-      subtitle.textContent = statusFilter === 'All' 
-        ? 'Complete List (All Statuses)' 
-        : `Showing: ${statusFilter} Laptops Only`;
+      let subtitleText = batchFilter === 'All' ? 'All Batches (2025-2026)' : courseLabels[batchFilter] || batchFilter;
+      if (statusFilter !== 'All') subtitleText += ` — ${statusFilter} Laptops Only`;
+      
+      subtitle.textContent = subtitleText;
 
       // Filter data
       let filtered = allData;
       if (statusFilter !== 'All') {
-        filtered = allData.filter(item => item.status === statusFilter);
+        filtered = filtered.filter(item => item.status === statusFilter);
+      }
+      if (batchFilter !== 'All') {
+        filtered = filtered.filter(item => item.course === batchFilter);
       }
 
       // Group by course
