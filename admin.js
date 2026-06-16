@@ -262,6 +262,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const detailPrintBtn = document.getElementById('detailPrintBtn');
+  if (detailPrintBtn) {
+    detailPrintBtn.addEventListener('click', () => {
+      window.print();
+    });
+  }
+
   if (detailModal) {
     detailModal.addEventListener('click', (e) => {
       if (e.target === detailModal) detailModal.classList.remove('visible');

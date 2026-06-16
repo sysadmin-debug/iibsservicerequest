@@ -1332,3 +1332,55 @@ footer {
   width: 18px;
   height: 18px;
 }
+
+/* --- Print Styles --- */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  
+  #ticketDetailModal, 
+  #ticketDetailModal * {
+    visibility: visible;
+  }
+  
+  #ticketDetailModal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    background: transparent;
+  }
+
+  .modal-content {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  .ticket-action-box {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin-top: 1.5rem !important;
+  }
+
+  .ticket-action-box input, 
+  .ticket-action-box select {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    color: #000 !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+  }
+
+  #detailCloseBtn,
+  #detailSaveBtn,
+  #detailPrintBtn {
+    display: none !important;
+  }
+}
