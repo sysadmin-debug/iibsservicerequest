@@ -132,7 +132,16 @@ const stockLogSchema = new mongoose.Schema({
   bill_photo_url: String,
   created_at: { type: Date, default: Date.now }
 });
-const StockLog = mongoose.model('StockLog', stockLogSchema);
+const StockLog = mongoose.models.StockLog || mongoose.model('StockLog', stockLogSchema);
+
+const laptopEligibilitySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  course: { type: String, required: true },
+  status: { type: String, default: 'Pending' },
+  serialNo: { type: String, default: '' },
+  updatedAt: { type: Date, default: Date.now }
+});
+const LaptopEligibility = mongoose.models.LaptopEligibility || mongoose.model('LaptopEligibility', laptopEligibilitySchema);
 
 // =======================
 // API ENDPOINTS
@@ -261,6 +270,54 @@ app.post(['/api/upload', '/upload'], upload.single('file'), (req, res) => {
   const mimeType = req.file.mimetype;
   const publicUrl = `data:${mimeType};base64,${base64Image}`;
   res.json({ publicUrl });
+});
+
+// --- LAPTOP ELIGIBILITY ---
+
+app.get('/api/laptop/search', async (req, res) => {
+  try {
+    const { name, course } = req.query;
+    if (!name || !course) return res.status(400).json({ error: 'Name and course are required' });
+    
+    // Case insensitive regex search for name
+    const student = await LaptopEligibility.findOne({
+      name: new RegExp(`^${name}$`, 'i'),
+      course: course
+    });
+    
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found in eligibility list' });
+    }
+    
+    res.json(student);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/laptop/update', async (req, res) => {
+  try {
+    const { id, status } = req.body;
+    if (!id || !status) return res.status(400).json({ error: 'ID and status are required' });
+    
+    if (!['Received', 'Cancel'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const student = await LaptopEligibility.findByIdAndUpdate(
+      id,
+      { status, updatedAt: new Date() },
+      { new: true }
+    );
+    
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+    
+    res.json(student);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 if (process.env.NODE_ENV !== 'production') {

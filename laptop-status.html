@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laptop Eligibility Tracker - IIBS</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    .result-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-top: 2rem;
+      text-align: center;
+      display: none;
+      animation: modalSlideIn 0.4s ease;
+    }
+
+    .result-card.visible {
+      display: block;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 1rem;
+      margin: 1rem 0;
+    }
+
+    .status-pending { background: #fef3c7; color: #d97706; }
+    .status-received { background: #d1fae5; color: #059669; }
+    .status-cancel { background: #fee2e2; color: #dc2626; }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .btn-received {
+      background: #10b981;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+    .btn-received:hover { background: #059669; }
+
+    .btn-cancel-laptop {
+      background: #ef4444;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+    .btn-cancel-laptop:hover { background: #dc2626; }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Background Orbs -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- Navigation Header -->
+  <header id="mainHeader">
+    <div class="nav-container">
+      <div class="logo">
+        <img src="logo.jpeg" alt="IIBS Logo" class="logo-img" style="height: 40px; border-radius: 8px;">
+        <span>IIBS <span class="logo-accent">ServiceDesk</span></span>
+      </div>
+      <nav id="navLinks">
+        <a href="index.html"><i data-lucide="home" class="nav-icon"></i> Home</a>
+        <a href="#" class="active"><i data-lucide="laptop" class="nav-icon"></i> Laptop Tracker</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-container" style="max-width: 800px;">
+    <div class="header-section text-center">
+      <h1 class="page-title">Laptop Eligibility Tracker</h1>
+      <p class="page-subtitle">Check your eligibility status and update whether you have received or canceled your laptop request.</p>
+    </div>
+
+    <!-- Tracker Form Section -->
+    <div class="form-card">
+      <form id="laptopTrackerForm">
+        <div class="form-row" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div class="form-group" style="flex: 2; min-width: 200px;">
+            <label for="searchName"><i data-lucide="user" class="label-icon"></i> Student Name *</label>
+            <input type="text" id="searchName" placeholder="Enter your full name exactly as per records" required style="width: 100%;" />
+          </div>
+          <div class="form-group" style="flex: 1; min-width: 150px;">
+            <label for="searchCourse"><i data-lucide="graduation-cap" class="label-icon"></i> Course *</label>
+            <select id="searchCourse" required style="width: 100%;">
+              <option value="">Select Course...</option>
+              <option value="PGDM">PGDM</option>
+              <option value="MBA">MBA</option>
+              <option value="UG">UG</option>
+              <option value="Student taken Laptop with Letter">Student taken Laptop with Letter</option>
+              <option value="Faculty">Faculty</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions text-center" style="margin-top: 1.5rem;">
+          <button type="submit" class="btn-primary" id="btnSearch">
+            <i data-lucide="search"></i> Check Status
+          </button>
+        </div>
+      </form>
+
+      <!-- Result Area -->
+      <div id="resultArea" class="result-card">
+        <h2 id="resultName" style="margin-bottom: 0.5rem; color: var(--text-primary); font-family: 'Outfit', sans-serif;">Student Name</h2>
+        <p id="resultCourse" style="color: var(--text-secondary); margin-bottom: 1rem; font-weight: 500;">Course</p>
+        
+        <div id="resultStatusBadge" class="status-badge status-pending">
+          <i data-lucide="clock"></i> Pending
+        </div>
+        
+        <p id="resultMessage" style="color: var(--text-secondary); margin-top: 1rem;">Please update your status below.</p>
+
+        <div id="actionArea" class="action-buttons">
+          <button type="button" class="btn-received" onclick="updateStatus('Received')">
+            <i data-lucide="check-circle"></i> Mark as Received
+          </button>
+          <button type="button" class="btn-cancel-laptop" onclick="updateStatus('Cancel')">
+            <i data-lucide="x-circle"></i> Cancel Laptop
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastMessage">
+    <div class="toast-content">
+      <i data-lucide="check-circle" id="toastIcon"></i>
+      <span id="toastText">Action successful!</span>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    let currentStudentId = null;
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toastMessage');
+      const text = document.getElementById('toastText');
+      const icon = document.getElementById('toastIcon');
+      
+      text.textContent = message;
+      toast.style.background = isError ? 'rgba(239, 68, 68, 0.9)' : 'rgba(16, 185, 129, 0.9)';
+      
+      lucide.createIcons({
+        icons: {
+          'check-circle': !isError ? 'check-circle' : 'alert-circle'
+        },
+        nameAttr: 'data-lucide',
+        attrs: {
+          class: 'lucide lucide-' + (!isError ? 'check-circle' : 'alert-circle')
+        }
+      });
+      
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    document.getElementById('laptopTrackerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSearch');
+      btn.innerHTML = `Searching...`;
+      btn.disabled = true;
+
+      const name = document.getElementById('searchName').value.trim();
+      const course = document.getElementById('searchCourse').value;
+
+      try {
+        const response = await fetch(`/api/laptop/search?name=${encodeURIComponent(name)}&course=${encodeURIComponent(course)}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Student not found.');
+        }
+
+        renderResult(data);
+      } catch (error) {
+        document.getElementById('resultArea').classList.remove('visible');
+        showToast(error.message, true);
+      } finally {
+        btn.innerHTML = `<i data-lucide="search"></i> Check Status`;
+        btn.disabled = false;
+        lucide.createIcons();
+      }
+    });
+
+    function renderResult(student) {
+      currentStudentId = student._id;
+      
+      document.getElementById('resultName').textContent = student.name;
+      document.getElementById('resultCourse').textContent = student.course;
+      
+      const badge = document.getElementById('resultStatusBadge');
+      const actionArea = document.getElementById('actionArea');
+      const msg = document.getElementById('resultMessage');
+
+      badge.className = 'status-badge'; // reset
+      let iconName = '';
+
+      if (student.status === 'Received') {
+        badge.classList.add('status-received');
+        iconName = 'check-circle';
+        badge.innerHTML = `<i data-lucide="${iconName}"></i> Received`;
+        actionArea.style.display = 'none';
+        msg.textContent = 'You have already collected your laptop.';
+      } else if (student.status === 'Cancel') {
+        badge.classList.add('status-cancel');
+        iconName = 'x-circle';
+        badge.innerHTML = `<i data-lucide="${iconName}"></i> Canceled`;
+        actionArea.style.display = 'none';
+        msg.textContent = 'You have canceled your laptop request.';
+      } else {
+        badge.classList.add('status-pending');
+        iconName = 'clock';
+        badge.innerHTML = `<i data-lucide="${iconName}"></i> Pending`;
+        actionArea.style.display = 'flex';
+        msg.textContent = 'Please update your status below if you have received your laptop or wish to cancel.';
+      }
+
+      document.getElementById('resultArea').classList.add('visible');
+      lucide.createIcons();
+    }
+
+    async function updateStatus(newStatus) {
+      if (!currentStudentId) return;
+
+      const confirmMsg = newStatus === 'Received' 
+        ? 'Are you sure you want to mark this laptop as Received? This action cannot be undone.'
+        : 'Are you sure you want to Cancel your laptop request? This action cannot be undone.';
+      
+      if (!confirm(confirmMsg)) return;
+
+      try {
+        const response = await fetch('/api/laptop/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: currentStudentId, status: newStatus })
+        });
+        
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+
+        showToast(`Status updated to ${newStatus}`);
+        renderResult(data);
+      } catch (error) {
+        showToast(error.message, true);
+      }
+    }
+  </script>
+</body>
+</html>
