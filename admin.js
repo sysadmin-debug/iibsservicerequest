@@ -317,6 +317,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ===== Department Toggle Based on Role =====
+  const userRoleEl = document.getElementById('userRole');
+  const userDeptInput = document.getElementById('userDepartment');
+  const userDeptSelect = document.getElementById('userDepartmentSelect');
+  
+  if (userRoleEl && userDeptInput && userDeptSelect) {
+    userRoleEl.addEventListener('change', (e) => {
+      if (e.target.value === 'Staff') {
+        userDeptInput.style.display = 'none';
+        userDeptInput.removeAttribute('required');
+        userDeptSelect.style.display = 'block';
+        userDeptSelect.setAttribute('required', 'true');
+      } else {
+        userDeptSelect.style.display = 'none';
+        userDeptSelect.removeAttribute('required');
+        userDeptInput.style.display = 'block';
+        userDeptInput.setAttribute('required', 'true');
+      }
+    });
+  }
+
   // ===== Form Submission =====
   const form = document.getElementById('serviceForm');
   const submitBtn = form?.querySelector('button[type="submit"]');
@@ -339,7 +360,9 @@ document.addEventListener('DOMContentLoaded', () => {
         name: document.getElementById('userName').value.trim(),
         iibs_id: document.getElementById('userIdNumber').value.trim(),
         role: document.getElementById('userRole').value,
-        department: document.getElementById('userDepartment').value.trim(),
+        department: document.getElementById('userRole').value === 'Staff' 
+          ? document.getElementById('userDepartmentSelect').value 
+          : document.getElementById('userDepartment').value.trim(),
         contact: document.getElementById('userContact').value.trim(),
         email: document.getElementById('userEmail').value.trim(),
         ticket_type: document.getElementById('ticketType').value,
