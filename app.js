@@ -121,15 +121,38 @@ document.addEventListener('DOMContentLoaded', () => {
   const userRoleEl = document.getElementById('userRole');
   const userDeptInput = document.getElementById('userDepartment');
   const userDeptSelect = document.getElementById('userDepartmentSelect');
+  const departmentGroup = document.getElementById('departmentGroup');
+  const studentFieldsGroup = document.getElementById('studentFieldsGroup');
+  const userCourse = document.getElementById('userCourse');
+  const userClassroom = document.getElementById('userClassroom');
   
-  if (userRoleEl && userDeptInput && userDeptSelect) {
+  if (userRoleEl && departmentGroup && studentFieldsGroup) {
     userRoleEl.addEventListener('change', (e) => {
-      if (e.target.value === 'Staff') {
+      if (e.target.value === 'Student') {
+        departmentGroup.style.display = 'none';
+        userDeptInput.removeAttribute('required');
+        userDeptSelect.removeAttribute('required');
+        
+        studentFieldsGroup.style.display = 'block';
+        userCourse.setAttribute('required', 'true');
+        userClassroom.setAttribute('required', 'true');
+      } else if (e.target.value === 'Staff') {
+        studentFieldsGroup.style.display = 'none';
+        userCourse.removeAttribute('required');
+        userClassroom.removeAttribute('required');
+        
+        departmentGroup.style.display = 'block';
         userDeptInput.style.display = 'none';
         userDeptInput.removeAttribute('required');
         userDeptSelect.style.display = 'block';
         userDeptSelect.setAttribute('required', 'true');
       } else {
+        // Faculty or default
+        studentFieldsGroup.style.display = 'none';
+        userCourse.removeAttribute('required');
+        userClassroom.removeAttribute('required');
+        
+        departmentGroup.style.display = 'block';
         userDeptSelect.style.display = 'none';
         userDeptSelect.removeAttribute('required');
         userDeptInput.style.display = 'block';
@@ -165,14 +188,19 @@ document.addEventListener('DOMContentLoaded', () => {
         otherReqText = `Date: ${cDate} | Time: ${cTime} | Place: ${cPlace}`;
       }
 
+      const roleValue = document.getElementById('userRole').value;
+      const deptValue = roleValue === 'Student' 
+        ? '' 
+        : (roleValue === 'Staff' ? document.getElementById('userDepartmentSelect').value : document.getElementById('userDepartment').value.trim());
+
       const newTicket = {
         ticket_id: tempId,
         name: document.getElementById('userName').value.trim(),
         iibs_id: document.getElementById('userIdNumber').value.trim(),
-        role: document.getElementById('userRole').value,
-        department: document.getElementById('userRole').value === 'Staff' 
-          ? document.getElementById('userDepartmentSelect').value 
-          : document.getElementById('userDepartment').value.trim(),
+        role: roleValue,
+        department: deptValue,
+        course: roleValue === 'Student' ? document.getElementById('userCourse').value.trim() : '',
+        classroom: roleValue === 'Student' ? document.getElementById('userClassroom').value.trim() : '',
         contact: document.getElementById('userContact').value.trim(),
         email: document.getElementById('userEmail').value.trim(),
         ticket_type: document.getElementById('ticketType').value,

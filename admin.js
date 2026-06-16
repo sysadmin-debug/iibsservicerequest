@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
         iibsId: row.iibs_id,
         role: row.role,
         department: row.department,
+        course: row.course || '',
+        classroom: row.classroom || '',
         contact: row.contact,
         email: row.email,
         ticketType: row.ticket_type,
@@ -183,7 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <span><i data-lucide="user"></i> ${t.name}</span>
             <span><i data-lucide="id-card"></i> ${t.iibsId}</span>
             <span><i data-lucide="users"></i> ${t.role}</span>
-            <span><i data-lucide="building-2"></i> ${t.department}</span>
+            ${t.role === 'Student' 
+              ? `<span><i data-lucide="graduation-cap"></i> ${t.course}</span><span><i data-lucide="door-open"></i> ${t.classroom}</span>`
+              : `<span><i data-lucide="building-2"></i> ${t.department}</span>`}
             <span><i data-lucide="phone"></i> ${t.contact}</span>
             <span><i data-lucide="clock"></i> ${dateString}</span>
           </div>
@@ -237,7 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
         <div><strong>Name:</strong> ${ticket.name}</div>
         <div><strong>ID:</strong> ${ticket.iibsId}</div>
         <div><strong>Role:</strong> ${ticket.role}</div>
-        <div><strong>Dept:</strong> ${ticket.department}</div>
+        ${ticket.role === 'Student'
+          ? `<div><strong>Course:</strong> ${ticket.course}</div><div><strong>Classroom:</strong> ${ticket.classroom}</div>`
+          : `<div><strong>Dept:</strong> ${ticket.department}</div>`}
         <div><strong>Contact:</strong> ${ticket.contact}</div>
         <div><strong>Email:</strong> ${ticket.email}</div>
         <div style="grid-column: 1 / -1;"><strong>Submitted:</strong> ${dateString}</div>
@@ -321,15 +327,38 @@ document.addEventListener('DOMContentLoaded', () => {
   const userRoleEl = document.getElementById('userRole');
   const userDeptInput = document.getElementById('userDepartment');
   const userDeptSelect = document.getElementById('userDepartmentSelect');
+  const departmentGroup = document.getElementById('departmentGroup');
+  const studentFieldsGroup = document.getElementById('studentFieldsGroup');
+  const userCourse = document.getElementById('userCourse');
+  const userClassroom = document.getElementById('userClassroom');
   
-  if (userRoleEl && userDeptInput && userDeptSelect) {
+  if (userRoleEl && departmentGroup && studentFieldsGroup) {
     userRoleEl.addEventListener('change', (e) => {
-      if (e.target.value === 'Staff') {
+      if (e.target.value === 'Student') {
+        departmentGroup.style.display = 'none';
+        userDeptInput.removeAttribute('required');
+        userDeptSelect.removeAttribute('required');
+        
+        studentFieldsGroup.style.display = 'block';
+        userCourse.setAttribute('required', 'true');
+        userClassroom.setAttribute('required', 'true');
+      } else if (e.target.value === 'Staff') {
+        studentFieldsGroup.style.display = 'none';
+        userCourse.removeAttribute('required');
+        userClassroom.removeAttribute('required');
+        
+        departmentGroup.style.display = 'block';
         userDeptInput.style.display = 'none';
         userDeptInput.removeAttribute('required');
         userDeptSelect.style.display = 'block';
         userDeptSelect.setAttribute('required', 'true');
       } else {
+        // Faculty or default
+        studentFieldsGroup.style.display = 'none';
+        userCourse.removeAttribute('required');
+        userClassroom.removeAttribute('required');
+        
+        departmentGroup.style.display = 'block';
         userDeptSelect.style.display = 'none';
         userDeptSelect.removeAttribute('required');
         userDeptInput.style.display = 'block';
@@ -355,14 +384,19 @@ document.addEventListener('DOMContentLoaded', () => {
       // Generate a nice TKT id using timestamp
       const tempId = `TKT-${dateStr.getTime().toString().substring(5)}`;
 
+      const roleValue = document.getElementById('userRole').value;
+      const deptValue = roleValue === 'Student' 
+        ? '' 
+        : (roleValue === 'Staff' ? document.getElementById('userDepartmentSelect').value : document.getElementById('userDepartment').value.trim());
+
       const newTicket = {
         ticket_id: tempId,
         name: document.getElementById('userName').value.trim(),
         iibs_id: document.getElementById('userIdNumber').value.trim(),
-        role: document.getElementById('userRole').value,
-        department: document.getElementById('userRole').value === 'Staff' 
-          ? document.getElementById('userDepartmentSelect').value 
-          : document.getElementById('userDepartment').value.trim(),
+        role: roleValue,
+        department: deptValue,
+        course: roleValue === 'Student' ? document.getElementById('userCourse').value.trim() : '',
+        classroom: roleValue === 'Student' ? document.getElementById('userClassroom').value.trim() : '',
         contact: document.getElementById('userContact').value.trim(),
         email: document.getElementById('userEmail').value.trim(),
         ticket_type: document.getElementById('ticketType').value,
@@ -526,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Create CSV content
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Ticket ID,Name,IIBS ID,Role,Department,Contact,Email,Ticket Type,Details/Other Request,Status,Date Submitted,Resolution\n";
+    csvContent += "Ticket ID,Name,IIBS ID,Role,Department,Course,Classroom,Contact,Email,Ticket Type,Details/Other Request,Status,Date Submitted,Resolution\n";
     
     tickets.forEach(t => {
       // Helper to escape commas, quotes, and newlines
@@ -547,6 +581,8 @@ document.addEventListener('DOMContentLoaded', () => {
         escapeCsv(t.iibsId),
         escapeCsv(t.role),
         escapeCsv(t.department),
+        escapeCsv(t.course),
+        escapeCsv(t.classroom),
         escapeCsv(t.contact),
         escapeCsv(t.email),
         escapeCsv(t.ticketType),

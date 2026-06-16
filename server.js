@@ -99,6 +99,8 @@ const ticketSchema = new mongoose.Schema({
   iibs_id: String,
   role: String,
   department: String,
+  course: String,
+  classroom: String,
   contact: String,
   email: String,
   ticket_type: String,

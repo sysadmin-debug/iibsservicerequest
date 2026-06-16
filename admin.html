@@ -198,7 +198,7 @@
             </div>
 
             <div class="form-column">
-              <div class="form-group">
+              <div id="departmentGroup" class="form-group">
                 <label for="userDepartment">
                   <i data-lucide="building-2" class="label-icon"></i> Department *
                 </label>
@@ -215,6 +215,21 @@
                   <option value="R.T.Nagar BDE">R.T.Nagar BDE</option>
                   <option value="R.T.Nagar DIgital Marketing">R.T.Nagar DIgital Marketing</option>
                 </select>
+              </div>
+
+              <div id="studentFieldsGroup" style="display: none;">
+                <div class="form-group">
+                  <label for="userCourse">
+                    <i data-lucide="graduation-cap" class="label-icon"></i> Course *
+                  </label>
+                  <input type="text" id="userCourse" placeholder="e.g. BBA, MBA, BCA">
+                </div>
+                <div class="form-group" style="margin-top: 1rem;">
+                  <label for="userClassroom">
+                    <i data-lucide="door-open" class="label-icon"></i> Classroom *
+                  </label>
+                  <input type="text" id="userClassroom" placeholder="e.g. Room 101, Lab 2">
+                </div>
               </div>
 
               <div class="form-group">
