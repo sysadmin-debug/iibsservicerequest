@@ -197,6 +197,35 @@ app.put(['/api/tickets/:ticket_id', '/tickets/:ticket_id'], async (req, res) => 
 
 // --- INVENTORY ---
 
+app.post('/api/inventory/import', async (req, res) => {
+  try {
+    const items = req.body;
+    let inserted = 0;
+    for (const item of items) {
+      if (!item.id) item.id = 'INV-' + Date.now() + Math.floor(Math.random() * 1000);
+      
+      const existing = await Inventory.findOne({ item_name: item.item_name });
+      if (!existing) {
+        const newItem = new Inventory({ ...item, last_updated: new Date() });
+        await newItem.save();
+        inserted++;
+      } else {
+        // If it exists, we just append to the history and update quantity
+        if (item.history && item.history.length > 0) {
+           existing.history = existing.history.concat(item.history);
+           existing.quantity = item.quantity;
+           existing.last_updated = new Date();
+           await existing.save();
+           inserted++;
+        }
+      }
+    }
+    res.json({ success: true, inserted });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post(['/api/inventory', '/inventory'], async (req, res) => {
   try {
     const newItem = new Inventory({ ...req.body, last_updated: new Date() });
