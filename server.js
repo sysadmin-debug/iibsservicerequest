@@ -352,6 +352,25 @@ app.delete('/api/laptop/:id', async (req, res) => {
   }
 });
 
+app.post('/api/laptop/import', async (req, res) => {
+  try {
+    const records = req.body;
+    if (!Array.isArray(records)) return res.status(400).json({ error: 'Array required' });
+    
+    let inserted = 0;
+    for (const rec of records) {
+      const existing = await LaptopEligibility.findOne({ name: rec.name, course: rec.course });
+      if (!existing) {
+        await LaptopEligibility.create(rec);
+        inserted++;
+      }
+    }
+    res.json({ success: true, inserted });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 if (process.env.NODE_ENV !== 'production') {
   app.listen(port, () => {
     console.log(`IIBS Backend running at http://localhost:${port}`);
