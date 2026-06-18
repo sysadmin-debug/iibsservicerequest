@@ -685,7 +685,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function formatStatus(status) {
-    const map = { open: 'Open', progress: 'In Progress', resolved: 'Resolved' };
+    const map = { open: 'Open', progress: 'In Progress', resolved: 'Resolved', approved: 'Approved', rejected: 'Rejected' };
     return map[status] || status;
   }
 

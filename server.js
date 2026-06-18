@@ -74,6 +74,7 @@ async function sendResolutionEmail(ticket) {
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Added for HTML form submissions
 app.use(express.static(__dirname)); // --- FILE UPLOAD (Vercel Compatible) ---
 // Vercel serverless functions cannot write to the local disk permanently.
 // We use memory storage and encode to Base64 to save directly in MongoDB.
@@ -174,17 +175,26 @@ app.get('/api/tickets/approve/:ticket_id', async (req, res) => {
       return res.status(404).send('<h1>Ticket not found</h1>');
     }
     
-    const existingRes = ticket.resolution || '';
-    if (!existingRes.includes('✅ APPROVED for CCTV Check')) {
-      ticket.resolution = `✅ APPROVED for CCTV Check.\n\n${existingRes}`;
-      await ticket.save();
+    // If it's already approved or rejected, just show a message.
+    const isApproved = ticket.status === 'approved';
+    const isRejected = ticket.status === 'rejected';
+    if (isApproved || isRejected) {
+      return res.send(`
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; text-align: center; color: #333; max-width: 600px; margin: 0 auto;">
+          <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+            <h1 style="color: ${isApproved ? '#10b981' : '#ef4444'}; margin-top: 0;">${isApproved ? '✅ Already Approved' : '❌ Already Rejected'}</h1>
+            <p>This ticket was previously processed.</p>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 0;">You may close this window.</p>
+          </div>
+        </div>
+      `);
     }
-    
+
     res.send(`
       <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; text-align: center; color: #333; max-width: 600px; margin: 0 auto;">
         <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
-          <h1 style="color: #10b981; margin-top: 0;">✅ Request Approved</h1>
-          <p style="font-size: 1.1rem; color: #475569;">You have successfully authorized the IT team to provide the requested CCTV footage.</p>
+          <h1 style="color: #4f46e5; margin-top: 0;">CCTV Footage Request</h1>
+          <p style="font-size: 1.1rem; color: #475569;">Please review the requested footage details and decide to approve or reject.</p>
           
           <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 25px 0;">
             <h3 style="margin-top: 0; color: #0f172a; margin-bottom: 15px;">Ticket Details</h3>
@@ -194,12 +204,57 @@ app.get('/api/tickets/approve/:ticket_id', async (req, res) => {
             <p style="margin: 8px 0;"><strong>Footage Details:</strong><br/> <span style="display: inline-block; margin-top: 5px; color: #475569;">${ticket.other_request}</span></p>
           </div>
           
+          <form method="POST" action="/api/tickets/approve/${ticket.ticket_id}" style="text-align: left;">
+            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #334155;">Remarks (Optional):</label>
+            <textarea name="remarks" rows="3" style="width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 20px; font-family: inherit;" placeholder="Type any comments here..."></textarea>
+            
+            <div style="display: flex; gap: 15px;">
+              <button type="submit" name="action" value="approve" style="flex: 1; background-color: #10b981; color: white; padding: 14px; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: 600; cursor: pointer;">✅ Approve</button>
+              <button type="submit" name="action" value="reject" style="flex: 1; background-color: #ef4444; color: white; padding: 14px; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: 600; cursor: pointer;">❌ Reject</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `);
+  } catch (err) {
+    res.status(500).send('<h1>Error loading request</h1>');
+  }
+});
+
+app.post('/api/tickets/approve/:ticket_id', async (req, res) => {
+  try {
+    const ticketId = req.params.ticket_id;
+    const { action, remarks } = req.body;
+    
+    const ticket = await Ticket.findOne({ ticket_id: ticketId });
+    if (!ticket) {
+      return res.status(404).send('<h1>Ticket not found</h1>');
+    }
+
+    const existingRes = ticket.resolution ? ticket.resolution + '\n\n' : '';
+    const remarkText = remarks ? ` - Remarks: ${remarks}` : '';
+
+    if (action === 'approve') {
+      ticket.status = 'approved';
+      ticket.resolution = `✅ APPROVED for CCTV Check${remarkText}\n\n${existingRes}`;
+    } else if (action === 'reject') {
+      ticket.status = 'rejected';
+      ticket.resolution = `❌ REJECTED for CCTV Check${remarkText}\n\n${existingRes}`;
+    }
+
+    await ticket.save();
+
+    res.send(`
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; text-align: center; color: #333; max-width: 600px; margin: 0 auto;">
+        <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+          <h1 style="color: ${action === 'approve' ? '#10b981' : '#ef4444'}; margin-top: 0;">${action === 'approve' ? '✅ Request Approved' : '❌ Request Rejected'}</h1>
+          <p style="font-size: 1.1rem; color: #475569;">The decision has been recorded and the IT team will be notified.</p>
           <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 0;">You may now close this window.</p>
         </div>
       </div>
     `);
   } catch (err) {
-    res.status(500).send('<h1>Error approving request</h1>');
+    res.status(500).send('<h1>Error processing approval</h1>');
   }
 });
 
