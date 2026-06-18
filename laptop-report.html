@@ -401,27 +401,44 @@
         students.forEach((student, index) => {
           let statusClass = student.status; // 'Received', 'Cancel', 'Pending'
 
-          html += `
-                <tr>
-                  <td>${index + 1}</td>
-                  <td><input type="text" class="editable-input" style="font-weight: 500;" value="${student.name}" onchange="updateStudentField('${student._id}', 'name', this.value)" /></td>
-                  <td>
+          let nameField = isReadOnly ? `<span style="font-weight: 500;">${student.name}</span>` : `<input type="text" class="editable-input" style="font-weight: 500;" value="${student.name}" onchange="updateStudentField('${student._id}', 'name', this.value)" />`;
+          
+          let statusDisplay = student.status === 'Cancel' ? 'Cancelled' : student.status;
+          let statusField = isReadOnly ? `<span class="status-select ${statusClass}" style="display:inline-block; padding: 0.25rem 0;">${statusDisplay}</span>` : `
                     <select class="status-select ${statusClass}" onchange="updateStudentField('${student._id}', 'status', this.value); this.className = 'status-select ' + this.value;">
                       <option value="Pending" ${student.status === 'Pending' ? 'selected' : ''}>Pending</option>
                       <option value="Received" ${student.status === 'Received' ? 'selected' : ''}>Received</option>
                       <option value="Cancel" ${student.status === 'Cancel' ? 'selected' : ''}>Cancelled</option>
                     </select>
-                  </td>
-                  <td><input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" /></td>
-                  ${courseKey === 'Faculty' ? `
+          `;
+
+          let serialField = isReadOnly ? `<span>${student.serialNo || '-'}</span>` : `<input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" />`;
+
+          let facultyFields = '';
+          if (courseKey === 'Faculty') {
+             facultyFields = isReadOnly ? `
+                    <td><span>${student.givenDate || '-'}</span></td>
+                    <td><span>${student.returnDate || '-'}</span></td>
+             ` : `
                     <td><input type="text" class="editable-input" value="${student.givenDate || ''}" placeholder="DD/MM/YYYY" onchange="updateStudentField('${student._id}', 'givenDate', this.value)" /></td>
                     <td><input type="text" class="editable-input" value="${student.returnDate || ''}" placeholder="DD/MM/YYYY" onchange="updateStudentField('${student._id}', 'returnDate', this.value)" /></td>
-                  ` : ''}
-                  <td class="report-controls-cell">
+             `;
+          }
+
+          let deleteBtn = isReadOnly ? '' : `
                     <button class="delete-btn" onclick="deleteStudent('${student._id}', '${student.name.replace(/'/g, "\\'")}')" title="Delete Record">
                       <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
                     </button>
-                  </td>
+          `;
+
+          html += `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td>${nameField}</td>
+                  <td>${statusField}</td>
+                  <td>${serialField}</td>
+                  ${facultyFields}
+                  <td class="report-controls-cell">${deleteBtn}</td>
                 </tr>
           `;
         });
@@ -483,9 +500,12 @@
       }
     }
 
+    let isReadOnly = true;
+
     function checkPassword() {
       const pwd = document.getElementById('reportPassword').value;
       if (pwd === 'iibs@2025' || pwd === 'admin123') {
+        isReadOnly = (pwd === 'iibs@2025');
         document.getElementById('authOverlay').style.display = 'none';
         document.body.style.overflow = 'visible';
         fetchLaptops();
