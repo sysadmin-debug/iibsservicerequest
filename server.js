@@ -158,7 +158,41 @@ app.post(['/api/tickets', '/tickets'], async (req, res) => {
     const newTicket = new Ticket(req.body);
     await newTicket.save();
     
-    // Note: CCTV approval is now handled manually via the admin portal link generation.
+    // --- CCTV APPROVAL EMAIL ---
+    if (req.body.ticket_type === 'CCTV Footage Checking' && req.body.cctvApprover) {
+      const approveUrl = `https://${req.headers.host || 'iibsservicerequest.vercel.app'}/api/tickets/approve/${newTicket.ticket_id}`;
+      const mailOptions = {
+        from: `"IIBS IT Helpdesk" <${process.env.GMAIL_USER}>`,
+        to: req.body.cctvApprover,
+        subject: `ACTION REQUIRED: CCTV Footage Approval - ${newTicket.ticket_id}`,
+        html: `
+          <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #333; border: 1px solid #ddd; max-width: 500px; border-radius: 8px;">
+            <h2 style="color: #0f172a; margin-top: 0;">CCTV Footage Request</h2>
+            <p style="font-size: 1.05rem;"><strong>Requested By:</strong> ${newTicket.name} (${newTicket.role})</p>
+            <div style="background: #f1f5f9; padding: 15px; border-left: 4px solid #3b82f6; border-radius: 6px; margin: 15px 0;">
+              <strong style="display: block; margin-bottom: 5px;">Footage Details:</strong>
+              <span style="color: #475569;">${newTicket.other_request}</span>
+            </div>
+            <p>Please review this request and submit your official decision.</p>
+            <br/>
+            <a href="${approveUrl}" style="background-color: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Review & Approve/Reject</a>
+          </div>
+        `
+      };
+      
+      if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+        try {
+          await transporter.sendMail(mailOptions);
+        } catch (err) {
+          console.error('Error sending CCTV approval email:', err);
+          newTicket.resolution = `[System Error: Failed to send email to ${req.body.cctvApprover} - ${err.message}]\n` + (newTicket.resolution || '');
+          await newTicket.save();
+        }
+      } else {
+        newTicket.resolution = `[System Error: GMAIL_USER or GMAIL_PASS environment variables are NOT set on Vercel. Email was not sent.]\n` + (newTicket.resolution || '');
+        await newTicket.save();
+      }
+    }
     
     res.status(201).json([newTicket]); 
   } catch (error) {
