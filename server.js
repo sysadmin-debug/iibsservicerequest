@@ -181,10 +181,21 @@ app.get('/api/tickets/approve/:ticket_id', async (req, res) => {
     }
     
     res.send(`
-      <div style="font-family: Arial; padding: 40px; text-align: center; color: #333;">
-        <h1 style="color: #10b981;">Success!</h1>
-        <p>You have successfully approved the CCTV footage request for Ticket <strong>${ticketId}</strong>.</p>
-        <p>The IT team has been authorized.</p>
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; text-align: center; color: #333; max-width: 600px; margin: 0 auto;">
+        <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+          <h1 style="color: #10b981; margin-top: 0;">✅ Request Approved</h1>
+          <p style="font-size: 1.1rem; color: #475569;">You have successfully authorized the IT team to provide the requested CCTV footage.</p>
+          
+          <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 25px 0;">
+            <h3 style="margin-top: 0; color: #0f172a; margin-bottom: 15px;">Ticket Details</h3>
+            <p style="margin: 8px 0;"><strong>Ticket ID:</strong> ${ticket.ticket_id}</p>
+            <p style="margin: 8px 0;"><strong>Requested By:</strong> ${ticket.name} (${ticket.role})</p>
+            <p style="margin: 8px 0;"><strong>Contact:</strong> ${ticket.contact}</p>
+            <p style="margin: 8px 0;"><strong>Footage Details:</strong><br/> <span style="display: inline-block; margin-top: 5px; color: #475569;">${ticket.other_request}</span></p>
+          </div>
+          
+          <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 0;">You may now close this window.</p>
+        </div>
       </div>
     `);
   } catch (err) {
