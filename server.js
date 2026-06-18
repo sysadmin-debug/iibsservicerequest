@@ -177,7 +177,7 @@ app.post(['/api/tickets', '/tickets'], async (req, res) => {
         `
       };
       if (process.env.GMAIL_USER) {
-        transporter.sendMail(mailOptions).catch(err => console.error('Error sending CCTV approval email:', err));
+        await transporter.sendMail(mailOptions).catch(err => console.error('Error sending CCTV approval email:', err));
       }
     }
 
@@ -237,8 +237,8 @@ app.put(['/api/tickets/:ticket_id', '/tickets/:ticket_id'], async (req, res) => 
 
     // If it wasn't resolved before, but is resolved now, trigger the email
     if (!wasResolved && updated.status === 'resolved') {
-      // Run asynchronously without awaiting so the API responds instantly
-      sendResolutionEmail(updated).catch(console.error);
+      // Must await the email in Vercel, otherwise the lambda terminates before sending
+      await sendResolutionEmail(updated).catch(console.error);
     }
 
     res.json([updated]);
