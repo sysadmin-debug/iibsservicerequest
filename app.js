@@ -133,9 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let emails = [];
     if (batch === 'UG') {
-      emails = ['drakshayini@iibsonline.com', 'hajira@iibsonline.com', 'rakesh@iibsonline.com'];
+      emails = ['drakshayini@iibsonline.com', 'hajira@iibsonline.com', 'rakesh@iibsonline.com', 'sysadmin@iibsonline.com'];
     } else if (batch === 'PGDM' || batch === 'MBA') {
-      emails = ['prof.arun.k@iibsonline.com', 'b.charith@iibsonline.com', 'prof.robby@iibsonline.com', 'saketh.k@iibsonline.com'];
+      emails = ['prof.arun.k@iibsonline.com', 'b.charith@iibsonline.com', 'prof.robby@iibsonline.com', 'saketh.k@iibsonline.com', 'sysadmin@iibsonline.com'];
     }
     
     emails.forEach(email => {
