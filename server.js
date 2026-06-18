@@ -176,8 +176,17 @@ app.post(['/api/tickets', '/tickets'], async (req, res) => {
           </div>
         `
       };
-      if (process.env.GMAIL_USER) {
-        await transporter.sendMail(mailOptions).catch(err => console.error('Error sending CCTV approval email:', err));
+      if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+        try {
+          await transporter.sendMail(mailOptions);
+        } catch (err) {
+          console.error('Error sending CCTV approval email:', err);
+          newTicket.resolution = `[System Error: Failed to send email to ${req.body.cctvApprover} - ${err.message}]\n` + (newTicket.resolution || '');
+          await newTicket.save();
+        }
+      } else {
+        newTicket.resolution = `[System Error: GMAIL_USER or GMAIL_PASS environment variables are NOT set on Vercel. Email was not sent.]\n` + (newTicket.resolution || '');
+        await newTicket.save();
       }
     }
 
