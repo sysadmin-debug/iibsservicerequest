@@ -105,17 +105,46 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('cctvTime').required = true;
         document.getElementById('cctvDate').required = true;
         document.getElementById('cctvPlace').required = true;
+        document.getElementById('cctvBatch').required = true;
+        document.getElementById('cctvApprover').required = true;
       } else {
         if (cctvGroup) cctvGroup.style.display = 'none';
         const t = document.getElementById('cctvTime');
         const d = document.getElementById('cctvDate');
         const p = document.getElementById('cctvPlace');
+        const b = document.getElementById('cctvBatch');
+        const a = document.getElementById('cctvApprover');
         if (t) t.required = false;
         if (d) d.required = false;
         if (p) p.required = false;
+        if (b) b.required = false;
+        if (a) a.required = false;
       }
     });
   }
+
+  // ===== CCTV Approvers Update =====
+  window.updateCctvApprovers = function() {
+    const batch = document.getElementById('cctvBatch').value;
+    const approverSelect = document.getElementById('cctvApprover');
+    approverSelect.innerHTML = '<option value="" disabled selected>-- Select Approver --</option>';
+    
+    if (!batch) return;
+    
+    let emails = [];
+    if (batch === 'UG') {
+      emails = ['drakshayini@iibsonline.com', 'hajira@iibsonline.com', 'rakesh@iibsonline.com'];
+    } else if (batch === 'PGDM' || batch === 'MBA') {
+      emails = ['prof.arun.k@iibsonline.com', 'b.charith@iibsonline.com', 'prof.robby@iibsonline.com', 'saketh.k@iibsonline.com'];
+    }
+    
+    emails.forEach(email => {
+      const opt = document.createElement('option');
+      opt.value = email;
+      opt.textContent = email;
+      approverSelect.appendChild(opt);
+    });
+  };
 
   // ===== Department Toggle Based on Role =====
   const userRoleEl = document.getElementById('userRole');
@@ -179,13 +208,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const tempId = `TKT-${dateStr.getTime().toString().substring(5)}`;
 
       let otherReqText = document.getElementById('otherRequest')?.value.trim() || '';
+      let cctvApproverEmail = '';
       
       // If CCTV, concatenate the details
       if (document.getElementById('ticketType').value === 'CCTV Footage Checking') {
         const cTime = document.getElementById('cctvTime')?.value || 'N/A';
         const cDate = document.getElementById('cctvDate')?.value || 'N/A';
         const cPlace = document.getElementById('cctvPlace')?.value || 'N/A';
-        otherReqText = `Date: ${cDate} | Time: ${cTime} | Place: ${cPlace}`;
+        const cBatch = document.getElementById('cctvBatch')?.value || 'N/A';
+        cctvApproverEmail = document.getElementById('cctvApprover')?.value || '';
+        otherReqText = `Date: ${cDate} | Time: ${cTime} | Place: ${cPlace} | Batch: ${cBatch} | Approver: ${cctvApproverEmail}`;
       }
 
       const roleValue = document.getElementById('userRole').value;
@@ -205,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
         email: document.getElementById('userEmail').value.trim(),
         ticket_type: document.getElementById('ticketType').value,
         other_request: otherReqText,
+        cctvApprover: cctvApproverEmail, // Added for backend to use
         status: 'open',
         resolution: ''
       };

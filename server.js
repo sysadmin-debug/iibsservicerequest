@@ -156,9 +156,61 @@ app.post(['/api/tickets', '/tickets'], async (req, res) => {
   try {
     const newTicket = new Ticket(req.body);
     await newTicket.save();
+    
+    // --- CCTV APPROVAL EMAIL ---
+    if (req.body.ticket_type === 'CCTV Footage Checking' && req.body.cctvApprover) {
+      const approveUrl = `https://${req.headers.host || 'iibsservicerequest.vercel.app'}/api/tickets/approve/${newTicket.ticket_id}`;
+      const mailOptions = {
+        from: `"IIBS IT Helpdesk" <${process.env.GMAIL_USER}>`,
+        to: req.body.cctvApprover,
+        subject: `ACTION REQUIRED: CCTV Footage Approval - ${newTicket.ticket_id}`,
+        html: `
+          <div style="font-family: Arial; padding: 20px; color: #333; border: 1px solid #ddd; max-width: 500px; border-radius: 8px;">
+            <h2 style="color: #0f172a;">CCTV Footage Request</h2>
+            <p><strong>Requested By:</strong> ${newTicket.name} (${newTicket.department || newTicket.course})</p>
+            <p style="background: #f1f5f9; padding: 10px; border-left: 3px solid #3b82f6;"><strong>Details:</strong><br/>${newTicket.other_request}</p>
+            <br/>
+            <p>Please review this request. Click the button below to authorize the IT department to provide the footage.</p>
+            <br/>
+            <a href="${approveUrl}" style="background-color: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Approve Request</a>
+          </div>
+        `
+      };
+      if (process.env.GMAIL_USER) {
+        transporter.sendMail(mailOptions).catch(err => console.error('Error sending CCTV approval email:', err));
+      }
+    }
+
     res.status(201).json([newTicket]); 
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/tickets/approve/:ticket_id', async (req, res) => {
+  try {
+    const ticketId = req.params.ticket_id;
+    const ticket = await Ticket.findOne({ ticket_id: ticketId });
+    
+    if (!ticket) {
+      return res.status(404).send('<h1>Ticket not found</h1>');
+    }
+    
+    const existingRes = ticket.resolution || '';
+    if (!existingRes.includes('✅ APPROVED for CCTV Check')) {
+      ticket.resolution = `✅ APPROVED for CCTV Check.\n\n${existingRes}`;
+      await ticket.save();
+    }
+    
+    res.send(`
+      <div style="font-family: Arial; padding: 40px; text-align: center; color: #333;">
+        <h1 style="color: #10b981;">Success!</h1>
+        <p>You have successfully approved the CCTV footage request for Ticket <strong>${ticketId}</strong>.</p>
+        <p>The IT team has been authorized.</p>
+      </div>
+    `);
+  } catch (err) {
+    res.status(500).send('<h1>Error approving request</h1>');
   }
 });
 
