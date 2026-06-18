@@ -97,21 +97,25 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 0.95rem;
+      page-break-inside: auto !important;
     }
 
     .report-table thead {
-      display: table-header-group;
+      display: table-header-group !important;
     }
 
     .report-table tr {
-      page-break-inside: avoid;
-      break-inside: avoid;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+      page-break-after: auto !important;
     }
 
     .report-table th, .report-table td {
       border: 1px solid #e2e8f0;
       padding: 0.75rem 1rem;
       text-align: left;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
     }
 
     .report-table th {
