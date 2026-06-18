@@ -157,39 +157,8 @@ app.post(['/api/tickets', '/tickets'], async (req, res) => {
     const newTicket = new Ticket(req.body);
     await newTicket.save();
     
-    // --- CCTV APPROVAL EMAIL ---
-    if (req.body.ticket_type === 'CCTV Footage Checking' && req.body.cctvApprover) {
-      const approveUrl = `https://${req.headers.host || 'iibsservicerequest.vercel.app'}/api/tickets/approve/${newTicket.ticket_id}`;
-      const mailOptions = {
-        from: `"IIBS IT Helpdesk" <${process.env.GMAIL_USER}>`,
-        to: req.body.cctvApprover,
-        subject: `ACTION REQUIRED: CCTV Footage Approval - ${newTicket.ticket_id}`,
-        html: `
-          <div style="font-family: Arial; padding: 20px; color: #333; border: 1px solid #ddd; max-width: 500px; border-radius: 8px;">
-            <h2 style="color: #0f172a;">CCTV Footage Request</h2>
-            <p><strong>Requested By:</strong> ${newTicket.name} (${newTicket.department || newTicket.course})</p>
-            <p style="background: #f1f5f9; padding: 10px; border-left: 3px solid #3b82f6;"><strong>Details:</strong><br/>${newTicket.other_request}</p>
-            <br/>
-            <p>Please review this request. Click the button below to authorize the IT department to provide the footage.</p>
-            <br/>
-            <a href="${approveUrl}" style="background-color: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Approve Request</a>
-          </div>
-        `
-      };
-      if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
-        try {
-          await transporter.sendMail(mailOptions);
-        } catch (err) {
-          console.error('Error sending CCTV approval email:', err);
-          newTicket.resolution = `[System Error: Failed to send email to ${req.body.cctvApprover} - ${err.message}]\n` + (newTicket.resolution || '');
-          await newTicket.save();
-        }
-      } else {
-        newTicket.resolution = `[System Error: GMAIL_USER or GMAIL_PASS environment variables are NOT set on Vercel. Email was not sent.]\n` + (newTicket.resolution || '');
-        await newTicket.save();
-      }
-    }
-
+    // Note: CCTV approval is now handled manually via the admin portal link generation.
+    
     res.status(201).json([newTicket]); 
   } catch (error) {
     res.status(500).json({ error: error.message });

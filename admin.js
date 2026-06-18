@@ -230,6 +230,21 @@ document.addEventListener('DOMContentLoaded', () => {
       ? ticket.otherRequest
       : ticket.ticketType;
 
+    let cctvApprovalBtn = '';
+    if (ticket.ticketType === 'CCTV Footage Checking') {
+      const approveUrl = `https://${window.location.host}/api/tickets/approve/${ticket.id}`;
+      cctvApprovalBtn = `
+        <div style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <strong style="display: block; margin-bottom: 0.5rem; color: #0f172a;">Manual Approval Link:</strong>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" readonly value="${approveUrl}" style="flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem;" id="approvalLinkText_${ticket.id}" />
+            <button type="button" class="btn" style="padding: 0.5rem 1rem;" onclick="navigator.clipboard.writeText(document.getElementById('approvalLinkText_${ticket.id}').value); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy Link', 2000);">Copy Link</button>
+          </div>
+          <small style="display: block; margin-top: 0.5rem; color: #64748b;">Copy and send this link to the approver via WhatsApp or Email. Once they click it, the ticket will be approved.</small>
+        </div>
+      `;
+    }
+
     document.getElementById('detailModalTitle').textContent = `Ticket ${ticket.id}`;
     document.getElementById('detailModalBody').innerHTML = `
       <div style="margin-bottom: 1rem;">
@@ -251,6 +266,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ${ticket.attendedBy ? `<div style="grid-column: 1 / -1; color: #4f46e5;"><strong>Attended By:</strong> ${ticket.attendedBy}</div>` : ''}
       </div>
       
+      ${cctvApprovalBtn}
+
       ${ticket.resolution ? `
         <div style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-left: 3px solid #10b981; border-radius: 4px;">
           <h4 style="margin-bottom: 0.25rem; color: #10b981; font-size: 0.9rem;">Resolution</h4>
