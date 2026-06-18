@@ -80,7 +80,6 @@
 
     .batch-section {
       margin-bottom: 3rem;
-      page-break-inside: avoid;
     }
 
     .batch-title {
@@ -90,12 +89,23 @@
       margin-bottom: 1rem;
       border-bottom: 1px solid #cbd5e1;
       padding-bottom: 0.5rem;
+      page-break-after: avoid;
+      break-after: avoid;
     }
 
     .report-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.95rem;
+    }
+
+    .report-table thead {
+      display: table-header-group;
+    }
+
+    .report-table tr {
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     .report-table th, .report-table td {
