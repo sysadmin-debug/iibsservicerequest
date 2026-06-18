@@ -1340,8 +1340,8 @@ footer {
 }
 
 @media print {
-  /* Hide everything except the ticket detail modal */
-  body > *:not(#ticketDetailModal) {
+  /* Hide everything except the ticket detail modal on the admin page */
+  body.admin-page > *:not(#ticketDetailModal) {
     display: none !important;
   }
 
