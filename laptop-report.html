@@ -356,6 +356,14 @@
 
       // Filter data
       let filtered = allData;
+      
+      // Remove dummy header rows that were imported from Excel page breaks
+      filtered = filtered.filter(item => {
+        if (!item.name) return true;
+        const lowerName = item.name.trim().toLowerCase();
+        return lowerName !== 'student name' && lowerName !== 'student name ';
+      });
+
       if (statusFilter !== 'All') {
         filtered = filtered.filter(item => item.status === statusFilter);
       }
