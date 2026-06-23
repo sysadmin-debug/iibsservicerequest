@@ -46,7 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
         otherRequest: row.other_request || '',
         status: row.status,
         resolution: row.resolution || '',
-        attendedBy: row.attended_by || ''
+        attendedBy: row.attended_by || '',
+        approvalMailSent: row.approval_mail_sent || false,
+        cctvApproverEmail: row.cctv_approver_email || ''
       }));
       
       renderStats();
@@ -176,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="ticket-id">${t.id}</span>
               <span class="badge badge-${t.status}">${formatStatus(t.status)}</span>
               <span class="badge badge-category">${t.ticketType}</span>
+              ${t.ticketType === 'CCTV Footage Checking' && t.approvalMailSent && t.status === 'open' ? `<span class="badge" style="background: #fef3c7; color: #b45309;">Pending Approval</span>` : ''}
             </div>
             <!-- Visual indicator that it's clickable -->
             <i data-lucide="chevron-right" style="color: var(--text-secondary); width: 20px; height: 20px;"></i>
@@ -235,6 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="margin-bottom: 1rem;">
         <span class="badge badge-${ticket.status}" style="margin-right: 0.5rem;">${formatStatus(ticket.status)}</span>
         <span class="badge badge-category">${ticket.ticketType}</span>
+        ${ticket.ticketType === 'CCTV Footage Checking' && ticket.approvalMailSent ? 
+          (ticket.status === 'approved' ? `<div style="background-color: #ecfdf5; color: #047857; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 4px solid #10b981; display: flex; align-items: center; gap: 8px;"><i data-lucide="check-circle" style="width: 18px; height: 18px;"></i> Approved by: <strong>${ticket.cctvApproverEmail || 'Approver'}</strong></div>` : 
+           ticket.status === 'rejected' ? `<div style="background-color: #fef2f2; color: #b91c1c; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 4px solid #ef4444; display: flex; align-items: center; gap: 8px;"><i data-lucide="x-circle" style="width: 18px; height: 18px;"></i> Rejected by: <strong>${ticket.cctvApproverEmail || 'Approver'}</strong></div>` :
+           `<div style="background-color: #fffbeb; color: #b45309; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 4px solid #f59e0b; display: flex; align-items: center; gap: 8px;"><i data-lucide="mail" style="width: 18px; height: 18px;"></i> Pending Approval from: <strong>${ticket.cctvApproverEmail || 'Approver'}</strong></div>`) 
+        : ''}
       </div>
       <p style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 1rem; font-weight: 500;">${desc}</p>
       
@@ -523,6 +531,8 @@ document.addEventListener('DOMContentLoaded', () => {
       fetchTicketsFromSupabase();
     } else if (tabId === 'inventory') {
       fetchInventoryFromSupabase();
+    } else if (tabId === 'vendor') {
+      fetchVendorReports();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -580,7 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Create CSV content
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Ticket ID,Name,IIBS ID,Role,Department,Course,Classroom,Contact,Email,Ticket Type,Details/Other Request,Status,Date Submitted,Resolution\n";
+    csvContent += "Ticket ID,Name,IIBS ID,Role,Department,Course,Classroom,Contact,Email,Ticket Type,Details/Other Request,Status,Date Submitted,Work Details / Resolution\n";
     
     tickets.forEach(t => {
       // Helper to escape commas, quotes, and newlines
@@ -1055,6 +1065,134 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
+
+  // ===== Vendor Report Form Submission & Management =====
+  let vendorReports = [];
+  const addVendorModal = document.getElementById('addVendorModal');
+  const addVendorBtn = document.getElementById('addVendorBtn');
+  const vendorModalCloseBtn = document.getElementById('vendorModalCloseBtn');
+  const vendorReportForm = document.getElementById('vendorReportForm');
+  const vendorSubmitBtn = document.getElementById('vendorSubmitBtn');
+
+  if (addVendorBtn) addVendorBtn.addEventListener('click', () => addVendorModal?.classList.add('visible'));
+  if (vendorModalCloseBtn) vendorModalCloseBtn.addEventListener('click', () => addVendorModal?.classList.remove('visible'));
+  
+  if (addVendorModal) {
+    addVendorModal.addEventListener('click', (e) => {
+      if (e.target === addVendorModal) addVendorModal.classList.remove('visible');
+    });
+  }
+
+  async function fetchVendorReports() {
+    try {
+      const res = await fetch('/api/vendor-report');
+      if (!res.ok) throw new Error('API failed');
+      const data = await res.json();
+      vendorReports = data || [];
+      renderVendorReports();
+    } catch (err) {
+      console.error('Error fetching vendor reports:', err);
+      document.getElementById('vendorListContainer').innerHTML = `
+        <div class="empty-state">
+          <i data-lucide="alert-triangle" style="color: var(--accent-rose);"></i>
+          <p>Unable to load vendor reports.</p>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+  }
+
+  function renderVendorReports() {
+    const list = document.getElementById('vendorListContainer');
+    if (!list) return;
+
+    if (vendorReports.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <i data-lucide="file-check"></i>
+          <p>No vendor reports found</p>
+          <small>Click "Add Service Entry" to log a new report</small>
+        </div>
+      `;
+      lucide.createIcons();
+      return;
+    }
+
+    list.innerHTML = vendorReports.map(report => {
+      let dateString = report.service_date;
+      try {
+        dateString = new Date(report.service_date).toLocaleDateString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric'
+        });
+      } catch(e) {}
+
+      return `
+        <div class="ticket-item" style="display: flex; flex-direction: column; gap: 0.5rem; cursor: default;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <span class="badge badge-resolved" style="margin-bottom: 0.5rem;"><i data-lucide="check-circle" style="width: 12px; height: 12px; display: inline-block; margin-right: 4px;"></i> Completed</span>
+              <div class="ticket-subject" style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.2rem;">${report.vendor_name}</div>
+              <div style="color: var(--text-secondary); font-size: 0.9rem;"><i data-lucide="mail" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${report.vendor_email}</div>
+            </div>
+            <div style="text-align: right; color: var(--text-secondary); font-size: 0.9rem;">
+              <div style="font-weight: 600; color: var(--text-primary);"><i data-lucide="calendar" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${dateString}</div>
+              <div style="margin-top: 0.2rem;"><i data-lucide="user" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${report.contact_person}</div>
+            </div>
+          </div>
+          <div style="background: var(--bg-secondary); padding: 0.8rem; border-radius: 6px; margin-top: 0.5rem;">
+            <div style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.4rem;"><strong>Service Details:</strong><br>${report.service_details}</div>
+            ${report.remarks ? `<div style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Remarks:</strong> ${report.remarks}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    lucide.createIcons();
+  }
+
+  if (vendorReportForm) {
+    vendorReportForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (vendorSubmitBtn) {
+        vendorSubmitBtn.innerHTML = '<i data-lucide="loader" class="spin"></i> Sending...';
+        vendorSubmitBtn.disabled = true;
+      }
+
+      const payload = {
+        vendor_name: document.getElementById('vendorName').value.trim(),
+        vendor_email: document.getElementById('vendorEmail').value.trim(),
+        service_date: document.getElementById('vendorDate').value,
+        contact_person: document.getElementById('vendorContact').value.trim(),
+        service_details: document.getElementById('vendorDetails').value.trim(),
+        remarks: document.getElementById('vendorRemarks').value.trim()
+      };
+
+      try {
+        const res = await fetch('/api/vendor-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error('Failed to submit vendor report');
+
+        alert('Vendor Report saved and email sent successfully!');
+        vendorReportForm.reset();
+        addVendorModal?.classList.remove('visible');
+        fetchVendorReports();
+      } catch (err) {
+        console.error('Error submitting vendor report:', err);
+        alert('Failed to submit vendor report. Please check the connection.');
+      } finally {
+        if (vendorSubmitBtn) {
+          vendorSubmitBtn.innerHTML = '<i data-lucide="send" style="width: 18px; height: 18px;"></i> Save & Send Email';
+          vendorSubmitBtn.disabled = false;
+          lucide.createIcons();
+        }
+      }
+    });
+  }
 
   // ===== Init =====
   fetchTicketsFromSupabase();

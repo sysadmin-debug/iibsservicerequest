@@ -52,7 +52,7 @@ async function sendResolutionEmail(ticket) {
           </div>
           
           <h4 style="color: #334155; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">We Value Your Feedback!</h4>
-          <p style="font-size: 0.95rem;">Please reply directly to this email to let us know if the issue is completely resolved to your satisfaction, or if you need any further assistance regarding this matter.</p>
+          <p style="font-size: 0.95rem;">Please reply directly to this email with your feedback.</p>
           
           <p style="margin-top: 30px; font-size: 0.9rem; color: #64748b;">
             Best Regards,<br/>
@@ -109,6 +109,8 @@ const ticketSchema = new mongoose.Schema({
   status: { type: String, default: 'open' },
   resolution: String,
   attended_by: String,
+  cctv_approver_email: String,
+  approval_mail_sent: { type: Boolean, default: false },
   created_at: { type: Date, default: Date.now }
 });
 const Ticket = mongoose.model('Ticket', ticketSchema);
@@ -147,6 +149,17 @@ const laptopEligibilitySchema = new mongoose.Schema({
 });
 const LaptopEligibility = mongoose.models.LaptopEligibility || mongoose.model('LaptopEligibility', laptopEligibilitySchema);
 
+const vendorReportSchema = new mongoose.Schema({
+  vendor_name: { type: String, required: true },
+  vendor_email: { type: String, required: true },
+  service_date: { type: Date, required: true },
+  service_details: { type: String, required: true },
+  contact_person: { type: String, required: true },
+  remarks: { type: String, default: '' },
+  created_at: { type: Date, default: Date.now }
+});
+const VendorReport = mongoose.models.VendorReport || mongoose.model('VendorReport', vendorReportSchema);
+
 // =======================
 // API ENDPOINTS
 // =======================
@@ -183,6 +196,9 @@ app.post(['/api/tickets', '/tickets'], async (req, res) => {
       if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
         try {
           await transporter.sendMail(mailOptions);
+          newTicket.cctv_approver_email = req.body.cctvApprover;
+          newTicket.approval_mail_sent = true;
+          await newTicket.save();
         } catch (err) {
           console.error('Error sending CCTV approval email:', err);
           newTicket.resolution = `[System Error: Failed to send email to ${req.body.cctvApprover} - ${err.message}]\n` + (newTicket.resolution || '');
@@ -271,9 +287,11 @@ app.post('/api/tickets/approve/:ticket_id', async (req, res) => {
     if (action === 'approve') {
       ticket.status = 'approved';
       ticket.resolution = `✅ APPROVED for CCTV Check${remarkText}\n\n${existingRes}`;
+      if (ticket.cctv_approver_email) ticket.attended_by = ticket.cctv_approver_email;
     } else if (action === 'reject') {
       ticket.status = 'rejected';
       ticket.resolution = `❌ REJECTED for CCTV Check${remarkText}\n\n${existingRes}`;
+      if (ticket.cctv_approver_email) ticket.attended_by = ticket.cctv_approver_email;
     }
 
     await ticket.save();
@@ -525,6 +543,76 @@ app.post('/api/laptop/import', async (req, res) => {
       }
     }
     res.json({ success: true, inserted });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// --- VENDOR REPORT ---
+
+app.get('/api/vendor-report', async (req, res) => {
+  try {
+    const reports = await VendorReport.find().sort({ created_at: -1 });
+    res.json(reports);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/vendor-report', async (req, res) => {
+  try {
+    const { vendor_name, vendor_email, service_date, service_details, contact_person, remarks } = req.body;
+    
+    const newReport = new VendorReport({
+      vendor_name,
+      vendor_email,
+      service_date,
+      service_details,
+      contact_person,
+      remarks
+    });
+    await newReport.save();
+
+    // Send email to vendor
+    if (process.env.GMAIL_USER && process.env.GMAIL_PASS && vendor_email) {
+      const mailOptions = {
+        from: `"IIBS IT Department" <${process.env.GMAIL_USER}>`,
+        to: vendor_email,
+        subject: `Service Report - IIBS IT Department`,
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+            <div style="background-color: #0f172a; padding: 20px; text-align: center;">
+              <h2 style="color: #fff; margin: 0;">IIBS IT Service Report</h2>
+            </div>
+            <div style="padding: 20px;">
+              <p>Dear <strong>${vendor_name}</strong>,</p>
+              <p>Thank you for providing service at IIBS. Please find the details of the service entry below:</p>
+              
+              <div style="background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                <p style="margin: 0 0 10px 0;"><strong>Date of Service:</strong> ${new Date(service_date).toLocaleDateString('en-IN')}</p>
+                <p style="margin: 0 0 10px 0;"><strong>Contact Person:</strong> ${contact_person}</p>
+                <p style="margin: 0 0 10px 0;"><strong>Service Details:</strong><br/> ${service_details}</p>
+                <p style="margin: 0;"><strong>Remarks:</strong><br/> ${remarks || 'None'}</p>
+              </div>
+              
+              <p style="margin-top: 30px; font-size: 0.9rem; color: #64748b;">
+                Best Regards,<br/>
+                <strong>IIBS IT Department</strong>
+              </p>
+            </div>
+          </div>
+        `
+      };
+      
+      try {
+        await transporter.sendMail(mailOptions);
+        console.log(\`Vendor report email sent to \${vendor_email}\`);
+      } catch (err) {
+        console.error('Error sending vendor report email:', err);
+      }
+    }
+
+    res.status(201).json({ success: true, report: newReport });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -33,6 +33,7 @@
         <a href="#" data-tab="track"><i data-lucide="search" class="nav-icon"></i> Track Tickets</a>
         <a href="#" data-tab="inventory"><i data-lucide="box" class="nav-icon"></i> Stock Register</a>
         <a href="laptop-report.html"><i data-lucide="file-text" class="nav-icon"></i> Laptop Report</a>
+        <a href="#" data-tab="vendor"><i data-lucide="file-check" class="nav-icon"></i> Vendor Report</a>
         <a href="#" data-tab="help"><i data-lucide="life-buoy" class="nav-icon"></i> Help</a>
       </nav>
       <button class="mobile-menu-btn" id="mobileMenuBtn">
@@ -379,6 +380,26 @@
       </div>
     </div>
 
+    <!-- TAB: VENDOR REPORT -->
+    <div id="vendor" class="tab-content">
+      <div class="track-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2><i data-lucide="file-check" class="section-icon"></i> Vendor Report</h2>
+          <p>Track history of vendor service visits and log new service entries.</p>
+        </div>
+        <button id="addVendorBtn" class="btn-primary" style="margin-bottom: 0;">
+          <i data-lucide="plus"></i> Add Service Entry
+        </button>
+      </div>
+
+      <div class="ticket-list" id="vendorListContainer" style="margin-top: 1.5rem;">
+        <div class="empty-state">
+          <i data-lucide="loader" class="spin"></i>
+          <p>Loading vendor reports...</p>
+        </div>
+      </div>
+    </div>
+
     <!-- TAB: HELP -->
     <div id="help" class="tab-content">
       <div class="help-container">
@@ -492,7 +513,7 @@
         </select>
 
         <label>Work Details / Resolution:</label>
-        <input type="text" id="detailResolutionInput" placeholder="Enter work details or resolution..." style="margin-bottom: 1rem;">
+        <textarea id="detailResolutionInput" placeholder="Enter work details or resolution..." style="margin-bottom: 1rem; resize: vertical;" rows="4"></textarea>
       </div>
       <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
         <button class="btn-secondary" id="detailPrintBtn" style="margin-right: auto;"><i data-lucide="printer"></i> Print</button>
@@ -610,6 +631,55 @@
       <div style="display: flex; gap: 10px; justify-content: flex-end;">
         <button class="btn-secondary" id="historyCloseBtn">Close</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Add Vendor Service Modal -->
+  <div class="modal-overlay" id="addVendorModal">
+    <div class="modal-content" style="max-width: 800px; text-align: left;">
+      <h2 style="margin-bottom: 0.5rem;"><i data-lucide="file-check" style="vertical-align: middle; margin-right: 8px;"></i>New Vendor Service Entry</h2>
+      <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">An email report will be sent to the vendor automatically.</p>
+      
+      <form id="vendorReportForm">
+        <div class="form-grid">
+          <div class="form-column">
+            <div class="form-group">
+              <label>Vendor/Company Name *</label>
+              <input type="text" id="vendorName" placeholder="e.g. Dell Services" required>
+            </div>
+            <div class="form-group">
+              <label>Vendor Email Address *</label>
+              <input type="email" id="vendorEmail" placeholder="support@dell.com" required>
+            </div>
+            <div class="form-group">
+              <label>Date of Service *</label>
+              <input type="date" id="vendorDate" required>
+            </div>
+          </div>
+
+          <div class="form-column">
+            <div class="form-group">
+              <label>Contact Person *</label>
+              <input type="text" id="vendorContact" placeholder="e.g. John Doe" required>
+            </div>
+            <div class="form-group">
+              <label>Service Details *</label>
+              <textarea id="vendorDetails" rows="4" placeholder="Describe the work performed..." required></textarea>
+            </div>
+            <div class="form-group">
+              <label>Remarks (Optional)</label>
+              <textarea id="vendorRemarks" rows="2" placeholder="Any additional notes or pending items..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
+          <button type="button" class="btn-secondary" id="vendorModalCloseBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="vendorSubmitBtn">
+            <i data-lucide="send" style="width: 18px; height: 18px;"></i> Save & Send Email
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
