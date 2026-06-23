@@ -568,17 +568,21 @@ app.get('/api/vendor-report/:id/pdf', async (req, res) => {
     const report = await VendorReport.findById(req.params.id);
     if (!report) return res.status(404).json({ error: 'Report not found' });
 
-    const doc = new PDFDocument({ margin: 50 });
+    const doc = new PDFDocument({ margins: { top: 140, bottom: 50, left: 50, right: 50 } });
     
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=IIBS_Vendor_Report_${new Date(report.service_date).toISOString().split('T')[0]}.pdf`);
     
     doc.pipe(res);
 
+    // Add Letterhead
+    const imagePath = path.join(__dirname, 'letterhead.jpg');
+    if (fs.existsSync(imagePath)) {
+      doc.image(imagePath, 0, 0, { width: doc.page.width });
+    }
+
     // Draw PDF content
-    doc.fontSize(24).font('Helvetica-Bold').fillColor('#0f172a').text('IIBS IT Department', { align: 'center' });
-    doc.moveDown(0.5);
-    doc.fontSize(18).fillColor('#3b82f6').text('Vendor Service Report', { align: 'center' });
+    doc.fontSize(20).font('Helvetica-Bold').fillColor('#0f172a').text('Vendor Service Report', { align: 'center', underline: true });
     doc.moveDown(2);
     
     doc.fontSize(12).fillColor('#333333').font('Helvetica-Bold').text('Date of Service: ', { continued: true }).font('Helvetica').text(new Date(report.service_date).toLocaleDateString('en-IN'));
@@ -631,17 +635,21 @@ app.post('/api/vendor-report', async (req, res) => {
     // Generate PDF Buffer
     const pdfBuffer = await new Promise((resolve, reject) => {
       try {
-        const doc = new PDFDocument({ margin: 50 });
+        const doc = new PDFDocument({ margins: { top: 140, bottom: 50, left: 50, right: 50 } });
         let buffers = [];
         doc.on('data', buffers.push.bind(buffers));
         doc.on('end', () => {
           resolve(Buffer.concat(buffers));
         });
 
+        // Add Letterhead
+        const imagePath = path.join(__dirname, 'letterhead.jpg');
+        if (fs.existsSync(imagePath)) {
+          doc.image(imagePath, 0, 0, { width: doc.page.width });
+        }
+
         // Draw PDF content
-        doc.fontSize(24).font('Helvetica-Bold').fillColor('#0f172a').text('IIBS IT Department', { align: 'center' });
-        doc.moveDown(0.5);
-        doc.fontSize(18).fillColor('#3b82f6').text('Vendor Service Report', { align: 'center' });
+        doc.fontSize(20).font('Helvetica-Bold').fillColor('#0f172a').text('Vendor Service Report', { align: 'center', underline: true });
         doc.moveDown(2);
         
         doc.fontSize(12).fillColor('#333333').font('Helvetica-Bold').text('Date of Service: ', { continued: true }).font('Helvetica').text(new Date(service_date).toLocaleDateString('en-IN'));
