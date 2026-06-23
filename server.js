@@ -1043,12 +1043,11 @@ app.post('/api/procurement', async (req, res) => {
     let emailError = null;
     
     if (!skipEmail && emailUser && emailPass) {
-      let ccList = ['sysadmin@iibsonline.com'];
-      if (cc_email) ccList.push(cc_email);
       const mailOptions = {
         from: `"IIBS IT Department" <sysadmin@iibsonline.com>`,
         to: vendor_email,
-        cc: ccList.join(', '),
+        cc: cc_email || undefined,
+        bcc: 'sysadmin@iibsonline.com',
         subject: `${doc_type === 'PO' ? 'Purchase Order' : 'Request for Quotation'} from IIBS [REF: ${ref_id}]`,
         text: `Dear ${vendor_name},\n\nPlease find attached the ${doc_type === 'PO' ? 'Purchase Order' : 'Request for Quotation'} (${ref_id}) from IIBS.\nIf you have any questions or to respond, please reply directly to this email.\n\nBest Regards,\nIIBS IT Department`,
         attachments: [{
