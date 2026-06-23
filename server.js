@@ -562,6 +562,55 @@ app.get('/api/vendor-report', async (req, res) => {
   }
 });
 
+// Download PDF route
+app.get('/api/vendor-report/:id/pdf', async (req, res) => {
+  try {
+    const report = await VendorReport.findById(req.params.id);
+    if (!report) return res.status(404).json({ error: 'Report not found' });
+
+    const doc = new PDFDocument({ margin: 50 });
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=IIBS_Vendor_Report_${new Date(report.service_date).toISOString().split('T')[0]}.pdf`);
+    
+    doc.pipe(res);
+
+    // Draw PDF content
+    doc.fontSize(24).font('Helvetica-Bold').fillColor('#0f172a').text('IIBS IT Department', { align: 'center' });
+    doc.moveDown(0.5);
+    doc.fontSize(18).fillColor('#3b82f6').text('Vendor Service Report', { align: 'center' });
+    doc.moveDown(2);
+    
+    doc.fontSize(12).fillColor('#333333').font('Helvetica-Bold').text('Date of Service: ', { continued: true }).font('Helvetica').text(new Date(report.service_date).toLocaleDateString('en-IN'));
+    doc.moveDown(0.5);
+    doc.font('Helvetica-Bold').text('Vendor Name: ', { continued: true }).font('Helvetica').text(report.vendor_name);
+    doc.moveDown(0.5);
+    doc.font('Helvetica-Bold').text('Contact Person: ', { continued: true }).font('Helvetica').text(report.contact_person);
+    doc.moveDown(0.5);
+    doc.font('Helvetica-Bold').text('Technician Name: ', { continued: true }).font('Helvetica').text(report.technician_name);
+    doc.moveDown(0.5);
+    doc.font('Helvetica-Bold').text('Vendor Email: ', { continued: true }).font('Helvetica').text(report.vendor_email);
+    doc.moveDown(1.5);
+    
+    doc.font('Helvetica-Bold').fontSize(14).text('Service Details:');
+    doc.moveDown(0.5);
+    doc.font('Helvetica').fontSize(12).text(report.service_details, { align: 'justify' });
+    doc.moveDown(1.5);
+
+    doc.font('Helvetica-Bold').fontSize(14).text('Remarks:');
+    doc.moveDown(0.5);
+    doc.font('Helvetica').fontSize(12).text(report.remarks || 'None', { align: 'justify' });
+    
+    doc.moveDown(4);
+    doc.text('-----------------------------------', { align: 'right' });
+    doc.text('IT Admin Signature / Stamp', { align: 'right' });
+    
+    doc.end();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/vendor-report', async (req, res) => {
   try {
     const { vendor_name, vendor_email, cc_email, service_date, service_details, contact_person, technician_name, remarks } = req.body;

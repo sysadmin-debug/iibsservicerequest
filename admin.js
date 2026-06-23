@@ -1140,9 +1140,13 @@ document.addEventListener('DOMContentLoaded', () => {
               <div style="margin-top: 0.2rem; color: #4f46e5;"><i data-lucide="wrench" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${report.technician_name}</div>
             </div>
           </div>
-          <div style="background: var(--bg-secondary); padding: 0.8rem; border-radius: 6px; margin-top: 0.5rem;">
-            <div style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.4rem;"><strong>Service Details:</strong><br>${report.service_details}</div>
-            ${report.remarks ? `<div style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Remarks:</strong> ${report.remarks}</div>` : ''}
+          <div style="background: var(--bg-secondary); padding: 0.8rem; border-radius: 6px; margin-top: 0.5rem; position: relative;">
+            <div style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.4rem; padding-right: 40px;"><strong>Service Details:</strong><br>${report.service_details}</div>
+            ${report.remarks ? `<div style="font-size: 0.9rem; color: var(--text-secondary); padding-right: 40px;"><strong>Remarks:</strong> ${report.remarks}</div>` : ''}
+            
+            <a href="/api/vendor-report/${report._id}/pdf" download class="btn-icon" style="position: absolute; right: 10px; top: 10px; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 4px; padding: 4px 8px; text-decoration: none; font-size: 0.8rem; background: #fff;" title="Download PDF">
+              <i data-lucide="download" style="width: 14px; height: 14px; vertical-align: middle;"></i> PDF
+            </a>
           </div>
         </div>
       `;
