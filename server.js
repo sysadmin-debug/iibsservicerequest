@@ -853,9 +853,13 @@ app.get('/api/procurement/:id/pdf', async (req, res) => {
     doc.moveDown(1.5);
     
     doc.font('Helvetica-Bold').text('Item Description', 50, doc.y, { width: 250, continued: true });
-    doc.text('Qty', 300, doc.y, { width: 50, continued: true, align: 'right' });
-    doc.text('Price', 350, doc.y, { width: 80, continued: true, align: 'right' });
-    doc.text('Total', 430, doc.y, { width: 80, align: 'right' });
+    if (report.doc_type === 'PO') {
+      doc.text('Qty', 300, doc.y, { width: 50, continued: true, align: 'right' });
+      doc.text('Price', 350, doc.y, { width: 80, continued: true, align: 'right' });
+      doc.text('Total', 430, doc.y, { width: 80, align: 'right' });
+    } else {
+      doc.text('Qty', 300, doc.y, { width: 50, align: 'right' });
+    }
     doc.moveDown(0.5);
     
     let startY = doc.y;
@@ -867,17 +871,22 @@ app.get('/api/procurement/:id/pdf', async (req, res) => {
       report.items.forEach(item => {
         let y = doc.y;
         doc.text(item.description, 50, y, { width: 250 });
-        doc.text(item.quantity.toString(), 300, y, { width: 50, align: 'right' });
-        doc.text((item.unit_price || 0).toFixed(2), 350, y, { width: 80, align: 'right' });
-        doc.text((item.total || 0).toFixed(2), 430, y, { width: 80, align: 'right' });
+        if (report.doc_type === 'PO') {
+          doc.text(item.quantity.toString(), 300, y, { width: 50, align: 'right' });
+          doc.text((item.unit_price || 0).toFixed(2), 350, y, { width: 80, align: 'right' });
+          doc.text((item.total || 0).toFixed(2), 430, y, { width: 80, align: 'right' });
+        } else {
+          doc.text(item.quantity.toString(), 300, y, { width: 50, align: 'right' });
+        }
         doc.moveDown(0.5);
       });
     }
     
     doc.moveDown(1);
-    doc.font('Helvetica-Bold').text(`Total Amount: Rs ${(report.total_amount || 0).toFixed(2)}`, { align: 'right' });
-    doc.moveDown(1.5);
-    
+    if (report.doc_type === 'PO') {
+      doc.font('Helvetica-Bold').text(`Total Amount: Rs ${(report.total_amount || 0).toFixed(2)}`, { align: 'right' });
+      doc.moveDown(1.5);
+    }
     if (report.remarks) {
       doc.text('Remarks:');
       doc.font('Helvetica').text(report.remarks);
