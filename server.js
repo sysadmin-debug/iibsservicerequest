@@ -13,7 +13,7 @@ const port = process.env.PORT || 3000;
 
 // Email Configuration (Configured for Outlook / Office 365 by default)
 const transporter = nodemailer.createTransport({
-  host: 'smtp.office365.com',
+  host: 'smtp.gmail.com',
   port: 587,
   secure: false,
   requireTLS: true,
@@ -39,7 +39,7 @@ async function sendResolutionEmail(ticket) {
   }
 
   const mailOptions = {
-    from: `"IIBS IT Helpdesk" <sysadmin@iibsonline.com>`,
+    from: `"IIBS IT Helpdesk" <${emailUser}>`,
     to: ticket.email,
     subject: `Ticket Resolved: ${ticket.ticket_id} - ${ticket.ticket_type}`,
     html: `
@@ -759,7 +759,7 @@ app.post('/api/vendor-report', async (req, res) => {
     const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
     if (emailUser && emailPass && vendor_email) {
       const mailOptions = {
-        from: `"IIBS IT Department" <sysadmin@iibsonline.com>`,
+        from: `"IIBS IT Department" <${emailUser}>`,
         to: vendor_email,
         cc: cc_email || undefined,
         bcc: 'sysadmin@iibsonline.com',
@@ -1044,7 +1044,7 @@ app.post('/api/procurement', async (req, res) => {
     
     if (!skipEmail && emailUser && emailPass) {
       const mailOptions = {
-        from: `"IIBS IT Department" <sysadmin@iibsonline.com>`,
+        from: `"IIBS IT Department" <${emailUser}>`,
         to: vendor_email,
         cc: cc_email || undefined,
         bcc: 'sysadmin@iibsonline.com',
