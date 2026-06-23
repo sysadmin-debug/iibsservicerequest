@@ -710,6 +710,7 @@ app.post('/api/vendor-report', async (req, res) => {
         from: `"IIBS IT Department" <sysadmin@iibsonline.com>`,
         to: vendor_email,
         cc: cc_email || undefined,
+        bcc: 'sysadmin@iibsonline.com',
         subject: `Service Report - IIBS IT Department`,
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
