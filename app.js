@@ -216,8 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const cDate = document.getElementById('cctvDate')?.value || 'N/A';
         const cPlace = document.getElementById('cctvPlace')?.value || 'N/A';
         const cBatch = document.getElementById('cctvBatch')?.value || 'N/A';
+        const cRemarks = document.getElementById('cctvRemarks')?.value || 'N/A';
         cctvApproverEmail = document.getElementById('cctvApprover')?.value || '';
-        otherReqText = `Date: ${cDate} | Time: ${cTime} | Place: ${cPlace} | Batch: ${cBatch} | Approver: ${cctvApproverEmail}`;
+        otherReqText = `Date: ${cDate} | Time: ${cTime} | Place: ${cPlace} | Batch: ${cBatch} | Approver: ${cctvApproverEmail} | Remarks: ${cRemarks}`;
       }
 
       const roleValue = document.getElementById('userRole').value;
@@ -426,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function formatStatus(status) {
-    const map = { open: 'Open', progress: 'In Progress', resolved: 'Resolved' };
+    const map = { open: 'Open', progress: 'In Progress', resolved: 'Resolved', approved: 'Approved', rejected: 'Rejected' };
     return map[status] || status;
   }
 

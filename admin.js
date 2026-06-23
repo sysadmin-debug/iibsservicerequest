@@ -1463,6 +1463,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a href="https://wa.me/?text=${waText}" target="_blank" class="btn-icon" style="color: #25D366; border: 1px solid #25D366; border-radius: 4px; padding: 4px 8px; text-decoration: none; font-size: 0.8rem; background: #fff; display: flex; align-items: center; gap: 4px;" title="Share via WhatsApp">
                   <i data-lucide="message-circle" style="width: 14px; height: 14px;"></i> WhatsApp
                 </a>
+                <button onclick="deleteProcurement('${doc._id}')" class="btn-icon" style="color: #ef4444; border: 1px solid #ef4444; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; background: #fff; display: flex; align-items: center; gap: 4px; cursor: pointer;" title="Delete Document">
+                  <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> Delete
+                </button>
               </div>
             </div>
           </div>
@@ -1500,4 +1503,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== Init =====
   fetchTicketsFromSupabase();
+  window.deleteProcurement = async function(id) {
+    if (!confirm('Are you sure you want to delete this procurement document? This action cannot be undone.')) return;
+    try {
+      const res = await fetch(`/api/procurement/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete document');
+      alert('Document deleted successfully');
+      fetchProcurement();
+    } catch (err) {
+      console.error(err);
+      alert(`Error: ${err.message}`);
+    }
+  };
+
 });

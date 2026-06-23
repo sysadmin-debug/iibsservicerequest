@@ -1395,7 +1395,8 @@ footer {
   }
 
   .ticket-action-box input, 
-  .ticket-action-box select {
+  .ticket-action-box select,
+  .ticket-action-box textarea {
     border: none !important;
     background: transparent !important;
     padding: 0 !important;

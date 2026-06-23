@@ -1067,6 +1067,17 @@ app.post('/api/procurement', async (req, res) => {
   }
 });
 
+// DELETE Procurement Document
+app.delete('/api/procurement/:id', async (req, res) => {
+  try {
+    const doc = await Procurement.findByIdAndDelete(req.params.id);
+    if (!doc) return res.status(404).json({ error: 'Document not found' });
+    res.json({ success: true, message: 'Document deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // IMAP Sync Route
 app.get('/api/procurement/sync', async (req, res) => {
   const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
