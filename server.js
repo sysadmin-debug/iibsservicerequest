@@ -16,11 +16,15 @@ const transporter = nodemailer.createTransport({
   host: 'smtp.office365.com',
   port: 587,
   secure: false,
-  requireTLS: true,
   auth: {
     user: process.env.EMAIL_USER || process.env.GMAIL_USER,
     pass: process.env.EMAIL_PASS || process.env.GMAIL_PASS
-  }
+  },
+  tls: {
+    ciphers: 'SSLv3',
+    rejectUnauthorized: false
+  },
+  authMethod: 'LOGIN'
 });
 
 // Function to send resolution email
@@ -39,7 +43,7 @@ async function sendResolutionEmail(ticket) {
   }
 
   const mailOptions = {
-    from: `"IIBS IT Helpdesk" <sysadmin@iibsonline.com>`,
+    from: `"IIBS IT Helpdesk" <${process.env.EMAIL_USER || process.env.GMAIL_USER}>`,
     to: ticket.email,
     subject: `Ticket Resolved: ${ticket.ticket_id} - ${ticket.ticket_type}`,
     html: `
@@ -759,7 +763,7 @@ app.post('/api/vendor-report', async (req, res) => {
     const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
     if (emailUser && emailPass && vendor_email) {
       const mailOptions = {
-        from: `"IIBS IT Department" <sysadmin@iibsonline.com>`,
+        from: `"IIBS IT Department" <${emailUser}>`,
         to: vendor_email,
         cc: cc_email || undefined,
         bcc: 'sysadmin@iibsonline.com',
@@ -1046,7 +1050,7 @@ app.post('/api/procurement', async (req, res) => {
       let ccList = ['sysadmin@iibsonline.com'];
       if (cc_email) ccList.push(cc_email);
       const mailOptions = {
-        from: `"IIBS IT Department" <sysadmin@iibsonline.com>`,
+        from: `"IIBS IT Department" <${emailUser}>`,
         to: vendor_email,
         cc: ccList.join(', '),
         subject: `${doc_type === 'PO' ? 'Purchase Order' : 'Request for Quotation'} from IIBS [REF: ${ref_id}]`,
