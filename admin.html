@@ -31,9 +31,10 @@
         <a href="#" class="active" data-tab="home"><i data-lucide="home" class="nav-icon"></i> Home</a>
         <a href="#" data-tab="newticket"><i data-lucide="plus-circle" class="nav-icon"></i> Raise Ticket</a>
         <a href="#" data-tab="track"><i data-lucide="search" class="nav-icon"></i> Track Tickets</a>
-        <a href="#" data-tab="inventory"><i data-lucide="box" class="nav-icon"></i> Stock Register</a>
-        <a href="laptop-report.html"><i data-lucide="file-text" class="nav-icon"></i> Laptop Report</a>
-        <a href="#" data-tab="vendor"><i data-lucide="file-check" class="nav-icon"></i> Vendor Report</a>
+        <a href="#" onclick="switchTab('inventory')"><i data-lucide="package"></i> Stock Register</a>
+        <a href="#" onclick="switchTab('vendor')"><i data-lucide="file-check"></i> Vendor Management</a>
+        <a href="#" onclick="switchTab('procurement')"><i data-lucide="shopping-cart"></i> Procurement</a>
+        <a href="#" onclick="logout()" style="color: #ef4444; margin-top: auto;"><i data-lucide="log-out"></i> Logout</a>
         <a href="#" data-tab="help"><i data-lucide="life-buoy" class="nav-icon"></i> Help</a>
       </nav>
       <button class="mobile-menu-btn" id="mobileMenuBtn">
@@ -400,6 +401,31 @@
       </div>
     </div>
 
+    <!-- TAB: PROCUREMENT -->
+    <div id="procurement" class="tab-content">
+      <div class="track-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h2><i data-lucide="shopping-cart" class="section-icon"></i> Procurement (PO / RFQ)</h2>
+          <p>Generate Purchase Orders, Quotation Requests, and track vendor email replies.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button id="syncRepliesBtn" class="btn-secondary" style="margin-bottom: 0;">
+            <i data-lucide="refresh-cw"></i> Sync Replies
+          </button>
+          <button id="addProcurementBtn" class="btn-primary" style="margin-bottom: 0;">
+            <i data-lucide="plus"></i> Create New
+          </button>
+        </div>
+      </div>
+
+      <div class="ticket-list" id="procurementListContainer" style="margin-top: 1.5rem;">
+        <div class="empty-state">
+          <i data-lucide="loader" class="spin"></i>
+          <p>Loading procurement records...</p>
+        </div>
+      </div>
+    </div>
+
     <!-- TAB: HELP -->
     <div id="help" class="tab-content">
       <div class="help-container">
@@ -698,6 +724,59 @@
       <p>&copy; 2026 IIBS – International Institute of Business. All rights reserved.</p>
     </div>
   </footer>
+  <!-- Add Procurement Modal -->
+  <div class="modal-overlay" id="addProcurementModal">
+    <div class="modal-content" style="max-width: 900px; text-align: left; max-height: 90vh; overflow-y: auto;">
+      <h2 style="margin-bottom: 0.5rem;"><i data-lucide="shopping-cart" style="vertical-align: middle; margin-right: 8px;"></i>Create Procurement Document</h2>
+      <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Generates a PDF and emails it directly to the vendor.</p>
+      
+      <form id="procurementForm">
+        <div class="form-grid">
+          <div class="form-column">
+            <div class="form-group">
+              <label>Document Type *</label>
+              <select id="procDocType" required>
+                <option value="RFQ">Request For Quotation (RFQ)</option>
+                <option value="PO">Purchase Order (PO)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Vendor / Company Name *</label>
+              <input type="text" id="procVendorName" list="vendorNamesList" required placeholder="e.g. Dell Services">
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="form-group">
+              <label>Vendor Email Address *</label>
+              <input type="email" id="procVendorEmail" placeholder="vendor@example.com" required>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0;">Line Items</h3>
+          <button type="button" class="btn-secondary" id="addProcItemBtn" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">
+            <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add Item
+          </button>
+        </div>
+
+        <div id="procItemsContainer">
+          <!-- Items will be injected here -->
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+          <label>Remarks / Notes (Optional)</label>
+          <textarea id="procRemarks" rows="2" placeholder="Any additional instructions..."></textarea>
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
+          <button type="button" class="btn-secondary" id="procModalCloseBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="procSubmitBtn">Generate & Send Email</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="admin.js"></script>
 </body>
 </html>

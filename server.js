@@ -11,18 +11,24 @@ const PDFDocument = require('pdfkit');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Email Configuration
+// Email Configuration (Configured for Outlook / Office 365 by default)
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.office365.com',
+  port: 587,
+  secure: false,
+  requireTLS: true,
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS
+    user: process.env.EMAIL_USER || process.env.GMAIL_USER,
+    pass: process.env.EMAIL_PASS || process.env.GMAIL_PASS
   }
 });
 
 // Function to send resolution email
 async function sendResolutionEmail(ticket) {
-  if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+  const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
+  const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
+
+  if (!emailUser || !emailPass) {
     console.warn('Email credentials not set. Skipping email notification.');
     return;
   }
@@ -124,6 +130,30 @@ const inventorySchema = new mongoose.Schema({
   last_updated: { type: Date, default: Date.now }
 });
 const Inventory = mongoose.model('Inventory', inventorySchema);
+
+const procurementSchema = new mongoose.Schema({
+  doc_type: { type: String, enum: ['RFQ', 'PO'], required: true },
+  ref_id: { type: String, unique: true, required: true },
+  vendor_name: { type: String, required: true },
+  vendor_email: { type: String, required: true },
+  date: { type: Date, default: Date.now },
+  items: [{
+    description: String,
+    quantity: Number,
+    unit_price: Number,
+    total: Number
+  }],
+  total_amount: Number,
+  remarks: String,
+  status: { type: String, default: 'Sent' },
+  replies: [{
+    date: Date,
+    from: String,
+    subject: String,
+    body: String
+  }]
+});
+const Procurement = mongoose.model('Procurement', procurementSchema);
 
 const stockLogSchema = new mongoose.Schema({
   id: { type: String, default: () => crypto.randomUUID(), unique: true },
@@ -705,7 +735,9 @@ app.post('/api/vendor-report', async (req, res) => {
     });
 
     // Send email to vendor with PDF attachment
-    if (process.env.GMAIL_USER && process.env.GMAIL_PASS && vendor_email) {
+    const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
+    const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
+    if (emailUser && emailPass && vendor_email) {
       const mailOptions = {
         from: `"IIBS IT Department" <sysadmin@iibsonline.com>`,
         to: vendor_email,
@@ -753,6 +785,185 @@ app.post('/api/vendor-report', async (req, res) => {
     }
 
     res.status(201).json({ success: true, report: newReport });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// =======================
+// PROCUREMENT ENDPOINTS
+// =======================
+
+app.get('/api/procurement', async (req, res) => {
+  try {
+    const records = await Procurement.find().sort({ date: -1 });
+    res.json(records);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/procurement', async (req, res) => {
+  try {
+    const { doc_type, vendor_name, vendor_email, items, remarks } = req.body;
+    
+    // Generate REF_ID
+    const count = await Procurement.countDocuments({ doc_type });
+    const ref_id = `${doc_type}-${1000 + count + 1}`;
+    
+    let total_amount = 0;
+    if (items && Array.isArray(items)) {
+      items.forEach(item => {
+        item.total = item.quantity * item.unit_price;
+        total_amount += item.total;
+      });
+    }
+
+    const newProc = new Procurement({
+      doc_type, ref_id, vendor_name, vendor_email, items, total_amount, remarks
+    });
+    await newProc.save();
+
+    // Generate PDF
+    const pdfBuffer = await new Promise((resolve, reject) => {
+      try {
+        const doc = new PDFDocument({ margins: { top: 140, bottom: 50, left: 50, right: 50 } });
+        let buffers = [];
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => resolve(Buffer.concat(buffers)));
+
+        const imagePath = path.join(__dirname, 'letterhead.jpg');
+        if (fs.existsSync(imagePath)) {
+          doc.image(imagePath, 0, 0, { width: doc.page.width });
+        }
+
+        const title = doc_type === 'PO' ? 'PURCHASE ORDER' : 'REQUEST FOR QUOTATION';
+        doc.fontSize(20).font('Helvetica-Bold').fillColor('#0f172a').text(title, { align: 'center', underline: true });
+        doc.moveDown(2);
+        
+        doc.fontSize(12).fillColor('#333333').font('Helvetica-Bold').text('Reference No: ', { continued: true }).font('Helvetica').text(ref_id);
+        doc.font('Helvetica-Bold').text('Date: ', { continued: true }).font('Helvetica').text(new Date().toLocaleDateString('en-IN'));
+        doc.moveDown(1);
+        doc.font('Helvetica-Bold').text('To: ', { continued: true }).font('Helvetica').text(vendor_name);
+        doc.moveDown(1.5);
+        
+        // Draw Items Table (simple)
+        doc.font('Helvetica-Bold').text('Item Description', 50, doc.y, { width: 250, continued: true });
+        doc.text('Qty', 300, doc.y, { width: 50, continued: true, align: 'right' });
+        doc.text('Price', 350, doc.y, { width: 80, continued: true, align: 'right' });
+        doc.text('Total', 430, doc.y, { width: 80, align: 'right' });
+        doc.moveDown(0.5);
+        
+        let startY = doc.y;
+        doc.moveTo(50, startY).lineTo(512, startY).stroke();
+        doc.moveDown(0.5);
+        
+        doc.font('Helvetica');
+        if (items && Array.isArray(items)) {
+          items.forEach(item => {
+            let y = doc.y;
+            doc.text(item.description, 50, y, { width: 250 });
+            doc.text(item.quantity.toString(), 300, y, { width: 50, align: 'right' });
+            doc.text(item.unit_price.toFixed(2), 350, y, { width: 80, align: 'right' });
+            doc.text(item.total.toFixed(2), 430, y, { width: 80, align: 'right' });
+            doc.moveDown(0.5);
+          });
+        }
+        
+        doc.moveDown(1);
+        doc.font('Helvetica-Bold').text(`Total Amount: Rs ${total_amount.toFixed(2)}`, { align: 'right' });
+        doc.moveDown(1.5);
+        
+        if (remarks) {
+          doc.text('Remarks:');
+          doc.font('Helvetica').text(remarks);
+          doc.moveDown(2);
+        }
+        
+        doc.moveDown(4);
+        doc.font('Helvetica-Bold').text('RAMESH A S', { align: 'right' });
+        doc.font('Helvetica').text('IT Admin', { align: 'right' });
+        doc.end();
+      } catch (err) { reject(err); }
+    });
+
+    // Send Email
+    const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
+    const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
+    if (emailUser && emailPass) {
+      const mailOptions = {
+        from: `"IIBS IT Department" <sysadmin@iibsonline.com>`,
+        to: vendor_email,
+        bcc: 'sysadmin@iibsonline.com',
+        subject: `${doc_type === 'PO' ? 'Purchase Order' : 'Request for Quotation'} from IIBS [REF: ${ref_id}]`,
+        text: `Dear ${vendor_name},\n\nPlease find attached the ${doc_type === 'PO' ? 'Purchase Order' : 'Request for Quotation'} (${ref_id}) from IIBS.\nIf you have any questions or to respond, please reply directly to this email.\n\nBest Regards,\nIIBS IT Department`,
+        attachments: [{
+          filename: `IIBS_${ref_id}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf'
+        }]
+      };
+      await transporter.sendMail(mailOptions);
+    }
+    res.json({ success: true, record: newProc });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// IMAP Sync Route
+app.get('/api/procurement/sync', async (req, res) => {
+  const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
+  const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
+
+  if (!emailUser || !emailPass) {
+    return res.status(400).json({ error: 'IMAP credentials not configured' });
+  }
+  
+  const { ImapFlow } = require('imapflow');
+  const simpleParser = require('mailparser').simpleParser;
+  
+  const client = new ImapFlow({
+    host: 'outlook.office365.com',
+    port: 993,
+    secure: true,
+    auth: { user: emailUser, pass: emailPass },
+    logger: false
+  });
+
+  try {
+    await client.connect();
+    let lock = await client.getMailboxLock('INBOX');
+    try {
+      // Fetch unread messages
+      let syncedCount = 0;
+      for await (let msg of client.fetch({ seen: false }, { source: true, envelope: true })) {
+        const subject = msg.envelope.subject || '';
+        // Look for [REF: PO-...] or [REF: RFQ-...]
+        const match = subject.match(/\[REF:\s*(PO-\d+|RFQ-\d+)\]/i);
+        if (match) {
+          const ref_id = match[1].toUpperCase();
+          const proc = await Procurement.findOne({ ref_id });
+          if (proc) {
+            const parsed = await simpleParser(msg.source);
+            proc.replies.push({
+              date: msg.envelope.date,
+              from: msg.envelope.from[0]?.address || 'Unknown',
+              subject: subject,
+              body: parsed.text || parsed.textAsHtml || 'No text content'
+            });
+            proc.status = 'Replied';
+            await proc.save();
+            syncedCount++;
+            await client.messageFlagsAdd(msg.seq, ['\\Seen']); // Mark as read
+          }
+        }
+      }
+      res.json({ success: true, synced: syncedCount });
+    } finally {
+      lock.release();
+    }
+    await client.logout();
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

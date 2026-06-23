@@ -534,6 +534,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (tabId === 'vendor') {
       fetchVendorReports();
       fetchSavedVendors();
+    } else if (tabId === 'procurement') {
+      fetchProcurement();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1229,6 +1231,187 @@ document.addEventListener('DOMContentLoaded', () => {
           vendorSubmitBtn.disabled = false;
           lucide.createIcons();
         }
+      }
+    });
+  }
+
+  // ===== PROCUREMENT MODULE =====
+  let procurementRecords = [];
+
+  const addProcBtn = document.getElementById('addProcurementBtn');
+  const addProcModal = document.getElementById('addProcurementModal');
+  const procModalCloseBtn = document.getElementById('procModalCloseBtn');
+  const procForm = document.getElementById('procurementForm');
+  const procItemsContainer = document.getElementById('procItemsContainer');
+  const addProcItemBtn = document.getElementById('addProcItemBtn');
+  const syncRepliesBtn = document.getElementById('syncRepliesBtn');
+
+  if (addProcBtn) addProcBtn.addEventListener('click', () => {
+    if (addProcModal) addProcModal.classList.add('visible');
+    if (procItemsContainer) {
+      procItemsContainer.innerHTML = '';
+      createLineItemRow();
+    }
+  });
+  if (procModalCloseBtn) procModalCloseBtn.addEventListener('click', () => {
+    if (addProcModal) addProcModal.classList.remove('visible');
+    if (procForm) procForm.reset();
+  });
+
+  window.createLineItemRow = function() {
+    if (!procItemsContainer) return;
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.gap = '10px';
+    row.style.marginBottom = '10px';
+    row.className = 'proc-item-row';
+    row.innerHTML = `
+      <input type="text" class="proc-item-desc" placeholder="Item Description" required style="flex: 3;">
+      <input type="number" class="proc-item-qty" placeholder="Qty" required min="1" style="flex: 1;">
+      <input type="number" class="proc-item-price" placeholder="Price" required min="0" step="0.01" style="flex: 1;">
+      <button type="button" class="btn-icon" style="color: #ef4444; border: 1px solid #ef4444; border-radius: 4px; padding: 0 8px;" onclick="this.parentElement.remove()">
+        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+      </button>
+    `;
+    procItemsContainer.appendChild(row);
+    lucide.createIcons();
+  }
+
+  if (addProcItemBtn) {
+    addProcItemBtn.addEventListener('click', window.createLineItemRow);
+  }
+
+  // Handle Procurement Auto-fill
+  const procVendorNameInput = document.getElementById('procVendorName');
+  if (procVendorNameInput) {
+    procVendorNameInput.addEventListener('input', (e) => {
+      const selected = savedVendors.find(v => v.vendor_name === e.target.value);
+      if (selected) {
+        document.getElementById('procVendorEmail').value = selected.vendor_email || '';
+      }
+    });
+  }
+
+  if (procForm) {
+    procForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('procSubmitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Generating PDF & Sending...';
+
+      const items = [];
+      document.querySelectorAll('.proc-item-row').forEach(row => {
+        items.push({
+          description: row.querySelector('.proc-item-desc').value,
+          quantity: parseInt(row.querySelector('.proc-item-qty').value),
+          unit_price: parseFloat(row.querySelector('.proc-item-price').value)
+        });
+      });
+
+      const payload = {
+        doc_type: document.getElementById('procDocType').value,
+        vendor_name: document.getElementById('procVendorName').value,
+        vendor_email: document.getElementById('procVendorEmail').value,
+        items,
+        remarks: document.getElementById('procRemarks').value
+      };
+
+      try {
+        const res = await fetch('/api/procurement', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Failed to create procurement doc');
+        alert('Document generated and emailed successfully!');
+        addProcModal.classList.remove('visible');
+        procForm.reset();
+        fetchProcurement();
+      } catch (err) {
+        console.error(err);
+        alert('Failed to send document.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Generate & Send Email';
+      }
+    });
+  }
+
+  async function fetchProcurement() {
+    try {
+      const res = await fetch('/api/procurement');
+      procurementRecords = await res.json();
+      renderProcurement();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  function renderProcurement() {
+    const container = document.getElementById('procurementListContainer');
+    if (!container) return;
+    if (procurementRecords.length === 0) {
+      container.innerHTML = `<div class="empty-state"><i data-lucide="file-x"></i><p>No procurement records found</p></div>`;
+      lucide.createIcons();
+      return;
+    }
+
+    container.innerHTML = procurementRecords.map(doc => {
+      const statusColor = doc.status === 'Replied' ? '#10b981' : '#f59e0b';
+      let repliesHtml = '';
+      if (doc.replies && doc.replies.length > 0) {
+        repliesHtml = `<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+          <h4 style="margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Email Replies:</h4>
+          ${doc.replies.map(r => `
+            <div style="background: #f1f5f9; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.85rem;">
+              <strong>From:</strong> ${r.from} <span style="color: #64748b; font-size: 0.8rem; margin-left: 10px;">${new Date(r.date).toLocaleString()}</span><br>
+              <div style="margin-top: 5px; white-space: pre-wrap;">${r.body}</div>
+            </div>
+          `).join('')}
+        </div>`;
+      }
+
+      return `
+        <div class="ticket-card" style="border-left: 4px solid ${doc.doc_type === 'PO' ? '#3b82f6' : '#8b5cf6'}">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div class="ticket-id">${doc.ref_id} &bull; ${new Date(doc.date).toLocaleDateString()}</div>
+              <div class="ticket-subject" style="font-size: 1.15rem; margin-bottom: 0.2rem;">${doc.vendor_name}</div>
+              <div style="font-size: 0.9rem; color: var(--text-secondary);"><i data-lucide="mail" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${doc.vendor_email}</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="badge" style="background-color: ${statusColor}20; color: ${statusColor}; margin-bottom: 5px; display: inline-block;">${doc.status}</span>
+              <div style="font-weight: 600; color: var(--text-primary);">₹${doc.total_amount.toLocaleString('en-IN')}</div>
+            </div>
+          </div>
+          ${repliesHtml}
+        </div>
+      `;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  if (syncRepliesBtn) {
+    syncRepliesBtn.addEventListener('click', async () => {
+      const originalText = syncRepliesBtn.innerHTML;
+      syncRepliesBtn.innerHTML = '<i data-lucide="loader" class="spin"></i> Syncing...';
+      syncRepliesBtn.disabled = true;
+      try {
+        const res = await fetch('/api/procurement/sync');
+        const data = await res.json();
+        if (data.success) {
+          alert(`Synced ${data.synced} new email replies!`);
+          fetchProcurement();
+        } else {
+          alert('Sync failed: ' + data.error);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Sync error. Check console.');
+      } finally {
+        syncRepliesBtn.innerHTML = originalText;
+        syncRepliesBtn.disabled = false;
+        lucide.createIcons();
       }
     });
   }
