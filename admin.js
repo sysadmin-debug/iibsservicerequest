@@ -1277,7 +1277,7 @@ document.addEventListener('DOMContentLoaded', () => {
     row.innerHTML = `
       <input type="text" class="proc-item-desc" placeholder="Item Description" required style="flex: 3;">
       <input type="number" class="proc-item-qty" placeholder="Qty" required min="1" style="flex: 1;">
-      <input type="number" class="proc-item-price" placeholder="Price" ${isRfq ? '' : 'required'} min="0" step="0.01" style="flex: 1;">
+      <input type="number" class="proc-item-price" placeholder="Price" ${isRfq ? '' : 'required'} min="0" step="0.01" style="flex: 1; ${isRfq ? 'display: none;' : ''}">
       <button type="button" class="btn-icon" style="color: #ef4444; border: 1px solid #ef4444; border-radius: 4px; padding: 0 8px;" onclick="this.parentElement.remove()">
         <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
       </button>
@@ -1293,8 +1293,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.proc-item-price').forEach(input => {
         if (isRfq) {
           input.removeAttribute('required');
+          input.style.display = 'none';
         } else {
           input.setAttribute('required', 'required');
+          input.style.display = '';
         }
       });
     });
@@ -1548,7 +1550,7 @@ document.addEventListener('DOMContentLoaded', () => {
           row.innerHTML = `
             <input type="text" class="proc-item-desc" placeholder="Item Description" required style="flex: 3;" value="${item.description}">
             <input type="number" class="proc-item-qty" placeholder="Qty" required min="1" style="flex: 1;" value="${item.quantity}">
-            <input type="number" class="proc-item-price" placeholder="Price" ${doc.doc_type === 'RFQ' ? '' : 'required'} min="0" step="0.01" style="flex: 1;" value="${item.unit_price}">
+            <input type="number" class="proc-item-price" placeholder="Price" ${doc.doc_type === 'RFQ' ? '' : 'required'} min="0" step="0.01" style="flex: 1; ${doc.doc_type === 'RFQ' ? 'display: none;' : ''}" value="${item.unit_price}">
             <button type="button" class="btn-icon" style="color: #ef4444; border: 1px solid #ef4444; border-radius: 4px; padding: 0 8px;" onclick="this.parentElement.remove()">
               <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
             </button>
