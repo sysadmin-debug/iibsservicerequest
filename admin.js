@@ -533,6 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fetchInventoryFromSupabase();
     } else if (tabId === 'vendor') {
       fetchVendorReports();
+      fetchSavedVendors();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1068,6 +1069,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== Vendor Report Form Submission & Management =====
   let vendorReports = [];
+  let savedVendors = [];
+
+  // Fetch unique saved vendors
+  async function fetchSavedVendors() {
+    try {
+      const res = await fetch('/api/vendors');
+      if (!res.ok) throw new Error('Failed to fetch saved vendors');
+      savedVendors = await res.json();
+      
+      const datalist = document.getElementById('vendorNamesList');
+      if (datalist) {
+        datalist.innerHTML = savedVendors.map(v => `<option value="${v.vendor_name}">`).join('');
+      }
+    } catch (error) {
+      console.error('Error fetching vendors:', error);
+    }
+  }
+
+  // Handle vendor auto-fill
+  const vendorNameInput = document.getElementById('vendorName');
+  if (vendorNameInput) {
+    vendorNameInput.addEventListener('input', (e) => {
+      const selected = savedVendors.find(v => v.vendor_name === e.target.value);
+      if (selected) {
+        document.getElementById('vendorEmail').value = selected.vendor_email || '';
+        document.getElementById('vendorContact').value = selected.contact_person || '';
+      }
+    });
+  }
+
+  // ===== VENDOR REPORTS API =====
   const addVendorModal = document.getElementById('addVendorModal');
   const addVendorBtn = document.getElementById('addVendorBtn');
   const vendorModalCloseBtn = document.getElementById('vendorModalCloseBtn');

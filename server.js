@@ -616,6 +616,27 @@ app.get('/api/vendor-report/:id/pdf', async (req, res) => {
   }
 });
 
+// Get unique vendors for auto-fill dropdown
+app.get('/api/vendors', async (req, res) => {
+  try {
+    const vendors = await VendorReport.aggregate([
+      { $sort: { created_at: -1 } },
+      { $group: {
+          _id: "$vendor_name",
+          vendor_email: { $first: "$vendor_email" },
+          contact_person: { $first: "$contact_person" }
+      }}
+    ]);
+    res.json(vendors.map(v => ({
+      vendor_name: v._id,
+      vendor_email: v.vendor_email,
+      contact_person: v.contact_person
+    })));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/vendor-report', async (req, res) => {
   try {
     const { vendor_name, vendor_email, cc_email, service_date, service_details, contact_person, technician_name, remarks } = req.body;

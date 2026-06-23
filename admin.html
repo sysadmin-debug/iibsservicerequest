@@ -644,9 +644,10 @@
         <div class="form-grid">
           <div class="form-column">
             <div class="form-group">
-              <label>Vendor/Company Name *</label>
-              <input type="text" id="vendorName" placeholder="e.g. Dell Services" required>
-            </div>
+            <label for="vendorName">Vendor / Company Name *</label>
+            <input type="text" id="vendorName" list="vendorNamesList" required placeholder="e.g. Dell Services">
+            <datalist id="vendorNamesList"></datalist>
+          </div>
             <div class="form-group">
               <label>Vendor Email Address *</label>
               <input type="email" id="vendorEmail" placeholder="support@dell.com" required>
