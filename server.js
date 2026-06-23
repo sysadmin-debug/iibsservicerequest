@@ -1058,6 +1058,8 @@ app.post('/api/procurement', async (req, res) => {
       };
       try {
         await transporter.sendMail(mailOptions);
+        procRecord.status = 'Sent';
+        await procRecord.save();
       } catch (err) {
         console.error("Email sending failed:", err);
         emailError = err.message;
