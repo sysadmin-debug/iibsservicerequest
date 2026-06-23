@@ -603,7 +603,8 @@ app.get('/api/vendor-report/:id/pdf', async (req, res) => {
     
     doc.moveDown(4);
     doc.text('-----------------------------------', { align: 'right' });
-    doc.text('IT Admin Signature / Stamp', { align: 'right' });
+    doc.font('Helvetica-Bold').text('RAMESH A S', { align: 'right' });
+    doc.font('Helvetica').text('IT Admin Signature / Stamp', { align: 'right' });
     
     doc.end();
   } catch (error) {
@@ -665,7 +666,8 @@ app.post('/api/vendor-report', async (req, res) => {
         
         doc.moveDown(4);
         doc.text('-----------------------------------', { align: 'right' });
-        doc.text('IT Admin Signature / Stamp', { align: 'right' });
+        doc.font('Helvetica-Bold').text('RAMESH A S', { align: 'right' });
+        doc.font('Helvetica').text('IT Admin Signature / Stamp', { align: 'right' });
         
         doc.end();
       } catch (err) {
