@@ -978,11 +978,15 @@ app.post('/api/procurement', async (req, res) => {
         doc.font('Helvetica-Bold').text('To: ', { continued: true }).font('Helvetica').text(vendor_name);
         doc.moveDown(1.5);
         
-        // Draw Items Table (simple)
+        // Draw Items Table Header
         doc.font('Helvetica-Bold').text('Item Description', 50, doc.y, { width: 250, continued: true });
-        doc.text('Qty', 300, doc.y, { width: 50, continued: true, align: 'right' });
-        doc.text('Price', 350, doc.y, { width: 80, continued: true, align: 'right' });
-        doc.text('Total', 430, doc.y, { width: 80, align: 'right' });
+        if (doc_type === 'PO') {
+          doc.text('Qty', 300, doc.y, { width: 50, continued: true, align: 'right' });
+          doc.text('Price', 350, doc.y, { width: 80, continued: true, align: 'right' });
+          doc.text('Total', 430, doc.y, { width: 80, align: 'right' });
+        } else {
+          doc.text('Qty', 300, doc.y, { width: 50, align: 'right' });
+        }
         doc.moveDown(0.5);
         
         let startY = doc.y;
@@ -994,16 +998,22 @@ app.post('/api/procurement', async (req, res) => {
           items.forEach(item => {
             let y = doc.y;
             doc.text(item.description, 50, y, { width: 250 });
-            doc.text(item.quantity.toString(), 300, y, { width: 50, align: 'right' });
-            doc.text((item.unit_price || 0).toFixed(2), 350, y, { width: 80, align: 'right' });
-            doc.text((item.total || 0).toFixed(2), 430, y, { width: 80, align: 'right' });
+            if (doc_type === 'PO') {
+              doc.text(item.quantity.toString(), 300, y, { width: 50, align: 'right' });
+              doc.text((item.unit_price || 0).toFixed(2), 350, y, { width: 80, align: 'right' });
+              doc.text((item.total || 0).toFixed(2), 430, y, { width: 80, align: 'right' });
+            } else {
+              doc.text(item.quantity.toString(), 300, y, { width: 50, align: 'right' });
+            }
             doc.moveDown(0.5);
           });
         }
         
         doc.moveDown(1);
-        doc.font('Helvetica-Bold').text(`Total Amount: Rs ${(total_amount || 0).toFixed(2)}`, { align: 'right' });
-        doc.moveDown(1.5);
+        if (doc_type === 'PO') {
+          doc.font('Helvetica-Bold').text(`Total Amount: Rs ${(total_amount || 0).toFixed(2)}`, { align: 'right' });
+          doc.moveDown(1.5);
+        }
         
         if (remarks) {
           doc.text('Remarks:');
