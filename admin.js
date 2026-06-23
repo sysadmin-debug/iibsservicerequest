@@ -1163,6 +1163,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const payload = {
         vendor_name: document.getElementById('vendorName').value.trim(),
         vendor_email: document.getElementById('vendorEmail').value.trim(),
+        cc_email: document.getElementById('vendorCcEmail').value.trim(),
         service_date: document.getElementById('vendorDate').value,
         contact_person: document.getElementById('vendorContact').value.trim(),
         technician_name: document.getElementById('vendorTechnician').value.trim(),

@@ -157,6 +157,7 @@ const vendorReportSchema = new mongoose.Schema({
   service_details: { type: String, required: true },
   contact_person: { type: String, required: true },
   technician_name: { type: String, required: true },
+  cc_email: { type: String, default: '' },
   remarks: { type: String, default: '' },
   created_at: { type: Date, default: Date.now }
 });
@@ -563,11 +564,12 @@ app.get('/api/vendor-report', async (req, res) => {
 
 app.post('/api/vendor-report', async (req, res) => {
   try {
-    const { vendor_name, vendor_email, service_date, service_details, contact_person, technician_name, remarks } = req.body;
+    const { vendor_name, vendor_email, cc_email, service_date, service_details, contact_person, technician_name, remarks } = req.body;
     
     const newReport = new VendorReport({
       vendor_name,
       vendor_email,
+      cc_email,
       service_date,
       service_details,
       contact_person,
@@ -627,6 +629,7 @@ app.post('/api/vendor-report', async (req, res) => {
       const mailOptions = {
         from: `"IIBS IT Department" <${process.env.GMAIL_USER}>`,
         to: vendor_email,
+        cc: cc_email || undefined,
         subject: `Service Report - IIBS IT Department`,
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
