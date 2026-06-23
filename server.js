@@ -896,63 +896,72 @@ app.get('/api/procurement/:id/pdf', async (req, res) => {
 
 app.post('/api/procurement', async (req, res) => {
   try {
-    const { doc_type, vendor_name, vendor_email, cc_email, items, remarks, skipEmail } = req.body;
+    const { edit_id, doc_type, vendor_name, vendor_email, cc_email, items, remarks, skipEmail } = req.body;
     
-    // Check for exact duplicate to prevent multiple RFQs/POs with same content
-    const existingProcs = await Procurement.find({
-      doc_type,
-      vendor_email,
-      vendor_name
-    }).sort({ created_at: -1 }).limit(5);
-
     let isDuplicate = false;
     let procRecord = null;
     let ref_id = '';
     let total_amount = 0;
 
-    for (const ep of existingProcs) {
-      const epRemarks = ep.remarks || '';
-      const newRemarks = remarks || '';
-      if (epRemarks === newRemarks) {
-        const existingItems = ep.items || [];
-        const newItems = items || [];
-        if (existingItems.length === newItems.length) {
-          let isSame = true;
-          for (let i = 0; i < existingItems.length; i++) {
-            if (existingItems[i].description !== newItems[i].description ||
-                existingItems[i].quantity !== newItems[i].quantity ||
-                existingItems[i].unit_price !== newItems[i].unit_price) {
-              isSame = false;
+    if (items && Array.isArray(items)) {
+      items.forEach(item => {
+        item.total = item.quantity * item.unit_price;
+        total_amount += item.total;
+      });
+    }
+
+    if (edit_id) {
+      procRecord = await Procurement.findByIdAndUpdate(
+        edit_id,
+        { doc_type, vendor_name, vendor_email, items, total_amount, remarks },
+        { new: true }
+      );
+      if (!procRecord) throw new Error('Document not found');
+      ref_id = procRecord.ref_id;
+    } else {
+      // Check for exact duplicate to prevent multiple RFQs/POs with same content
+      const existingProcs = await Procurement.find({
+        doc_type,
+        vendor_email,
+        vendor_name
+      }).sort({ created_at: -1 }).limit(5);
+
+      for (const ep of existingProcs) {
+        const epRemarks = ep.remarks || '';
+        const newRemarks = remarks || '';
+        if (epRemarks === newRemarks) {
+          const existingItems = ep.items || [];
+          const newItems = items || [];
+          if (existingItems.length === newItems.length) {
+            let isSame = true;
+            for (let i = 0; i < existingItems.length; i++) {
+              if (existingItems[i].description !== newItems[i].description ||
+                  existingItems[i].quantity !== newItems[i].quantity ||
+                  existingItems[i].unit_price !== newItems[i].unit_price) {
+                isSame = false;
+                break;
+              }
+            }
+            if (isSame) {
+              isDuplicate = true;
+              procRecord = ep;
+              ref_id = ep.ref_id;
+              total_amount = ep.total_amount;
               break;
             }
           }
-          if (isSame) {
-            isDuplicate = true;
-            procRecord = ep;
-            ref_id = ep.ref_id;
-            total_amount = ep.total_amount;
-            break;
-          }
         }
       }
-    }
 
-    if (!isDuplicate) {
-      // Generate REF_ID
-      const count = await Procurement.countDocuments({ doc_type });
-      ref_id = `${doc_type}-${1000 + count + 1}`;
-      
-      if (items && Array.isArray(items)) {
-        items.forEach(item => {
-          item.total = item.quantity * item.unit_price;
-          total_amount += item.total;
+      if (!isDuplicate) {
+        // Generate REF_ID
+        const count = await Procurement.countDocuments({ doc_type });
+        ref_id = `${doc_type}-${1000 + count + 1}`;
+        procRecord = new Procurement({
+          doc_type, ref_id, vendor_name, vendor_email, items, total_amount, remarks
         });
+        await procRecord.save();
       }
-
-      procRecord = new Procurement({
-        doc_type, ref_id, vendor_name, vendor_email, items, total_amount, remarks
-      });
-      await procRecord.save();
     }
 
     // Generate PDF

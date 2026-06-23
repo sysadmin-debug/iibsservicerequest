@@ -1252,6 +1252,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const syncRepliesBtn = document.getElementById('syncRepliesBtn');
 
   if (addProcBtn) addProcBtn.addEventListener('click', () => {
+    if (document.getElementById('procEditId')) document.getElementById('procEditId').value = '';
     if (addProcModal) addProcModal.classList.add('visible');
     if (procItemsContainer) {
       procItemsContainer.innerHTML = '';
@@ -1260,6 +1261,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   if (procModalCloseBtn) procModalCloseBtn.addEventListener('click', () => {
     if (addProcModal) addProcModal.classList.remove('visible');
+    if (document.getElementById('procEditId')) document.getElementById('procEditId').value = '';
     if (procForm) procForm.reset();
   });
 
@@ -1349,6 +1351,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const payload = {
+        edit_id: document.getElementById('procEditId') ? document.getElementById('procEditId').value : '',
         doc_type: document.getElementById('procDocType').value,
         vendor_name: document.getElementById('procVendorName').value,
         vendor_email: document.getElementById('procVendorEmail').value,
@@ -1376,7 +1379,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           alert('Document generated and emailed successfully!');
         }
-        addProcModal.classList.remove('visible');
+        if (addProcModal) addProcModal.classList.remove('visible');
+        if (document.getElementById('procEditId')) document.getElementById('procEditId').value = '';
         procForm.reset();
         fetchProcurement();
       } catch (err) {
@@ -1463,6 +1467,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a href="https://wa.me/?text=${waText}" target="_blank" class="btn-icon" style="color: #25D366; border: 1px solid #25D366; border-radius: 4px; padding: 4px 8px; text-decoration: none; font-size: 0.8rem; background: #fff; display: flex; align-items: center; gap: 4px;" title="Share via WhatsApp">
                   <i data-lucide="message-circle" style="width: 14px; height: 14px;"></i> WhatsApp
                 </a>
+                <button onclick="editProcurement('${doc._id}')" class="btn-icon" style="color: #f59e0b; border: 1px solid #f59e0b; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; background: #fff; display: flex; align-items: center; gap: 4px; cursor: pointer;" title="Edit Document">
+                  <i data-lucide="edit" style="width: 14px; height: 14px;"></i> Edit
+                </button>
                 <button onclick="deleteProcurement('${doc._id}')" class="btn-icon" style="color: #ef4444; border: 1px solid #ef4444; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; background: #fff; display: flex; align-items: center; gap: 4px; cursor: pointer;" title="Delete Document">
                   <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> Delete
                 </button>
@@ -1515,6 +1522,46 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error(err);
       alert(`Error: ${err.message}`);
     }
+  };
+
+  window.editProcurement = function(id) {
+    const doc = procurementRecords.find(d => d._id === id);
+    if (!doc) return;
+    
+    document.getElementById('procEditId').value = doc._id;
+    document.getElementById('procDocType').value = doc.doc_type;
+    document.getElementById('procVendorName').value = doc.vendor_name;
+    document.getElementById('procVendorEmail').value = doc.vendor_email;
+    if (document.getElementById('procCcEmail')) document.getElementById('procCcEmail').value = doc.cc_email || '';
+    document.getElementById('procRemarks').value = doc.remarks || '';
+    
+    const itemsContainer = document.getElementById('procItemsContainer');
+    if (itemsContainer) {
+      itemsContainer.innerHTML = '';
+      if (doc.items && doc.items.length > 0) {
+        doc.items.forEach(item => {
+          const row = document.createElement('div');
+          row.style.display = 'flex';
+          row.style.gap = '10px';
+          row.style.marginBottom = '10px';
+          row.className = 'proc-item-row';
+          row.innerHTML = `
+            <input type="text" class="proc-item-desc" placeholder="Item Description" required style="flex: 3;" value="${item.description}">
+            <input type="number" class="proc-item-qty" placeholder="Qty" required min="1" style="flex: 1;" value="${item.quantity}">
+            <input type="number" class="proc-item-price" placeholder="Price" ${doc.doc_type === 'RFQ' ? '' : 'required'} min="0" step="0.01" style="flex: 1;" value="${item.unit_price}">
+            <button type="button" class="btn-icon" style="color: #ef4444; border: 1px solid #ef4444; border-radius: 4px; padding: 0 8px;" onclick="this.parentElement.remove()">
+              <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+            </button>
+          `;
+          itemsContainer.appendChild(row);
+        });
+      } else {
+        createLineItemRow();
+      }
+    }
+    
+    if (addProcModal) addProcModal.classList.add('visible');
+    lucide.createIcons();
   };
 
 });
