@@ -33,7 +33,7 @@ async function sendResolutionEmail(ticket) {
   }
 
   const mailOptions = {
-    from: `"IIBS IT Helpdesk" <${process.env.GMAIL_USER}>`,
+    from: `"IIBS IT Helpdesk" <sysadmin@iibsonline.com>`,
     to: ticket.email,
     subject: `Ticket Resolved: ${ticket.ticket_id} - ${ticket.ticket_type}`,
     html: `
@@ -678,7 +678,7 @@ app.post('/api/vendor-report', async (req, res) => {
     // Send email to vendor with PDF attachment
     if (process.env.GMAIL_USER && process.env.GMAIL_PASS && vendor_email) {
       const mailOptions = {
-        from: `"IIBS IT Department" <${process.env.GMAIL_USER}>`,
+        from: `"IIBS IT Department" <sysadmin@iibsonline.com>`,
         to: vendor_email,
         cc: cc_email || undefined,
         subject: `Service Report - IIBS IT Department`,
