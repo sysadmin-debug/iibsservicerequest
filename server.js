@@ -156,6 +156,7 @@ const vendorReportSchema = new mongoose.Schema({
   service_date: { type: Date, required: true },
   service_details: { type: String, required: true },
   contact_person: { type: String, required: true },
+  technician_name: { type: String, required: true },
   remarks: { type: String, default: '' },
   created_at: { type: Date, default: Date.now }
 });
@@ -562,7 +563,7 @@ app.get('/api/vendor-report', async (req, res) => {
 
 app.post('/api/vendor-report', async (req, res) => {
   try {
-    const { vendor_name, vendor_email, service_date, service_details, contact_person, remarks } = req.body;
+    const { vendor_name, vendor_email, service_date, service_details, contact_person, technician_name, remarks } = req.body;
     
     const newReport = new VendorReport({
       vendor_name,
@@ -570,6 +571,7 @@ app.post('/api/vendor-report', async (req, res) => {
       service_date,
       service_details,
       contact_person,
+      technician_name,
       remarks
     });
     await newReport.save();
@@ -595,6 +597,8 @@ app.post('/api/vendor-report', async (req, res) => {
         doc.font('Helvetica-Bold').text('Vendor Name: ', { continued: true }).font('Helvetica').text(vendor_name);
         doc.moveDown(0.5);
         doc.font('Helvetica-Bold').text('Contact Person: ', { continued: true }).font('Helvetica').text(contact_person);
+        doc.moveDown(0.5);
+        doc.font('Helvetica-Bold').text('Technician Name: ', { continued: true }).font('Helvetica').text(technician_name);
         doc.moveDown(0.5);
         doc.font('Helvetica-Bold').text('Vendor Email: ', { continued: true }).font('Helvetica').text(vendor_email);
         doc.moveDown(1.5);
@@ -636,6 +640,7 @@ app.post('/api/vendor-report', async (req, res) => {
               <div style="background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 4px;">
                 <p style="margin: 0 0 10px 0;"><strong>Date of Service:</strong> ${new Date(service_date).toLocaleDateString('en-IN')}</p>
                 <p style="margin: 0 0 10px 0;"><strong>Contact Person:</strong> ${contact_person}</p>
+                <p style="margin: 0 0 10px 0;"><strong>Technician Name:</strong> ${technician_name}</p>
                 <p style="margin: 0 0 10px 0;"><strong>Service Details:</strong><br/> ${service_details}</p>
               </div>
               

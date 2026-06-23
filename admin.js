@@ -1137,6 +1137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="text-align: right; color: var(--text-secondary); font-size: 0.9rem;">
               <div style="font-weight: 600; color: var(--text-primary);"><i data-lucide="calendar" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${dateString}</div>
               <div style="margin-top: 0.2rem;"><i data-lucide="user" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${report.contact_person}</div>
+              <div style="margin-top: 0.2rem; color: #4f46e5;"><i data-lucide="wrench" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${report.technician_name}</div>
             </div>
           </div>
           <div style="background: var(--bg-secondary); padding: 0.8rem; border-radius: 6px; margin-top: 0.5rem;">
@@ -1164,6 +1165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         vendor_email: document.getElementById('vendorEmail').value.trim(),
         service_date: document.getElementById('vendorDate').value,
         contact_person: document.getElementById('vendorContact').value.trim(),
+        technician_name: document.getElementById('vendorTechnician').value.trim(),
         service_details: document.getElementById('vendorDetails').value.trim(),
         remarks: document.getElementById('vendorRemarks').value.trim()
       };
