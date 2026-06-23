@@ -13,7 +13,7 @@ const port = process.env.PORT || 3000;
 
 // Email Configuration (Configured for Outlook / Office 365 by default)
 const transporter = nodemailer.createTransport({
-  host: 'smtp.office365.com',
+  host: 'smtp-mail.outlook.com',
   port: 587,
   secure: false,
   auth: {
@@ -23,8 +23,7 @@ const transporter = nodemailer.createTransport({
   tls: {
     ciphers: 'SSLv3',
     rejectUnauthorized: false
-  },
-  authMethod: 'LOGIN'
+  }
 });
 
 // Function to send resolution email
