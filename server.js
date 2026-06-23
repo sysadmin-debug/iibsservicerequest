@@ -714,7 +714,7 @@ app.post('/api/vendor-report', async (req, res) => {
       
       try {
         await transporter.sendMail(mailOptions);
-        console.log(\`Vendor report email sent to \${vendor_email}\`);
+        console.log(`Vendor report email sent to ${vendor_email}`);
       } catch (err) {
         console.error('Error sending vendor report email:', err);
       }
