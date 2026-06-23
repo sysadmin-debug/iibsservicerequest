@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const PDFDocument = require('pdfkit');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -573,7 +574,51 @@ app.post('/api/vendor-report', async (req, res) => {
     });
     await newReport.save();
 
-    // Send email to vendor
+    // Generate PDF Buffer
+    const pdfBuffer = await new Promise((resolve, reject) => {
+      try {
+        const doc = new PDFDocument({ margin: 50 });
+        let buffers = [];
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => {
+          resolve(Buffer.concat(buffers));
+        });
+
+        // Draw PDF content
+        doc.fontSize(24).font('Helvetica-Bold').fillColor('#0f172a').text('IIBS IT Department', { align: 'center' });
+        doc.moveDown(0.5);
+        doc.fontSize(18).fillColor('#3b82f6').text('Vendor Service Report', { align: 'center' });
+        doc.moveDown(2);
+        
+        doc.fontSize(12).fillColor('#333333').font('Helvetica-Bold').text('Date of Service: ', { continued: true }).font('Helvetica').text(new Date(service_date).toLocaleDateString('en-IN'));
+        doc.moveDown(0.5);
+        doc.font('Helvetica-Bold').text('Vendor Name: ', { continued: true }).font('Helvetica').text(vendor_name);
+        doc.moveDown(0.5);
+        doc.font('Helvetica-Bold').text('Contact Person: ', { continued: true }).font('Helvetica').text(contact_person);
+        doc.moveDown(0.5);
+        doc.font('Helvetica-Bold').text('Vendor Email: ', { continued: true }).font('Helvetica').text(vendor_email);
+        doc.moveDown(1.5);
+        
+        doc.font('Helvetica-Bold').fontSize(14).text('Service Details:');
+        doc.moveDown(0.5);
+        doc.font('Helvetica').fontSize(12).text(service_details, { align: 'justify' });
+        doc.moveDown(1.5);
+
+        doc.font('Helvetica-Bold').fontSize(14).text('Remarks:');
+        doc.moveDown(0.5);
+        doc.font('Helvetica').fontSize(12).text(remarks || 'None', { align: 'justify' });
+        
+        doc.moveDown(4);
+        doc.text('-----------------------------------', { align: 'right' });
+        doc.text('IT Admin Signature / Stamp', { align: 'right' });
+        
+        doc.end();
+      } catch (err) {
+        reject(err);
+      }
+    });
+
+    // Send email to vendor with PDF attachment
     if (process.env.GMAIL_USER && process.env.GMAIL_PASS && vendor_email) {
       const mailOptions = {
         from: `"IIBS IT Department" <${process.env.GMAIL_USER}>`,
@@ -586,13 +631,12 @@ app.post('/api/vendor-report', async (req, res) => {
             </div>
             <div style="padding: 20px;">
               <p>Dear <strong>${vendor_name}</strong>,</p>
-              <p>Thank you for providing service at IIBS. Please find the details of the service entry below:</p>
+              <p>Thank you for providing service at IIBS. Please find the details of the service entry below, as well as an official PDF report attached for your records.</p>
               
               <div style="background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 4px;">
                 <p style="margin: 0 0 10px 0;"><strong>Date of Service:</strong> ${new Date(service_date).toLocaleDateString('en-IN')}</p>
                 <p style="margin: 0 0 10px 0;"><strong>Contact Person:</strong> ${contact_person}</p>
                 <p style="margin: 0 0 10px 0;"><strong>Service Details:</strong><br/> ${service_details}</p>
-                <p style="margin: 0;"><strong>Remarks:</strong><br/> ${remarks || 'None'}</p>
               </div>
               
               <p style="margin-top: 30px; font-size: 0.9rem; color: #64748b;">
@@ -601,7 +645,14 @@ app.post('/api/vendor-report', async (req, res) => {
               </p>
             </div>
           </div>
-        `
+        `,
+        attachments: [
+          {
+            filename: `IIBS_Vendor_Report_${new Date(service_date).toISOString().split('T')[0]}.pdf`,
+            content: pdfBuffer,
+            contentType: 'application/pdf'
+          }
+        ]
       };
       
       try {
