@@ -649,7 +649,7 @@ app.get('/api/vendor-report/:id/pdf', async (req, res) => {
 // Get unique vendors for auto-fill dropdown
 app.get('/api/vendors', async (req, res) => {
   try {
-    const vendors = await VendorReport.aggregate([
+    const vendors1 = await VendorReport.aggregate([
       { $sort: { created_at: -1 } },
       { $group: {
           _id: "$vendor_name",
@@ -657,10 +657,30 @@ app.get('/api/vendors', async (req, res) => {
           contact_person: { $first: "$contact_person" }
       }}
     ]);
-    res.json(vendors.map(v => ({
+    const vendors2 = await Procurement.aggregate([
+      { $sort: { date: -1 } },
+      { $group: {
+          _id: "$vendor_name",
+          vendor_email: { $first: "$vendor_email" }
+      }}
+    ]);
+
+    const vendorMap = new Map();
+    vendors1.forEach(v => vendorMap.set(v._id, v));
+    vendors2.forEach(v => {
+      if (!vendorMap.has(v._id)) {
+        vendorMap.set(v._id, { _id: v._id, vendor_email: v.vendor_email, contact_person: '' });
+      } else {
+        if (!vendorMap.get(v._id).vendor_email) {
+          vendorMap.get(v._id).vendor_email = v.vendor_email;
+        }
+      }
+    });
+
+    res.json(Array.from(vendorMap.values()).map(v => ({
       vendor_name: v._id,
       vendor_email: v.vendor_email,
-      contact_person: v.contact_person
+      contact_person: v.contact_person || ''
     })));
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -776,15 +796,17 @@ app.post('/api/vendor-report', async (req, res) => {
         ]
       };
       
+      let emailError = null;
       try {
         await transporter.sendMail(mailOptions);
         console.log(`Vendor report email sent to ${vendor_email}`);
       } catch (err) {
         console.error('Error sending vendor report email:', err);
+        emailError = err.message;
       }
     }
 
-    res.status(201).json({ success: true, report: newReport });
+    res.status(201).json({ success: true, report: newReport, emailError: typeof emailError !== 'undefined' ? emailError : null });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -803,26 +825,135 @@ app.get('/api/procurement', async (req, res) => {
   }
 });
 
-app.post('/api/procurement', async (req, res) => {
+app.get('/api/procurement/:id/pdf', async (req, res) => {
   try {
-    const { doc_type, vendor_name, vendor_email, items, remarks } = req.body;
+    const report = await Procurement.findById(req.params.id);
+    if (!report) return res.status(404).json({ error: 'Record not found' });
+
+    const doc = new PDFDocument({ margins: { top: 140, bottom: 50, left: 50, right: 50 } });
     
-    // Generate REF_ID
-    const count = await Procurement.countDocuments({ doc_type });
-    const ref_id = `${doc_type}-${1000 + count + 1}`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=IIBS_${report.ref_id}.pdf`);
     
-    let total_amount = 0;
-    if (items && Array.isArray(items)) {
-      items.forEach(item => {
-        item.total = item.quantity * item.unit_price;
-        total_amount += item.total;
-      });
+    doc.pipe(res);
+
+    const imagePath = path.join(__dirname, 'letterhead.jpg');
+    if (fs.existsSync(imagePath)) {
+      doc.image(imagePath, 0, 0, { width: doc.page.width });
     }
 
-    const newProc = new Procurement({
-      doc_type, ref_id, vendor_name, vendor_email, items, total_amount, remarks
-    });
-    await newProc.save();
+    const title = report.doc_type === 'PO' ? 'PURCHASE ORDER' : 'REQUEST FOR QUOTATION';
+    doc.fontSize(20).font('Helvetica-Bold').fillColor('#0f172a').text(title, { align: 'center', underline: true });
+    doc.moveDown(2);
+    
+    doc.fontSize(12).fillColor('#333333').font('Helvetica-Bold').text('Reference No: ', { continued: true }).font('Helvetica').text(report.ref_id);
+    doc.font('Helvetica-Bold').text('Date: ', { continued: true }).font('Helvetica').text(new Date(report.date).toLocaleDateString('en-IN'));
+    doc.moveDown(1);
+    doc.font('Helvetica-Bold').text('To: ', { continued: true }).font('Helvetica').text(report.vendor_name);
+    doc.moveDown(1.5);
+    
+    doc.font('Helvetica-Bold').text('Item Description', 50, doc.y, { width: 250, continued: true });
+    doc.text('Qty', 300, doc.y, { width: 50, continued: true, align: 'right' });
+    doc.text('Price', 350, doc.y, { width: 80, continued: true, align: 'right' });
+    doc.text('Total', 430, doc.y, { width: 80, align: 'right' });
+    doc.moveDown(0.5);
+    
+    let startY = doc.y;
+    doc.moveTo(50, startY).lineTo(512, startY).stroke();
+    doc.moveDown(0.5);
+    
+    doc.font('Helvetica');
+    if (report.items && Array.isArray(report.items)) {
+      report.items.forEach(item => {
+        let y = doc.y;
+        doc.text(item.description, 50, y, { width: 250 });
+        doc.text(item.quantity.toString(), 300, y, { width: 50, align: 'right' });
+        doc.text((item.unit_price || 0).toFixed(2), 350, y, { width: 80, align: 'right' });
+        doc.text((item.total || 0).toFixed(2), 430, y, { width: 80, align: 'right' });
+        doc.moveDown(0.5);
+      });
+    }
+    
+    doc.moveDown(1);
+    doc.font('Helvetica-Bold').text(`Total Amount: Rs ${(report.total_amount || 0).toFixed(2)}`, { align: 'right' });
+    doc.moveDown(1.5);
+    
+    if (report.remarks) {
+      doc.text('Remarks:');
+      doc.font('Helvetica').text(report.remarks);
+      doc.moveDown(2);
+    }
+    
+    doc.moveDown(4);
+    doc.font('Helvetica-Bold').text('RAMESH A S', { align: 'right' });
+    doc.font('Helvetica').text('IT Admin', { align: 'right' });
+    
+    doc.end();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/procurement', async (req, res) => {
+  try {
+    const { doc_type, vendor_name, vendor_email, cc_email, items, remarks, skipEmail } = req.body;
+    
+    // Check for exact duplicate to prevent multiple RFQs/POs with same content
+    const existingProcs = await Procurement.find({
+      doc_type,
+      vendor_email,
+      vendor_name
+    }).sort({ created_at: -1 }).limit(5);
+
+    let isDuplicate = false;
+    let procRecord = null;
+    let ref_id = '';
+    let total_amount = 0;
+
+    for (const ep of existingProcs) {
+      const epRemarks = ep.remarks || '';
+      const newRemarks = remarks || '';
+      if (epRemarks === newRemarks) {
+        const existingItems = ep.items || [];
+        const newItems = items || [];
+        if (existingItems.length === newItems.length) {
+          let isSame = true;
+          for (let i = 0; i < existingItems.length; i++) {
+            if (existingItems[i].description !== newItems[i].description ||
+                existingItems[i].quantity !== newItems[i].quantity ||
+                existingItems[i].unit_price !== newItems[i].unit_price) {
+              isSame = false;
+              break;
+            }
+          }
+          if (isSame) {
+            isDuplicate = true;
+            procRecord = ep;
+            ref_id = ep.ref_id;
+            total_amount = ep.total_amount;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!isDuplicate) {
+      // Generate REF_ID
+      const count = await Procurement.countDocuments({ doc_type });
+      ref_id = `${doc_type}-${1000 + count + 1}`;
+      
+      if (items && Array.isArray(items)) {
+        items.forEach(item => {
+          item.total = item.quantity * item.unit_price;
+          total_amount += item.total;
+        });
+      }
+
+      procRecord = new Procurement({
+        doc_type, ref_id, vendor_name, vendor_email, items, total_amount, remarks
+      });
+      await procRecord.save();
+    }
 
     // Generate PDF
     const pdfBuffer = await new Promise((resolve, reject) => {
@@ -864,14 +995,14 @@ app.post('/api/procurement', async (req, res) => {
             let y = doc.y;
             doc.text(item.description, 50, y, { width: 250 });
             doc.text(item.quantity.toString(), 300, y, { width: 50, align: 'right' });
-            doc.text(item.unit_price.toFixed(2), 350, y, { width: 80, align: 'right' });
-            doc.text(item.total.toFixed(2), 430, y, { width: 80, align: 'right' });
+            doc.text((item.unit_price || 0).toFixed(2), 350, y, { width: 80, align: 'right' });
+            doc.text((item.total || 0).toFixed(2), 430, y, { width: 80, align: 'right' });
             doc.moveDown(0.5);
           });
         }
         
         doc.moveDown(1);
-        doc.font('Helvetica-Bold').text(`Total Amount: Rs ${total_amount.toFixed(2)}`, { align: 'right' });
+        doc.font('Helvetica-Bold').text(`Total Amount: Rs ${(total_amount || 0).toFixed(2)}`, { align: 'right' });
         doc.moveDown(1.5);
         
         if (remarks) {
@@ -887,14 +1018,18 @@ app.post('/api/procurement', async (req, res) => {
       } catch (err) { reject(err); }
     });
 
-    // Send Email
+    // Send Email if not skipped
     const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
     const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
-    if (emailUser && emailPass) {
+    let emailError = null;
+    
+    if (!skipEmail && emailUser && emailPass) {
+      let ccList = ['sysadmin@iibsonline.com'];
+      if (cc_email) ccList.push(cc_email);
       const mailOptions = {
         from: `"IIBS IT Department" <sysadmin@iibsonline.com>`,
         to: vendor_email,
-        bcc: 'sysadmin@iibsonline.com',
+        cc: ccList.join(', '),
         subject: `${doc_type === 'PO' ? 'Purchase Order' : 'Request for Quotation'} from IIBS [REF: ${ref_id}]`,
         text: `Dear ${vendor_name},\n\nPlease find attached the ${doc_type === 'PO' ? 'Purchase Order' : 'Request for Quotation'} (${ref_id}) from IIBS.\nIf you have any questions or to respond, please reply directly to this email.\n\nBest Regards,\nIIBS IT Department`,
         attachments: [{
@@ -903,9 +1038,20 @@ app.post('/api/procurement', async (req, res) => {
           contentType: 'application/pdf'
         }]
       };
-      await transporter.sendMail(mailOptions);
+      try {
+        await transporter.sendMail(mailOptions);
+      } catch (err) {
+        console.error("Email sending failed:", err);
+        emailError = err.message;
+        procRecord.status = 'Draft';
+        await procRecord.save();
+      }
+    } else if (req.body.skipEmail) {
+      procRecord.status = 'Draft';
+      await procRecord.save();
     }
-    res.json({ success: true, record: newProc });
+    
+    res.json({ success: true, record: procRecord, emailError, isDuplicate });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -1216,15 +1216,20 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify(payload)
         });
 
-        if (!res.ok) throw new Error('Failed to submit vendor report');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Failed to submit vendor report');
 
-        alert('Vendor Report saved and email sent successfully!');
+        if (data.emailError) {
+          alert('Vendor Report saved, but email failed to send: ' + data.emailError);
+        } else {
+          alert('Vendor Report saved and email sent successfully!');
+        }
         vendorReportForm.reset();
         addVendorModal?.classList.remove('visible');
         fetchVendorReports();
       } catch (err) {
         console.error('Error submitting vendor report:', err);
-        alert('Failed to submit vendor report. Please check the connection.');
+        alert(`Failed to submit vendor report: ${err.message}`);
       } finally {
         if (vendorSubmitBtn) {
           vendorSubmitBtn.innerHTML = '<i data-lucide="send" style="width: 18px; height: 18px;"></i> Save & Send Email';
@@ -1260,6 +1265,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.createLineItemRow = function() {
     if (!procItemsContainer) return;
+    const docType = document.getElementById('procDocType')?.value || 'RFQ';
+    const isRfq = docType === 'RFQ';
     const row = document.createElement('div');
     row.style.display = 'flex';
     row.style.gap = '10px';
@@ -1268,13 +1275,27 @@ document.addEventListener('DOMContentLoaded', () => {
     row.innerHTML = `
       <input type="text" class="proc-item-desc" placeholder="Item Description" required style="flex: 3;">
       <input type="number" class="proc-item-qty" placeholder="Qty" required min="1" style="flex: 1;">
-      <input type="number" class="proc-item-price" placeholder="Price" required min="0" step="0.01" style="flex: 1;">
+      <input type="number" class="proc-item-price" placeholder="Price" ${isRfq ? '' : 'required'} min="0" step="0.01" style="flex: 1;">
       <button type="button" class="btn-icon" style="color: #ef4444; border: 1px solid #ef4444; border-radius: 4px; padding: 0 8px;" onclick="this.parentElement.remove()">
         <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
       </button>
     `;
     procItemsContainer.appendChild(row);
     lucide.createIcons();
+  }
+
+  const procDocTypeEl = document.getElementById('procDocType');
+  if (procDocTypeEl) {
+    procDocTypeEl.addEventListener('change', (e) => {
+      const isRfq = e.target.value === 'RFQ';
+      document.querySelectorAll('.proc-item-price').forEach(input => {
+        if (isRfq) {
+          input.removeAttribute('required');
+        } else {
+          input.setAttribute('required', 'required');
+        }
+      });
+    });
   }
 
   if (addProcItemBtn) {
@@ -1291,20 +1312,39 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  let skipEmailFlag = false;
+
+  const procSavePdfBtn = document.getElementById('procSavePdfBtn');
+  if (procSavePdfBtn) {
+    procSavePdfBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      skipEmailFlag = true;
+      if (procForm) procForm.dispatchEvent(new Event('submit', { cancelable: true }));
+    });
+  }
+
+  const procSubmitBtnMain = document.getElementById('procSubmitBtn');
+  if (procSubmitBtnMain) {
+    procSubmitBtnMain.addEventListener('click', () => {
+      skipEmailFlag = false;
+    });
+  }
 
   if (procForm) {
     procForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById('procSubmitBtn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Generating PDF & Sending...';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = skipEmailFlag ? 'Saving PDF...' : 'Generating PDF & Sending...';
+      }
 
       const items = [];
       document.querySelectorAll('.proc-item-row').forEach(row => {
         items.push({
           description: row.querySelector('.proc-item-desc').value,
-          quantity: parseInt(row.querySelector('.proc-item-qty').value),
-          unit_price: parseFloat(row.querySelector('.proc-item-price').value)
+          quantity: parseInt(row.querySelector('.proc-item-qty').value) || 0,
+          unit_price: parseFloat(row.querySelector('.proc-item-price').value) || 0
         });
       });
 
@@ -1312,8 +1352,10 @@ document.addEventListener('DOMContentLoaded', () => {
         doc_type: document.getElementById('procDocType').value,
         vendor_name: document.getElementById('procVendorName').value,
         vendor_email: document.getElementById('procVendorEmail').value,
+        cc_email: document.getElementById('procCcEmail') ? document.getElementById('procCcEmail').value : '',
         items,
-        remarks: document.getElementById('procRemarks').value
+        remarks: document.getElementById('procRemarks').value,
+        skipEmail: skipEmailFlag
       };
 
       try {
@@ -1322,17 +1364,30 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (!res.ok) throw new Error('Failed to create procurement doc');
-        alert('Document generated and emailed successfully!');
+        
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Failed to create procurement doc');
+        
+        if (skipEmailFlag) {
+          alert('Document saved successfully!');
+          window.open(`/api/procurement/${data.record._id}/pdf`, '_blank');
+        } else if (data.emailError) {
+          alert('Document saved, but email failed to send: ' + data.emailError);
+        } else {
+          alert('Document generated and emailed successfully!');
+        }
         addProcModal.classList.remove('visible');
         procForm.reset();
         fetchProcurement();
       } catch (err) {
         console.error(err);
-        alert('Failed to send document.');
+        alert(`Error: ${err.message}`);
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Generate & Send Email';
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Generate & Send Email';
+        }
+        skipEmailFlag = false;
       }
     });
   }
@@ -1371,17 +1426,44 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>`;
       }
 
+      let itemsHtml = '';
+      if (doc.items && doc.items.length > 0) {
+        itemsHtml = `<div style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--text-secondary);">
+          <strong style="color: var(--text-primary);">Items:</strong> ${doc.items.map(i => `${i.quantity}x ${i.description}`).join(', ')}
+        </div>`;
+      }
+      
+      let remarksHtml = '';
+      if (doc.remarks) {
+        remarksHtml = `<div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+          <strong style="color: var(--text-primary);">Remarks:</strong> ${doc.remarks}
+        </div>`;
+      }
+
+      const pdfUrl = `${window.location.origin}/api/procurement/${doc._id}/pdf`;
+      const waText = encodeURIComponent(`Please find the ${doc.doc_type === 'PO' ? 'Purchase Order' : 'Request for Quotation'} (${doc.ref_id}) here:\n${pdfUrl}`);
+
       return `
         <div class="ticket-card" style="border-left: 4px solid ${doc.doc_type === 'PO' ? '#3b82f6' : '#8b5cf6'}">
           <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
+            <div style="flex: 1; padding-right: 15px;">
               <div class="ticket-id">${doc.ref_id} &bull; ${new Date(doc.date).toLocaleDateString()}</div>
               <div class="ticket-subject" style="font-size: 1.15rem; margin-bottom: 0.2rem;">${doc.vendor_name}</div>
               <div style="font-size: 0.9rem; color: var(--text-secondary);"><i data-lucide="mail" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${doc.vendor_email}</div>
+              ${itemsHtml}
+              ${remarksHtml}
             </div>
-            <div style="text-align: right;">
+            <div style="text-align: right; flex-shrink: 0;">
               <span class="badge" style="background-color: ${statusColor}20; color: ${statusColor}; margin-bottom: 5px; display: inline-block;">${doc.status}</span>
-              <div style="font-weight: 600; color: var(--text-primary);">₹${doc.total_amount.toLocaleString('en-IN')}</div>
+              <div style="font-weight: 600; color: var(--text-primary);">₹${(doc.total_amount || 0).toLocaleString('en-IN')}</div>
+              <div style="margin-top: 10px; display: flex; gap: 5px; justify-content: flex-end;">
+                <a href="/api/procurement/${doc._id}/pdf" download class="btn-icon" style="color: #3b82f6; border: 1px solid #3b82f6; border-radius: 4px; padding: 4px 8px; text-decoration: none; font-size: 0.8rem; background: #fff; display: flex; align-items: center; gap: 4px;" title="Download PDF">
+                  <i data-lucide="download" style="width: 14px; height: 14px;"></i> PDF
+                </a>
+                <a href="https://wa.me/?text=${waText}" target="_blank" class="btn-icon" style="color: #25D366; border: 1px solid #25D366; border-radius: 4px; padding: 4px 8px; text-decoration: none; font-size: 0.8rem; background: #fff; display: flex; align-items: center; gap: 4px;" title="Share via WhatsApp">
+                  <i data-lucide="message-circle" style="width: 14px; height: 14px;"></i> WhatsApp
+                </a>
+              </div>
             </div>
           </div>
           ${repliesHtml}

@@ -747,8 +747,12 @@
           </div>
           <div class="form-column">
             <div class="form-group">
-              <label>Vendor Email Address *</label>
+              <label>VENDOR EMAIL ADDRESS *</label>
               <input type="email" id="procVendorEmail" placeholder="vendor@example.com" required>
+            </div>
+            <div class="form-group">
+              <label>CC EMAIL (OPTIONAL)</label>
+              <input type="email" id="procCcEmail" placeholder="cc@example.com">
             </div>
           </div>
         </div>
@@ -771,6 +775,7 @@
         
         <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
           <button type="button" class="btn-secondary" id="procModalCloseBtn">Cancel</button>
+          <button type="button" class="btn-secondary" id="procSavePdfBtn" style="border: 1px solid #3b82f6; color: #3b82f6;">Save PDF Only</button>
           <button type="submit" class="btn-primary" id="procSubmitBtn">Generate & Send Email</button>
         </div>
       </form>
