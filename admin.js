@@ -824,8 +824,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const op = parseInt(document.getElementById('invNewOpening').value) || 0;
     const arr = parseInt(document.getElementById('invNewArrivals').value) || 0;
     const iss = parseInt(document.getElementById('invNewIssues').value) || 0;
-    document.getElementById('invNewTotal').value = op + arr;
-    document.getElementById('invNewClosing').value = op + arr - iss;
+    
+    let total = op + arr;
+    if (op === arr && op > 0) {
+      total = op;
+    }
+    
+    document.getElementById('invNewTotal').value = total;
+    document.getElementById('invNewClosing').value = total - iss;
   }
   document.getElementById('invNewOpening')?.addEventListener('input', calcAddModal);
   document.getElementById('invNewArrivals')?.addEventListener('input', calcAddModal);
@@ -897,8 +903,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const op = parseInt(document.getElementById('invUpdateOpening').value) || 0;
     const arr = parseInt(document.getElementById('invUpdateArrivals').value) || 0;
     const iss = parseInt(document.getElementById('invUpdateIssues').value) || 0;
-    document.getElementById('invUpdateTotal').value = op + arr;
-    document.getElementById('invUpdateClosing').value = op + arr - iss;
+    
+    let total = op + arr;
+    if (op === arr && op > 0) {
+      total = op;
+    }
+    
+    document.getElementById('invUpdateTotal').value = total;
+    document.getElementById('invUpdateClosing').value = total - iss;
   }
   document.getElementById('invUpdateOpening')?.addEventListener('input', calcUpdateModal);
   document.getElementById('invUpdateArrivals')?.addEventListener('input', calcUpdateModal);
