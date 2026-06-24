@@ -1172,10 +1172,16 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td style="padding: 1rem 0.5rem;">${report.technician_name || '-'}</td>
                   <td style="padding: 1rem 0.5rem; max-width: 250px; white-space: normal; overflow-wrap: break-word;">${report.service_details}</td>
                   <td style="padding: 1rem 0.5rem;">${report.remarks || '-'}</td>
-                  <td style="padding: 1rem 0.5rem; text-align: right;">
+                  <td style="padding: 1rem 0.5rem; text-align: right; display: flex; gap: 8px; justify-content: flex-end;">
                     <a href="/api/vendor-report/${report._id}/pdf" download class="btn-secondary" style="padding: 0.4rem 0.8rem; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #3b82f6; color: #3b82f6;" title="Download PDF">
                       <i data-lucide="download" style="width: 14px; height: 14px;"></i> PDF
                     </a>
+                    <button class="btn-secondary" onclick="openUpdateVendorModal('${report._id}')" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px;" title="Update">
+                      <i data-lucide="edit" style="width: 14px; height: 14px;"></i> Update
+                    </button>
+                    <button class="btn-secondary" onclick="deleteVendorReport('${report._id}')" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px; color: var(--accent-rose); border-color: var(--accent-rose);" title="Delete">
+                      <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> Delete
+                    </button>
                   </td>
                 </tr>
               `;
@@ -1233,6 +1239,97 @@ document.addEventListener('DOMContentLoaded', () => {
         if (vendorSubmitBtn) {
           vendorSubmitBtn.innerHTML = '<i data-lucide="send" style="width: 18px; height: 18px;"></i> Save & Send Email';
           vendorSubmitBtn.disabled = false;
+          lucide.createIcons();
+        }
+      }
+    });
+  }
+
+  // Update Vendor Modal Logic
+  const updateVendorModal = document.getElementById('updateVendorModal');
+  const updateVendorReportForm = document.getElementById('updateVendorReportForm');
+  const updateVendorModalCloseBtn = document.getElementById('updateVendorModalCloseBtn');
+
+  if (updateVendorModalCloseBtn) {
+    updateVendorModalCloseBtn.addEventListener('click', () => {
+      updateVendorModal.classList.remove('visible');
+    });
+  }
+
+  window.openUpdateVendorModal = function(id) {
+    const report = vendorReports.find(r => r._id === id);
+    if (!report) return;
+
+    document.getElementById('updateVendorId').value = report._id;
+    document.getElementById('updateVendorName').value = report.vendor_name;
+    document.getElementById('updateVendorEmail').value = report.vendor_email;
+    document.getElementById('updateVendorCcEmail').value = report.cc_email || '';
+    
+    let dt = report.service_date;
+    try { dt = new Date(report.service_date).toISOString().split('T')[0]; } catch(e){}
+    document.getElementById('updateVendorDate').value = dt;
+    
+    document.getElementById('updateVendorContact').value = report.contact_person || '';
+    document.getElementById('updateVendorTechnician').value = report.technician_name || '';
+    document.getElementById('updateVendorDetails').value = report.service_details;
+    document.getElementById('updateVendorRemarks').value = report.remarks || '';
+
+    updateVendorModal.classList.add('visible');
+  };
+
+  window.deleteVendorReport = async function(id) {
+    if (!confirm('Are you sure you want to delete this vendor report?')) return;
+    try {
+      const res = await fetch(`/api/vendor-report/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete report');
+      alert('Vendor report deleted successfully');
+      fetchVendorReports();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete vendor report.');
+    }
+  };
+
+  if (updateVendorReportForm) {
+    updateVendorReportForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('updateVendorSubmitBtn');
+      if (btn) {
+        btn.innerHTML = '<i data-lucide="loader" class="spin"></i> Saving...';
+        btn.disabled = true;
+      }
+
+      const id = document.getElementById('updateVendorId').value;
+      const payload = {
+        vendor_name: document.getElementById('updateVendorName').value.trim(),
+        vendor_email: document.getElementById('updateVendorEmail').value.trim(),
+        cc_email: document.getElementById('updateVendorCcEmail').value.trim(),
+        service_date: document.getElementById('updateVendorDate').value,
+        contact_person: document.getElementById('updateVendorContact').value.trim(),
+        technician_name: document.getElementById('updateVendorTechnician').value.trim(),
+        service_details: document.getElementById('updateVendorDetails').value.trim(),
+        remarks: document.getElementById('updateVendorRemarks').value.trim()
+      };
+
+      try {
+        const res = await fetch(`/api/vendor-report/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error('Failed to update vendor report');
+        
+        alert('Vendor Report updated successfully!');
+        updateVendorModal.classList.remove('visible');
+        fetchVendorReports();
+      } catch (err) {
+        console.error(err);
+        alert(`Failed to update vendor report: ${err.message}`);
+      } finally {
+        if (btn) {
+          btn.innerHTML = '<i data-lucide="save" style="width: 18px; height: 18px;"></i> Save Changes';
+          btn.disabled = false;
           lucide.createIcons();
         }
       }

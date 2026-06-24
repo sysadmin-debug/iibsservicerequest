@@ -743,6 +743,64 @@
     </div>
   </div>
 
+  <!-- Update Vendor Service Modal -->
+  <div class="modal-overlay" id="updateVendorModal">
+    <div class="modal-content" style="max-width: 800px; text-align: left;">
+      <h2 style="margin-bottom: 0.5rem;"><i data-lucide="edit" style="vertical-align: middle; margin-right: 8px;"></i>Update Vendor Service Entry</h2>
+      <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Update the vendor report details. No email will be sent on update.</p>
+      
+      <form id="updateVendorReportForm">
+        <input type="hidden" id="updateVendorId">
+        <div class="form-grid">
+          <div class="form-column">
+            <div class="form-group">
+            <label for="updateVendorName">Vendor / Company Name *</label>
+            <input type="text" id="updateVendorName" list="vendorNamesList" required>
+          </div>
+            <div class="form-group">
+              <label>Vendor Email Address *</label>
+              <input type="email" id="updateVendorEmail" required>
+            </div>
+            <div class="form-group">
+              <label>CC Email (Optional)</label>
+              <input type="email" id="updateVendorCcEmail">
+            </div>
+            <div class="form-group">
+              <label>Date of Service *</label>
+              <input type="date" id="updateVendorDate" required>
+            </div>
+          </div>
+
+          <div class="form-column">
+            <div class="form-group">
+              <label>Contact Person *</label>
+              <input type="text" id="updateVendorContact" required>
+            </div>
+            <div class="form-group">
+              <label>Technician Name *</label>
+              <input type="text" id="updateVendorTechnician" required>
+            </div>
+            <div class="form-group">
+              <label>Service Details *</label>
+              <textarea id="updateVendorDetails" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+              <label>Remarks (Optional)</label>
+              <textarea id="updateVendorRemarks" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
+          <button type="button" class="btn-secondary" id="updateVendorModalCloseBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="updateVendorSubmitBtn">
+            <i data-lucide="save" style="width: 18px; height: 18px;"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer>
     <div class="footer-content">

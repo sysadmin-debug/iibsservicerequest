@@ -815,6 +815,26 @@ app.post('/api/vendor-report', async (req, res) => {
   }
 });
 
+app.put('/api/vendor-report/:id', async (req, res) => {
+  try {
+    const updated = await VendorReport.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updated) return res.status(404).json({ error: 'Report not found' });
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/vendor-report/:id', async (req, res) => {
+  try {
+    const deleted = await VendorReport.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: 'Report not found' });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // =======================
 // PROCUREMENT ENDPOINTS
 // =======================
