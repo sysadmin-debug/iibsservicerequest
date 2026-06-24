@@ -735,11 +735,12 @@ document.addEventListener('DOMContentLoaded', () => {
         <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
           <thead>
             <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Date</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Vendor Name</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Item Description</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Serial No</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Qty</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Month & Date</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Particulars</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Opening Stock</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Arrivals / Receipts</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Totals</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Closing</th>
               <th style="padding: 1rem 0.5rem; color: var(--text-secondary); text-align: right;">Actions</th>
             </tr>
           </thead>
@@ -747,16 +748,23 @@ document.addEventListener('DOMContentLoaded', () => {
             ${inventoryItems.map(item => {
               let dateString = item.date || item.last_updated;
               try {
-                dateString = new Date(dateString).toLocaleDateString('en-IN');
+                const d = new Date(dateString);
+                dateString = d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
               } catch(e) {}
               
+              const opening = item.opening_stock || 0;
+              const arrivals = item.arrivals || 0;
+              const total = opening + arrivals;
+              const closing = item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0);
+
               return `
                 <tr style="border-bottom: 1px solid var(--border-color);">
                   <td style="padding: 1rem 0.5rem;">${dateString}</td>
-                  <td style="padding: 1rem 0.5rem;">${item.vendor_name || '-'}</td>
-                  <td style="padding: 1rem 0.5rem; font-weight: 500;">${item.item_description || item.item_name || '-'}</td>
-                  <td style="padding: 1rem 0.5rem;">${item.serial_no || '-'}</td>
-                  <td style="padding: 1rem 0.5rem; font-weight: 700;">${item.quantity || 0}</td>
+                  <td style="padding: 1rem 0.5rem; font-weight: 500;">${item.particulars || item.item_name || item.item_description || '-'}</td>
+                  <td style="padding: 1rem 0.5rem;">${opening}</td>
+                  <td style="padding: 1rem 0.5rem; color: #10b981;">${arrivals > 0 ? '+' + arrivals : arrivals}</td>
+                  <td style="padding: 1rem 0.5rem; font-weight: bold; background: rgba(0,0,0,0.02);">${total}</td>
+                  <td style="padding: 1rem 0.5rem; font-weight: 700; color: #4f46e5;">${closing}</td>
                   <td style="padding: 1rem 0.5rem; text-align: right;">
                     <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem;"><i data-lucide="edit-3" style="width: 14px; height: 14px; display: inline-block;"></i> Update</button>
                     <button class="btn-secondary btn-delete-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);"><i data-lucide="trash-2" style="width: 14px; height: 14px; display: inline-block;"></i> Delete</button>
@@ -811,13 +819,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Auto-calculate for Add Modal
+  function calcAddModal() {
+    const op = parseInt(document.getElementById('invNewOpening').value) || 0;
+    const arr = parseInt(document.getElementById('invNewArrivals').value) || 0;
+    const iss = parseInt(document.getElementById('invNewIssues').value) || 0;
+    document.getElementById('invNewTotal').value = op + arr;
+    document.getElementById('invNewClosing').value = op + arr - iss;
+  }
+  document.getElementById('invNewOpening')?.addEventListener('input', calcAddModal);
+  document.getElementById('invNewArrivals')?.addEventListener('input', calcAddModal);
+  document.getElementById('invNewIssues')?.addEventListener('input', calcAddModal);
+
   // Add Item Modal
   document.getElementById('addStockBtn')?.addEventListener('click', () => {
     document.getElementById('invNewDate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('invNewVendor').value = '';
-    document.getElementById('invNewDesc').value = '';
-    document.getElementById('invNewSerial').value = '';
-    document.getElementById('invNewQuantity').value = '1';
+    document.getElementById('invNewParticulars').value = '';
+    document.getElementById('invNewOpening').value = '0';
+    document.getElementById('invNewArrivals').value = '0';
+    document.getElementById('invNewIssues').value = '0';
+    document.getElementById('invNewTotal').value = '0';
+    document.getElementById('invNewClosing').value = '0';
     addInventoryModal.classList.add('visible');
   });
 
@@ -827,13 +849,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('invAddSaveBtn')?.addEventListener('click', async () => {
     const date = document.getElementById('invNewDate').value;
-    const vendor_name = document.getElementById('invNewVendor').value.trim();
-    const item_description = document.getElementById('invNewDesc').value.trim();
-    const serial_no = document.getElementById('invNewSerial').value.trim();
-    const qty = parseInt(document.getElementById('invNewQuantity').value) || 0;
+    const particulars = document.getElementById('invNewParticulars').value.trim();
+    const opening_stock = parseInt(document.getElementById('invNewOpening').value) || 0;
+    const arrivals = parseInt(document.getElementById('invNewArrivals').value) || 0;
+    const issues = parseInt(document.getElementById('invNewIssues').value) || 0;
+    const closing_stock = parseInt(document.getElementById('invNewClosing').value) || 0;
 
-    if (!item_description || !date || !vendor_name) {
-      alert("Please fill required fields (Date, Vendor, Description).");
+    if (!particulars || !date) {
+      alert("Please fill required fields (Date, Particulars).");
       return;
     }
 
@@ -847,12 +870,13 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           date: date,
-          vendor_name: vendor_name,
-          item_description: item_description,
-          serial_no: serial_no,
-          quantity: qty,
-          item_name: item_description,
-          category: 'Other'
+          particulars: particulars,
+          opening_stock: opening_stock,
+          arrivals: arrivals,
+          issues: issues,
+          closing_stock: closing_stock,
+          item_name: particulars,
+          quantity: closing_stock
         })
       });
 
@@ -861,12 +885,24 @@ document.addEventListener('DOMContentLoaded', () => {
       addInventoryModal.classList.remove('visible');
       fetchInventoryFromSupabase();
     } catch (error) {
-      alert("Error adding item. Please try again.");
+      alert("Error adding entry. Please try again.");
     }
 
-    btn.textContent = 'Save Item';
+    btn.textContent = 'Save Entry';
     btn.disabled = false;
   });
+
+  // Auto-calculate for Update Modal
+  function calcUpdateModal() {
+    const op = parseInt(document.getElementById('invUpdateOpening').value) || 0;
+    const arr = parseInt(document.getElementById('invUpdateArrivals').value) || 0;
+    const iss = parseInt(document.getElementById('invUpdateIssues').value) || 0;
+    document.getElementById('invUpdateTotal').value = op + arr;
+    document.getElementById('invUpdateClosing').value = op + arr - iss;
+  }
+  document.getElementById('invUpdateOpening')?.addEventListener('input', calcUpdateModal);
+  document.getElementById('invUpdateArrivals')?.addEventListener('input', calcUpdateModal);
+  document.getElementById('invUpdateIssues')?.addEventListener('input', calcUpdateModal);
 
   // Update Stock Modal
   function openUpdateInventoryModal(id) {
@@ -884,10 +920,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('invUpdateDate').value = dateVal;
-    document.getElementById('invUpdateVendor').value = item.vendor_name || '';
-    document.getElementById('invUpdateDesc').value = item.item_description || item.item_name || '';
-    document.getElementById('invUpdateSerial').value = item.serial_no || '';
-    document.getElementById('invUpdateQuantity').value = item.quantity || 0;
+    document.getElementById('invUpdateParticulars').value = item.particulars || item.item_name || '';
+    document.getElementById('invUpdateOpening').value = item.opening_stock || 0;
+    document.getElementById('invUpdateArrivals').value = item.arrivals || 0;
+    document.getElementById('invUpdateIssues').value = item.issues || 0;
+    document.getElementById('invUpdateClosing').value = item.closing_stock || item.quantity || 0;
+    calcUpdateModal();
 
     updateInventoryModal.classList.add('visible');
   }
@@ -902,13 +940,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!currentUpdatingItemId) return;
     
     const date = document.getElementById('invUpdateDate').value;
-    const vendor_name = document.getElementById('invUpdateVendor').value.trim();
-    const item_description = document.getElementById('invUpdateDesc').value.trim();
-    const serial_no = document.getElementById('invUpdateSerial').value.trim();
-    const qty = parseInt(document.getElementById('invUpdateQuantity').value) || 0;
+    const particulars = document.getElementById('invUpdateParticulars').value.trim();
+    const opening_stock = parseInt(document.getElementById('invUpdateOpening').value) || 0;
+    const arrivals = parseInt(document.getElementById('invUpdateArrivals').value) || 0;
+    const issues = parseInt(document.getElementById('invUpdateIssues').value) || 0;
+    const closing_stock = parseInt(document.getElementById('invUpdateClosing').value) || 0;
 
-    if (!item_description || !date || !vendor_name) {
-      alert("Please fill required fields (Date, Vendor, Description).");
+    if (!particulars || !date) {
+      alert("Please fill required fields (Date, Particulars).");
       return;
     }
 
@@ -922,11 +961,13 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           date: date,
-          vendor_name: vendor_name,
-          item_description: item_description,
-          serial_no: serial_no,
-          quantity: qty,
-          item_name: item_description // For backward compatibility
+          particulars: particulars,
+          opening_stock: opening_stock,
+          arrivals: arrivals,
+          issues: issues,
+          closing_stock: closing_stock,
+          item_name: particulars,
+          quantity: closing_stock
         })
       });
       
@@ -935,7 +976,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateInventoryModal.classList.remove('visible');
       fetchInventoryFromSupabase();
     } catch (error) {
-      alert("Error updating item. Please try again.");
+      alert("Error updating entry. Please try again.");
     }
     btn.textContent = 'Save Changes';
     btn.disabled = false;
