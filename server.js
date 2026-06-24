@@ -11,14 +11,18 @@ const PDFDocument = require('pdfkit');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Email Configuration (Configured for Outlook / Office 365 by default)
+// Email Configuration (Dynamically handles Gmail and Office365)
+const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER || '';
+const isGmail = emailUser.toLowerCase().includes('@gmail.com');
+const smtpHost = isGmail ? 'smtp.gmail.com' : 'smtp.office365.com';
+
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
+  host: smtpHost,
   port: 587,
   secure: false,
   requireTLS: true,
   auth: {
-    user: process.env.EMAIL_USER || process.env.GMAIL_USER,
+    user: emailUser,
     pass: process.env.EMAIL_PASS || process.env.GMAIL_PASS
   }
 });
