@@ -1240,14 +1240,16 @@ app.get('/api/procurement/sync', async (req, res) => {
   const { ImapFlow } = require('imapflow');
   const simpleParser = require('mailparser').simpleParser;
   
+  const isGmail = emailUser.toLowerCase().includes('@gmail.com');
+  const imapHost = isGmail ? 'imap.gmail.com' : 'outlook.office365.com';
+  
   const client = new ImapFlow({
-    host: 'outlook.office365.com',
+    host: imapHost,
     port: 993,
     secure: true,
     auth: { user: emailUser, pass: emailPass },
     logger: false
   });
-
   try {
     await client.connect();
     let lock = await client.getMailboxLock('INBOX');
