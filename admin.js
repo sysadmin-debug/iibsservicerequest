@@ -699,6 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
 
       inventoryItems = data || [];
+      inventoryItems.sort((a, b) => new Date(a.date || a.last_updated || 0) - new Date(b.date || b.last_updated || 0));
       renderInventory();
     } catch (err) {
       console.error('Error fetching inventory:', err);
@@ -1124,6 +1125,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!res.ok) throw new Error('API failed');
       const data = await res.json();
       vendorReports = data || [];
+      vendorReports.sort((a, b) => new Date(a.service_date || a.createdAt || 0) - new Date(b.service_date || b.createdAt || 0));
       renderVendorReports();
     } catch (err) {
       console.error('Error fetching vendor reports:', err);
@@ -1529,6 +1531,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const res = await fetch('/api/procurement');
       procurementRecords = await res.json();
+      procurementRecords.sort((a, b) => new Date(a.po_date || a.createdAt || 0) - new Date(b.po_date || b.createdAt || 0));
       renderProcurement();
     } catch (err) {
       console.error(err);
