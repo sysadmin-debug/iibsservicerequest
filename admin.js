@@ -750,19 +750,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 dateString = new Date(dateString).toLocaleDateString('en-IN');
               } catch(e) {}
               
-              return \`
+              return `
                 <tr style="border-bottom: 1px solid var(--border-color);">
-                  <td style="padding: 1rem 0.5rem;">\${dateString}</td>
-                  <td style="padding: 1rem 0.5rem;">\${item.vendor_name || '-'}</td>
-                  <td style="padding: 1rem 0.5rem; font-weight: 500;">\${item.item_description || item.item_name || '-'}</td>
-                  <td style="padding: 1rem 0.5rem;">\${item.serial_no || '-'}</td>
-                  <td style="padding: 1rem 0.5rem; font-weight: 700;">\${item.quantity || 0}</td>
+                  <td style="padding: 1rem 0.5rem;">${dateString}</td>
+                  <td style="padding: 1rem 0.5rem;">${item.vendor_name || '-'}</td>
+                  <td style="padding: 1rem 0.5rem; font-weight: 500;">${item.item_description || item.item_name || '-'}</td>
+                  <td style="padding: 1rem 0.5rem;">${item.serial_no || '-'}</td>
+                  <td style="padding: 1rem 0.5rem; font-weight: 700;">${item.quantity || 0}</td>
                   <td style="padding: 1rem 0.5rem; text-align: right;">
-                    <button class="btn-secondary btn-update-stock" data-id="\${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem;"><i data-lucide="edit-3" style="width: 14px; height: 14px; display: inline-block;"></i> Update</button>
-                    <button class="btn-secondary btn-delete-stock" data-id="\${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);"><i data-lucide="trash-2" style="width: 14px; height: 14px; display: inline-block;"></i> Delete</button>
+                    <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem;"><i data-lucide="edit-3" style="width: 14px; height: 14px; display: inline-block;"></i> Update</button>
+                    <button class="btn-secondary btn-delete-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);"><i data-lucide="trash-2" style="width: 14px; height: 14px; display: inline-block;"></i> Delete</button>
                   </td>
                 </tr>
-              \`;
+              `;
             }).join('')}
           </tbody>
         </table>
@@ -1120,24 +1120,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
               } catch(e) {}
               
-              return \`
+              return `
                 <tr style="border-bottom: 1px solid var(--border-color);">
-                  <td style="padding: 1rem 0.5rem; white-space: nowrap;">\${dateString}</td>
+                  <td style="padding: 1rem 0.5rem; white-space: nowrap;">${dateString}</td>
                   <td style="padding: 1rem 0.5rem; font-weight: 500;">
-                    \${report.vendor_name}<br>
-                    <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">\${report.vendor_email}</span>
+                    ${report.vendor_name}<br>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">${report.vendor_email}</span>
                   </td>
-                  <td style="padding: 1rem 0.5rem;">\${report.contact_person || '-'}</td>
-                  <td style="padding: 1rem 0.5rem;">\${report.technician_name || '-'}</td>
-                  <td style="padding: 1rem 0.5rem; max-width: 250px; white-space: normal; overflow-wrap: break-word;">\${report.service_details}</td>
-                  <td style="padding: 1rem 0.5rem;">\${report.remarks || '-'}</td>
+                  <td style="padding: 1rem 0.5rem;">${report.contact_person || '-'}</td>
+                  <td style="padding: 1rem 0.5rem;">${report.technician_name || '-'}</td>
+                  <td style="padding: 1rem 0.5rem; max-width: 250px; white-space: normal; overflow-wrap: break-word;">${report.service_details}</td>
+                  <td style="padding: 1rem 0.5rem;">${report.remarks || '-'}</td>
                   <td style="padding: 1rem 0.5rem; text-align: right;">
-                    <a href="/api/vendor-report/\${report._id}/pdf" download class="btn-secondary" style="padding: 0.4rem 0.8rem; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #3b82f6; color: #3b82f6;" title="Download PDF">
+                    <a href="/api/vendor-report/${report._id}/pdf" download class="btn-secondary" style="padding: 0.4rem 0.8rem; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #3b82f6; color: #3b82f6;" title="Download PDF">
                       <i data-lucide="download" style="width: 14px; height: 14px;"></i> PDF
                     </a>
                   </td>
                 </tr>
-              \`;
+              `;
             }).join('')}
           </tbody>
         </table>
