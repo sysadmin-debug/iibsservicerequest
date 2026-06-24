@@ -754,7 +754,10 @@ document.addEventListener('DOMContentLoaded', () => {
               
               const opening = item.opening_stock || 0;
               const arrivals = item.arrivals || 0;
-              const total = opening + arrivals;
+              let total = opening + arrivals;
+              if (opening === arrivals && opening > 0) {
+                total = opening;
+              }
               const closing = item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0);
 
               return `
