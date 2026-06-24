@@ -124,6 +124,10 @@ const Ticket = mongoose.model('Ticket', ticketSchema);
 
 const inventorySchema = new mongoose.Schema({
   id: { type: String, default: () => crypto.randomUUID(), unique: true },
+  date: { type: Date, default: Date.now },
+  vendor_name: { type: String, default: '' },
+  item_description: { type: String, default: '' },
+  serial_no: { type: String, default: '' },
   item_name: String,
   category: String,
   quantity: { type: Number, default: 0 },

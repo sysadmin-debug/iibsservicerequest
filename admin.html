@@ -568,28 +568,35 @@
 
   <!-- Add Inventory Modal -->
   <div class="modal-overlay" id="addInventoryModal">
-    <div class="modal-content" style="max-width: 500px; text-align: left;">
+    <div class="modal-content" style="max-width: 600px; text-align: left;">
       <h2 style="margin-bottom: 1rem;"><i data-lucide="plus-square" style="vertical-align: middle; margin-right: 8px;"></i>Add New Stock Item</h2>
-      <div class="form-group" style="margin-bottom: 1rem;">
-        <label>Item Name *</label>
-        <input type="text" id="invNewItemName" placeholder="e.g. Wireless Mouse" required>
+      <div class="form-grid">
+        <div class="form-column">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Date *</label>
+            <input type="date" id="invNewDate" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Vendor Name *</label>
+            <input type="text" id="invNewVendor" placeholder="e.g. Dell Services" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Item Description *</label>
+            <input type="text" id="invNewDesc" placeholder="e.g. Wireless Mouse" required>
+          </div>
+        </div>
+        <div class="form-column">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Serial No</label>
+            <input type="text" id="invNewSerial" placeholder="e.g. SN12345678">
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Quantity *</label>
+            <input type="number" id="invNewQuantity" value="1" min="0" required>
+          </div>
+        </div>
       </div>
-      <div class="form-group" style="margin-bottom: 1rem;">
-        <label>Category *</label>
-        <select id="invNewCategory" required>
-          <option value="Peripherals">Peripherals</option>
-          <option value="Cables">Cables</option>
-          <option value="Hardware">Hardware (RAM, HDD, etc)</option>
-          <option value="Networking">Networking</option>
-          <option value="Consumables">Consumables (Ink, Toner)</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      <div class="form-group" style="margin-bottom: 1.5rem;">
-        <label>Initial Quantity *</label>
-        <input type="number" id="invNewQuantity" value="0" min="0" required>
-      </div>
-      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
         <button class="btn-secondary" id="invAddCloseBtn">Cancel</button>
         <button class="btn-primary" id="invAddSaveBtn">Save Item</button>
       </div>
@@ -598,38 +605,37 @@
 
   <!-- Update Inventory Modal -->
   <div class="modal-overlay" id="updateInventoryModal">
-    <div class="modal-content" style="max-width: 400px; text-align: left;">
-      <h2 style="margin-bottom: 0.5rem;" id="updateInvTitle">Update Stock</h2>
-      <p style="margin-bottom: 1rem; color: var(--text-secondary);" id="updateInvDesc">Current Quantity: 0</p>
-      
-      <div class="ticket-action-box">
-        <label>Action</label>
-        <select id="invUpdateAction" style="margin-bottom: 1rem;">
-          <option value="add">Add Stock (Incoming)</option>
-          <option value="subtract">Issue Stock (Outgoing)</option>
-        </select>
-        <label>Amount</label>
-        <input type="number" id="invUpdateAmount" value="1" min="1" style="margin-bottom: 1rem;">
-        
-        <label>Remarks / Issued To</label>
-        <input type="text" id="invUpdateRemarks" placeholder="e.g. Student Name, Dept, or Vendor" style="margin-bottom: 1rem;">
-
-        <!-- Purchase Details (Hidden on Subtract) -->
-        <div id="purchaseDetailsContainer">
-          <label>Supplier / Vendor Name</label>
-          <input type="text" id="invSupplier" placeholder="e.g. Amazon, Dell" style="margin-bottom: 1rem;">
-          
-          <label>Total Cost (₹)</label>
-          <input type="number" id="invCost" placeholder="e.g. 5000" min="0" style="margin-bottom: 1rem;">
-          
-          <label>Upload Bill / Invoice Photo</label>
-          <input type="file" id="invBillFile" accept="image/*,application/pdf" style="margin-bottom: 1rem; padding: 0.5rem; background: rgba(0,0,0,0.05); color: var(--text-primary);">
+    <div class="modal-content" style="max-width: 600px; text-align: left;">
+      <h2 style="margin-bottom: 1rem;" id="updateInvTitle">Update Stock Item</h2>
+      <div class="form-grid">
+        <div class="form-column">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Date *</label>
+            <input type="date" id="invUpdateDate" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Vendor Name *</label>
+            <input type="text" id="invUpdateVendor" placeholder="e.g. Dell Services" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Item Description *</label>
+            <input type="text" id="invUpdateDesc" placeholder="e.g. Wireless Mouse" required>
+          </div>
+        </div>
+        <div class="form-column">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Serial No</label>
+            <input type="text" id="invUpdateSerial" placeholder="e.g. SN12345678">
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Quantity *</label>
+            <input type="number" id="invUpdateQuantity" value="1" min="0" required>
+          </div>
         </div>
       </div>
-      
       <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
         <button class="btn-secondary" id="invUpdateCloseBtn">Cancel</button>
-        <button class="btn-primary" id="invUpdateSaveBtn">Update Quantity</button>
+        <button class="btn-primary" id="invUpdateSaveBtn">Save Changes</button>
       </div>
     </div>
   </div>
@@ -786,6 +792,6 @@
     </div>
   </div>
 
-  <script src="admin.js"></script>
+  <script src="admin.js?v=2"></script>
 </body>
 </html>

@@ -730,53 +730,44 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    list.innerHTML = inventoryItems.map(item => {
-      let dateString = item.last_updated;
-      try {
-        dateString = new Date(item.last_updated).toLocaleString('en-IN', {
-          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
-      } catch(e) {}
-
-      // Calculate health badge
-      let badgeClass = 'resolved'; // green
-      let healthText = 'In Stock';
-      if (item.quantity === 0) {
-        badgeClass = 'critical';
-        healthText = 'Out of Stock';
-      } else if (item.quantity <= 5) {
-        badgeClass = 'open'; // yellow
-        healthText = 'Low Stock';
-      }
-
-      return `
-        <div class="ticket-item" style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <div class="ticket-top-left" style="margin-bottom: 0.5rem;">
-              <span class="badge badge-${badgeClass}">${healthText}</span>
-              <span class="badge badge-category">${item.category}</span>
-            </div>
-            <div class="ticket-subject" style="font-size: 1.2rem;">${item.item_name}</div>
-            <div class="ticket-meta" style="margin-top: 0.5rem;">
-              <span><i data-lucide="clock"></i> Last updated: ${dateString}</span>
-            </div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-size: 2rem; font-weight: 700; color: var(--text-primary); line-height: 1;">${item.quantity}</div>
-            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem;">Total Available</div>
-            <button class="btn-secondary btn-history-stock" data-id="${item.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin-right: 0.25rem;">
-              <i data-lucide="clock"></i> History
-            </button>
-            <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; margin-right: 0.25rem;">
-              <i data-lucide="edit-3"></i> Update
-            </button>
-            <button class="btn-secondary btn-delete-stock" data-id="${item.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);">
-              <i data-lucide="trash-2"></i> Delete
-            </button>
-          </div>
-        </div>
-      `;
-    }).join('');
+    list.innerHTML = `
+      <div style="overflow-x: auto; background: var(--bg-secondary); border-radius: 8px; padding: 1rem;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Date</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Vendor Name</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Item Description</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Serial No</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Qty</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary); text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${inventoryItems.map(item => {
+              let dateString = item.date || item.last_updated;
+              try {
+                dateString = new Date(dateString).toLocaleDateString('en-IN');
+              } catch(e) {}
+              
+              return \`
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 1rem 0.5rem;">\${dateString}</td>
+                  <td style="padding: 1rem 0.5rem;">\${item.vendor_name || '-'}</td>
+                  <td style="padding: 1rem 0.5rem; font-weight: 500;">\${item.item_description || item.item_name || '-'}</td>
+                  <td style="padding: 1rem 0.5rem;">\${item.serial_no || '-'}</td>
+                  <td style="padding: 1rem 0.5rem; font-weight: 700;">\${item.quantity || 0}</td>
+                  <td style="padding: 1rem 0.5rem; text-align: right;">
+                    <button class="btn-secondary btn-update-stock" data-id="\${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem;"><i data-lucide="edit-3" style="width: 14px; height: 14px; display: inline-block;"></i> Update</button>
+                    <button class="btn-secondary btn-delete-stock" data-id="\${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);"><i data-lucide="trash-2" style="width: 14px; height: 14px; display: inline-block;"></i> Delete</button>
+                  </td>
+                </tr>
+              \`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
 
     lucide.createIcons();
 
@@ -822,8 +813,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Add Item Modal
   document.getElementById('addStockBtn')?.addEventListener('click', () => {
-    document.getElementById('invNewItemName').value = '';
-    document.getElementById('invNewQuantity').value = '0';
+    document.getElementById('invNewDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('invNewVendor').value = '';
+    document.getElementById('invNewDesc').value = '';
+    document.getElementById('invNewSerial').value = '';
+    document.getElementById('invNewQuantity').value = '1';
     addInventoryModal.classList.add('visible');
   });
 
@@ -832,12 +826,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('invAddSaveBtn')?.addEventListener('click', async () => {
-    const name = document.getElementById('invNewItemName').value.trim();
-    const category = document.getElementById('invNewCategory').value;
+    const date = document.getElementById('invNewDate').value;
+    const vendor_name = document.getElementById('invNewVendor').value.trim();
+    const item_description = document.getElementById('invNewDesc').value.trim();
+    const serial_no = document.getElementById('invNewSerial').value.trim();
     const qty = parseInt(document.getElementById('invNewQuantity').value) || 0;
 
-    if (!name) {
-      alert("Please enter an Item Name.");
+    if (!item_description || !date || !vendor_name) {
+      alert("Please fill required fields (Date, Vendor, Description).");
       return;
     }
 
@@ -850,9 +846,13 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          item_name: name,
-          category: category,
-          quantity: qty
+          date: date,
+          vendor_name: vendor_name,
+          item_description: item_description,
+          serial_no: serial_no,
+          quantity: qty,
+          item_name: item_description,
+          category: 'Other'
         })
       });
 
@@ -874,30 +874,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!item) return;
 
     currentUpdatingItemId = id;
-    document.getElementById('updateInvTitle').textContent = `Update: ${item.item_name}`;
-    document.getElementById('updateInvDesc').textContent = `Current Quantity: ${item.quantity}`;
-    document.getElementById('invUpdateAction').value = 'add';
-    document.getElementById('invUpdateAmount').value = '1';
-    document.getElementById('invUpdateRemarks').value = '';
     
-    // Purchase details reset
-    document.getElementById('invSupplier').value = '';
-    document.getElementById('invCost').value = '';
-    document.getElementById('invBillFile').value = '';
-    document.getElementById('purchaseDetailsContainer').style.display = 'block';
+    // Format date for the date input
+    let dateVal = new Date().toISOString().split('T')[0];
+    if (item.date) {
+      dateVal = new Date(item.date).toISOString().split('T')[0];
+    } else if (item.last_updated) {
+      dateVal = new Date(item.last_updated).toISOString().split('T')[0];
+    }
+
+    document.getElementById('invUpdateDate').value = dateVal;
+    document.getElementById('invUpdateVendor').value = item.vendor_name || '';
+    document.getElementById('invUpdateDesc').value = item.item_description || item.item_name || '';
+    document.getElementById('invUpdateSerial').value = item.serial_no || '';
+    document.getElementById('invUpdateQuantity').value = item.quantity || 0;
 
     updateInventoryModal.classList.add('visible');
   }
 
-  // Toggle purchase details container
-  document.getElementById('invUpdateAction')?.addEventListener('change', (e) => {
-    const container = document.getElementById('purchaseDetailsContainer');
-    if (e.target.value === 'add') {
-      container.style.display = 'block';
-    } else {
-      container.style.display = 'none';
-    }
-  });
+  // removed purchase details toggle
 
   document.getElementById('invUpdateCloseBtn')?.addEventListener('click', () => {
     updateInventoryModal.classList.remove('visible');
@@ -906,21 +901,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('invUpdateSaveBtn')?.addEventListener('click', async () => {
     if (!currentUpdatingItemId) return;
     
-    const item = inventoryItems.find(i => i.id === currentUpdatingItemId);
-    const action = document.getElementById('invUpdateAction').value;
-    const amount = parseInt(document.getElementById('invUpdateAmount').value) || 0;
-    
-    if (amount <= 0) {
-      alert("Amount must be greater than 0");
-      return;
-    }
+    const date = document.getElementById('invUpdateDate').value;
+    const vendor_name = document.getElementById('invUpdateVendor').value.trim();
+    const item_description = document.getElementById('invUpdateDesc').value.trim();
+    const serial_no = document.getElementById('invUpdateSerial').value.trim();
+    const qty = parseInt(document.getElementById('invUpdateQuantity').value) || 0;
 
-    let newQty = item.quantity;
-    if (action === 'add') newQty += amount;
-    else if (action === 'subtract') newQty -= amount;
-
-    if (newQty < 0) {
-      alert("Cannot reduce stock below 0.");
+    if (!item_description || !date || !vendor_name) {
+      alert("Please fill required fields (Date, Vendor, Description).");
       return;
     }
 
@@ -928,71 +916,28 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.textContent = 'Updating...';
     btn.disabled = true;
 
-    // 1. Update Inventory Table
     try {
       const resInv = await fetch(`/api/inventory/${currentUpdatingItemId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity: newQty })
-      });
-      if (!resInv.ok) throw new Error('Failed to update inventory');
-
-      // 2. Upload File (if present)
-      let billUrl = null;
-      let supplierName = null;
-      let purchaseCost = null;
-
-      if (action === 'add') {
-        supplierName = document.getElementById('invSupplier').value.trim();
-        purchaseCost = parseFloat(document.getElementById('invCost').value) || null;
-        
-        const fileInput = document.getElementById('invBillFile');
-        if (fileInput && fileInput.files.length > 0) {
-          const file = fileInput.files[0];
-          
-          btn.textContent = 'Uploading Bill...';
-          const formData = new FormData();
-          formData.append('file', file);
-
-          const uploadRes = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData
-          });
-
-          if (uploadRes.ok) {
-            const uploadData = await uploadRes.json();
-            billUrl = uploadData.publicUrl;
-          } else {
-            console.error('File upload failed');
-          }
-        }
-      }
-
-      // 3. Insert into Stock Log
-      const remarks = document.getElementById('invUpdateRemarks').value.trim();
-      await fetch('/api/stock_log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          item_id: item.id,
-          item_name: item.item_name,
-          action: action.toUpperCase(),
-          amount: amount,
-          remarks: remarks,
-          supplier_name: supplierName,
-          purchase_cost: purchaseCost,
-          bill_photo_url: billUrl
+        body: JSON.stringify({ 
+          date: date,
+          vendor_name: vendor_name,
+          item_description: item_description,
+          serial_no: serial_no,
+          quantity: qty,
+          item_name: item_description // For backward compatibility
         })
       });
+      
+      if (!resInv.ok) throw new Error('Failed to update inventory');
 
       updateInventoryModal.classList.remove('visible');
       fetchInventoryFromSupabase();
     } catch (error) {
-      console.error(error);
-      alert("Error updating stock. Please try again.");
+      alert("Error updating item. Please try again.");
     }
-
-    btn.textContent = 'Update Quantity';
+    btn.textContent = 'Save Changes';
     btn.disabled = false;
   });
 
@@ -1152,39 +1097,52 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    list.innerHTML = vendorReports.map(report => {
-      let dateString = report.service_date;
-      try {
-        dateString = new Date(report.service_date).toLocaleDateString('en-IN', {
-          day: '2-digit', month: 'short', year: 'numeric'
-        });
-      } catch(e) {}
-
-      return `
-        <div class="ticket-item" style="display: flex; flex-direction: column; gap: 0.5rem; cursor: default;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-              <span class="badge badge-resolved" style="margin-bottom: 0.5rem;"><i data-lucide="check-circle" style="width: 12px; height: 12px; display: inline-block; margin-right: 4px;"></i> Completed</span>
-              <div class="ticket-subject" style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.2rem;">${report.vendor_name}</div>
-              <div style="color: var(--text-secondary); font-size: 0.9rem;"><i data-lucide="mail" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${report.vendor_email}</div>
-            </div>
-            <div style="text-align: right; color: var(--text-secondary); font-size: 0.9rem;">
-              <div style="font-weight: 600; color: var(--text-primary);"><i data-lucide="calendar" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${dateString}</div>
-              <div style="margin-top: 0.2rem;"><i data-lucide="user" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${report.contact_person}</div>
-              <div style="margin-top: 0.2rem; color: #4f46e5;"><i data-lucide="wrench" style="width: 14px; height: 14px; vertical-align: middle;"></i> ${report.technician_name}</div>
-            </div>
-          </div>
-          <div style="background: var(--bg-secondary); padding: 0.8rem; border-radius: 6px; margin-top: 0.5rem; position: relative;">
-            <div style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.4rem; padding-right: 40px;"><strong>Service Details:</strong><br>${report.service_details}</div>
-            ${report.remarks ? `<div style="font-size: 0.9rem; color: var(--text-secondary); padding-right: 40px;"><strong>Remarks:</strong> ${report.remarks}</div>` : ''}
-            
-            <a href="/api/vendor-report/${report._id}/pdf" download class="btn-icon" style="position: absolute; right: 10px; top: 10px; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 4px; padding: 4px 8px; text-decoration: none; font-size: 0.8rem; background: #fff;" title="Download PDF">
-              <i data-lucide="download" style="width: 14px; height: 14px; vertical-align: middle;"></i> PDF
-            </a>
-          </div>
-        </div>
-      `;
-    }).join('');
+    list.innerHTML = `
+      <div style="overflow-x: auto; background: var(--bg-secondary); border-radius: 8px; padding: 1rem;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Date</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Vendor Name</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Contact Person</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Technician</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Service Details</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Remarks</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary); text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${vendorReports.map(report => {
+              let dateString = report.service_date;
+              try {
+                dateString = new Date(report.service_date).toLocaleDateString('en-IN', {
+                  day: '2-digit', month: 'short', year: 'numeric'
+                });
+              } catch(e) {}
+              
+              return \`
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 1rem 0.5rem; white-space: nowrap;">\${dateString}</td>
+                  <td style="padding: 1rem 0.5rem; font-weight: 500;">
+                    \${report.vendor_name}<br>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">\${report.vendor_email}</span>
+                  </td>
+                  <td style="padding: 1rem 0.5rem;">\${report.contact_person || '-'}</td>
+                  <td style="padding: 1rem 0.5rem;">\${report.technician_name || '-'}</td>
+                  <td style="padding: 1rem 0.5rem; max-width: 250px; white-space: normal; overflow-wrap: break-word;">\${report.service_details}</td>
+                  <td style="padding: 1rem 0.5rem;">\${report.remarks || '-'}</td>
+                  <td style="padding: 1rem 0.5rem; text-align: right;">
+                    <a href="/api/vendor-report/\${report._id}/pdf" download class="btn-secondary" style="padding: 0.4rem 0.8rem; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #3b82f6; color: #3b82f6;" title="Download PDF">
+                      <i data-lucide="download" style="width: 14px; height: 14px;"></i> PDF
+                    </a>
+                  </td>
+                </tr>
+              \`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
 
     lucide.createIcons();
   }
