@@ -815,6 +815,114 @@ app.post('/api/vendor-report', async (req, res) => {
   }
 });
 
+app.post('/api/vendor-report/:id/resend-email', async (req, res) => {
+  try {
+    const report = await VendorReport.findById(req.params.id);
+    if (!report) return res.status(404).json({ error: 'Report not found' });
+
+    const { vendor_name, vendor_email, cc_email, service_date, service_details, contact_person, technician_name, remarks } = report;
+
+    // Generate PDF Buffer
+    const pdfBuffer = await new Promise((resolve, reject) => {
+      try {
+        const doc = new PDFDocument({ margins: { top: 140, bottom: 50, left: 50, right: 50 } });
+        let buffers = [];
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => resolve(Buffer.concat(buffers)));
+
+        // Add Letterhead
+        const imagePath = path.join(__dirname, 'letterhead.jpg');
+        if (fs.existsSync(imagePath)) {
+          doc.image(imagePath, 0, 0, { width: doc.page.width });
+        }
+
+        // Draw PDF content
+        doc.fontSize(20).font('Helvetica-Bold').fillColor('#0f172a').text('Vendor Service Report', { align: 'center', underline: true });
+        doc.moveDown(2);
+        
+        doc.fontSize(12).fillColor('#333333').font('Helvetica-Bold').text('Date of Service: ', { continued: true }).font('Helvetica').text(new Date(service_date).toLocaleDateString('en-IN'));
+        doc.moveDown(0.5);
+        doc.font('Helvetica-Bold').text('Vendor Name: ', { continued: true }).font('Helvetica').text(vendor_name);
+        doc.moveDown(0.5);
+        doc.font('Helvetica-Bold').text('Contact Person: ', { continued: true }).font('Helvetica').text(contact_person);
+        doc.moveDown(0.5);
+        doc.font('Helvetica-Bold').text('Technician Name: ', { continued: true }).font('Helvetica').text(technician_name);
+        doc.moveDown(0.5);
+        doc.font('Helvetica-Bold').text('Vendor Email: ', { continued: true }).font('Helvetica').text(vendor_email);
+        doc.moveDown(1.5);
+        
+        doc.font('Helvetica-Bold').fontSize(14).text('Service Details:');
+        doc.moveDown(0.5);
+        doc.font('Helvetica').fontSize(12).text(service_details, { align: 'justify' });
+        doc.moveDown(1.5);
+
+        doc.font('Helvetica-Bold').fontSize(14).text('Remarks:');
+        doc.moveDown(0.5);
+        doc.font('Helvetica').fontSize(12).text(remarks || 'None', { align: 'justify' });
+        
+        doc.moveDown(4);
+        doc.text('-----------------------------------', { align: 'right' });
+        doc.font('Helvetica-Bold').text('RAMESH A S', { align: 'right' });
+        doc.font('Helvetica').text('IT Admin', { align: 'right' });
+        
+        doc.end();
+      } catch (err) {
+        reject(err);
+      }
+    });
+
+    // Send email to vendor with PDF attachment
+    const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
+    const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
+    if (!emailUser || !emailPass || !vendor_email) {
+       return res.status(400).json({ error: 'Email configuration missing or vendor has no email.' });
+    }
+
+    const mailOptions = {
+      from: `"IIBS IT Department" <${emailUser}>`,
+      to: vendor_email,
+      cc: cc_email || undefined,
+      bcc: 'sysadmin@iibsonline.com',
+      subject: `Service Report - IIBS IT Department`,
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+          <div style="background-color: #0f172a; padding: 20px; text-align: center;">
+            <h2 style="color: #fff; margin: 0;">IIBS IT Service Report</h2>
+          </div>
+          <div style="padding: 20px;">
+            <p>Dear <strong>${vendor_name}</strong>,</p>
+            <p>Thank you for providing service at IIBS. Please find the details of the service entry below, as well as an official PDF report attached for your records.</p>
+            
+            <div style="background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 4px;">
+              <p style="margin: 0 0 10px 0;"><strong>Date of Service:</strong> ${new Date(service_date).toLocaleDateString('en-IN')}</p>
+              <p style="margin: 0 0 10px 0;"><strong>Contact Person:</strong> ${contact_person}</p>
+              <p style="margin: 0 0 10px 0;"><strong>Technician Name:</strong> ${technician_name}</p>
+              <p style="margin: 0 0 10px 0;"><strong>Service Details:</strong><br/> ${service_details}</p>
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 0.9rem; color: #64748b;">
+              Best Regards,<br/>
+              <strong>IIBS IT Department</strong>
+            </p>
+          </div>
+        </div>
+      `,
+      attachments: [
+        {
+          filename: `IIBS_Vendor_Report_${new Date(service_date).toISOString().split('T')[0]}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf'
+        }
+      ]
+    };
+    
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.put('/api/vendor-report/:id', async (req, res) => {
   try {
     const updated = await VendorReport.findByIdAndUpdate(req.params.id, req.body, { new: true });

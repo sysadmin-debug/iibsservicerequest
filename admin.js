@@ -1176,6 +1176,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <a href="/api/vendor-report/${report._id}/pdf" download class="btn-secondary" style="padding: 0.4rem 0.8rem; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #3b82f6; color: #3b82f6;" title="Download PDF">
                       <i data-lucide="download" style="width: 14px; height: 14px;"></i> PDF
                     </a>
+                    <button class="btn-secondary" onclick="resendVendorEmail('${report._id}')" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px; color: #10b981; border-color: #10b981;" title="Resend Email">
+                      <i data-lucide="send" style="width: 14px; height: 14px;"></i> Resend
+                    </button>
                     <button class="btn-secondary" onclick="openUpdateVendorModal('${report._id}')" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px;" title="Update">
                       <i data-lucide="edit" style="width: 14px; height: 14px;"></i> Update
                     </button>
@@ -1287,6 +1290,19 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error(err);
       alert('Failed to delete vendor report.');
+    }
+  };
+
+  window.resendVendorEmail = async function(id) {
+    if (!confirm('Are you sure you want to resend the email to the vendor for this report?')) return;
+    try {
+      const res = await fetch(`/api/vendor-report/${id}/resend-email`, { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to resend email');
+      alert('Email has been resent successfully!');
+    } catch (err) {
+      console.error(err);
+      alert(`Failed to resend email: ${err.message}`);
     }
   };
 
