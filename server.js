@@ -153,7 +153,12 @@ const procurementSchema = new mongoose.Schema({
     date: Date,
     from: String,
     subject: String,
-    body: String
+    body: String,
+    attachments: [{
+      filename: String,
+      contentType: String,
+      content: String
+    }]
   }]
 });
 const Procurement = mongoose.model('Procurement', procurementSchema);
@@ -949,7 +954,7 @@ app.delete('/api/vendor-report/:id', async (req, res) => {
 
 app.get('/api/procurement', async (req, res) => {
   try {
-    const records = await Procurement.find().sort({ date: -1 });
+    const records = await Procurement.find().select('-replies.attachments.content').sort({ date: -1 });
     res.json(records);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -1265,11 +1270,23 @@ app.get('/api/procurement/sync', async (req, res) => {
           const proc = await Procurement.findOne({ ref_id });
           if (proc) {
             const parsed = await simpleParser(msg.source);
+            const attachments = [];
+            if (parsed.attachments && parsed.attachments.length > 0) {
+              parsed.attachments.forEach(att => {
+                attachments.push({
+                  filename: att.filename || 'attachment',
+                  contentType: att.contentType,
+                  content: att.content ? att.content.toString('base64') : ''
+                });
+              });
+            }
+
             proc.replies.push({
               date: msg.envelope.date,
               from: msg.envelope.from[0]?.address || 'Unknown',
               subject: subject,
-              body: parsed.text || parsed.textAsHtml || 'No text content'
+              body: parsed.text || parsed.textAsHtml || 'No text content',
+              attachments: attachments
             });
             proc.status = 'Replied';
             await proc.save();
@@ -1283,6 +1300,24 @@ app.get('/api/procurement/sync', async (req, res) => {
       lock.release();
     }
     await client.logout();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/procurement/:id/reply/:replyId/attachment/:attachmentIndex', async (req, res) => {
+  try {
+    const proc = await Procurement.findById(req.params.id);
+    if (!proc) return res.status(404).json({ error: 'Record not found' });
+    const reply = proc.replies.id(req.params.replyId);
+    if (!reply) return res.status(404).json({ error: 'Reply not found' });
+    const attachment = reply.attachments[req.params.attachmentIndex];
+    if (!attachment || !attachment.content) return res.status(404).json({ error: 'Attachment not found' });
+    
+    const buffer = Buffer.from(attachment.content, 'base64');
+    res.setHeader('Content-Type', attachment.contentType || 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="${attachment.filename}"`);
+    res.send(buffer);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -1553,12 +1553,28 @@ document.addEventListener('DOMContentLoaded', () => {
       if (doc.replies && doc.replies.length > 0) {
         repliesHtml = `<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
           <h4 style="margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Email Replies:</h4>
-          ${doc.replies.map(r => `
+          ${doc.replies.map(r => {
+            let attHtml = '';
+            if (r.attachments && r.attachments.length > 0) {
+              attHtml = `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+                <strong>Attachments:</strong>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px;">
+                  ${r.attachments.map((att, idx) => `
+                    <a href="/api/procurement/${doc._id}/reply/${r._id}/attachment/${idx}" target="_blank" class="badge" style="background-color: #e2e8f0; color: #334155; text-decoration: none; display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1;">
+                      <i data-lucide="paperclip" style="width: 12px; height: 12px;"></i> ${att.filename || 'Download File'}
+                    </a>
+                  `).join('')}
+                </div>
+              </div>`;
+            }
+            return `
             <div style="background: #f1f5f9; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.85rem;">
               <strong>From:</strong> ${r.from} <span style="color: #64748b; font-size: 0.8rem; margin-left: 10px;">${new Date(r.date).toLocaleString()}</span><br>
-              <div style="margin-top: 5px; white-space: pre-wrap;">${r.body}</div>
+              <div style="margin-top: 5px; white-space: pre-wrap; max-height: 200px; overflow-y: auto;">${r.body}</div>
+              ${attHtml}
             </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>`;
       }
 
