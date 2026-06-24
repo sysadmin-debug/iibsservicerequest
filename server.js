@@ -1323,6 +1323,28 @@ app.get('/api/procurement/:id/reply/:replyId/attachment/:attachmentIndex', async
   }
 });
 
+app.post('/api/procurement/:id/reply', async (req, res) => {
+  try {
+    const proc = await Procurement.findById(req.params.id);
+    if (!proc) return res.status(404).json({ error: 'Record not found' });
+    
+    const { from, subject, body } = req.body;
+    proc.replies.push({
+      date: new Date(),
+      from: from || 'Manual Note / WhatsApp',
+      subject: subject || 'Manual Note',
+      body: body || '',
+      attachments: []
+    });
+    proc.status = 'Replied';
+    await proc.save();
+    
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 if (process.env.NODE_ENV !== 'production') {
   app.listen(port, () => {
     console.log(`IIBS Backend running at http://localhost:${port}`);

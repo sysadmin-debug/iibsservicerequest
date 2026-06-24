@@ -1615,6 +1615,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a href="https://wa.me/?text=${waText}" target="_blank" class="btn-icon" style="color: #25D366; border: 1px solid #25D366; border-radius: 4px; padding: 4px 8px; text-decoration: none; font-size: 0.8rem; background: #fff; display: flex; align-items: center; gap: 4px;" title="Share via WhatsApp">
                   <i data-lucide="message-circle" style="width: 14px; height: 14px;"></i> WhatsApp
                 </a>
+                <button onclick="openManualReplyModal('${doc._id}')" class="btn-icon" style="color: #8b5cf6; border: 1px solid #8b5cf6; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; background: #fff; display: flex; align-items: center; gap: 4px; cursor: pointer;" title="Add Manual Note/Reply">
+                  <i data-lucide="message-square-plus" style="width: 14px; height: 14px;"></i> Note
+                </button>
                 <button onclick="editProcurement('${doc._id}')" class="btn-icon" style="color: #f59e0b; border: 1px solid #f59e0b; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; background: #fff; display: flex; align-items: center; gap: 4px; cursor: pointer;" title="Edit Document">
                   <i data-lucide="edit" style="width: 14px; height: 14px;"></i> Edit
                 </button>
@@ -1706,10 +1709,59 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         createLineItemRow();
       }
+      lucide.createIcons();
     }
-    
-    if (addProcModal) addProcModal.classList.add('visible');
-    lucide.createIcons();
+    document.getElementById('addProcurementModal').classList.add('visible');
+  }
+
+  // Manual Reply logic
+  const manualReplyModal = document.getElementById('addManualReplyModal');
+  const manualReplyForm = document.getElementById('addManualReplyForm');
+  
+  window.openManualReplyModal = function(id) {
+    if (manualReplyModal) {
+      document.getElementById('manualReplyProcId').value = id;
+      if (manualReplyForm) manualReplyForm.reset();
+      manualReplyModal.classList.add('visible');
+    }
   };
+
+  document.getElementById('manualReplyCloseBtn')?.addEventListener('click', () => {
+    if (manualReplyModal) manualReplyModal.classList.remove('visible');
+  });
+
+  if (manualReplyForm) {
+    manualReplyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('manualReplyProcId').value;
+      const from = document.getElementById('manualReplyFrom').value;
+      const body = document.getElementById('manualReplyBody').value;
+      
+      const btn = document.getElementById('manualReplySubmitBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Adding...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`/api/procurement/${id}/reply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from, body })
+        });
+        
+        if (!res.ok) throw new Error('Failed to add note');
+        
+        alert('Note added successfully!');
+        manualReplyModal.classList.remove('visible');
+        fetchProcurement();
+      } catch (err) {
+        console.error(err);
+        alert('Error: ' + err.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+  }
 
 });
