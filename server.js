@@ -205,6 +205,19 @@ const vendorReportSchema = new mongoose.Schema({
 });
 const VendorReport = mongoose.models.VendorReport || mongoose.model('VendorReport', vendorReportSchema);
 
+const mobileRegisterSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  mobile_model: { type: String, required: true },
+  designation: { type: String, required: true },
+  date_issue: { type: String, required: true },
+  date_return: { type: String, default: '' },
+  imei1: { type: String, required: true },
+  imei2: { type: String, default: '' },
+  phone: { type: String, required: true },
+  created_at: { type: Date, default: Date.now }
+});
+const MobileRegister = mongoose.models.MobileRegister || mongoose.model('MobileRegister', mobileRegisterSchema);
+
 // =======================
 // API ENDPOINTS
 // =======================
@@ -1343,6 +1356,44 @@ app.post('/api/procurement/:id/reply', async (req, res) => {
     proc.status = 'Replied';
     await proc.save();
     
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// --- MOBILE REGISTER ---
+app.get('/api/mobiles', async (req, res) => {
+  try {
+    const mobiles = await MobileRegister.find().sort({ created_at: -1 });
+    res.json(mobiles);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/mobiles', async (req, res) => {
+  try {
+    const newMobile = new MobileRegister(req.body);
+    await newMobile.save();
+    res.status(201).json(newMobile);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/mobiles/:id', async (req, res) => {
+  try {
+    const updated = await MobileRegister.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/mobiles/:id', async (req, res) => {
+  try {
+    await MobileRegister.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });

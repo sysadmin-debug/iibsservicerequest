@@ -1764,4 +1764,176 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ===== Mobile Register Logic =====
+  const MOBILE_API_URL = '/api/mobiles';
+  let mobilesData = [];
+  
+  const mobileForm = document.getElementById('mobileForm');
+  if (mobileForm) {
+    mobileForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('mobileSubmitBtn');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = 'Saving...';
+      submitBtn.disabled = true;
+
+      const editId = document.getElementById('editMobileId').value;
+      
+      const payload = {
+          name: document.getElementById('mobileName').value,
+          designation: document.getElementById('mobileDesignation').value,
+          mobile_model: document.getElementById('mobileModelInput').value,
+          phone: document.getElementById('mobilePhone').value,
+          imei1: document.getElementById('mobileImei1').value,
+          imei2: document.getElementById('mobileImei2').value,
+          date_issue: document.getElementById('mobileDateIssue').value,
+          date_return: document.getElementById('mobileDateReturn').value
+      };
+
+      try {
+          const url = editId ? `${MOBILE_API_URL}/${editId}` : MOBILE_API_URL;
+          const method = editId ? 'PUT' : 'POST';
+          
+          const response = await fetch(url, {
+              method: method,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+              window.resetMobileForm();
+              await window.fetchMobiles();
+              alert('Record saved successfully!');
+          } else {
+              alert('Error saving record');
+          }
+      } catch (error) {
+          console.error('Save error:', error);
+          alert('Connection error');
+      } finally {
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+      }
+    });
+  }
+
+  window.fetchMobiles = async function() {
+    try {
+        const response = await fetch(MOBILE_API_URL);
+        if (response.ok) {
+            mobilesData = await response.json();
+            renderMobileTable();
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
+  }
+
+  function renderMobileTable() {
+    const tbody = document.getElementById('mobileTableBody');
+    if (!tbody) return;
+    
+    if (mobilesData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-secondary);">No mobile records found.</td></tr>`;
+        return;
+    }
+
+    let html = '';
+    mobilesData.forEach(item => {
+        const isReturned = item.date_return && item.date_return.trim() !== '';
+        const statusColor = isReturned ? '#94a3b8' : '#10b981';
+        const statusText = isReturned ? 'Returned' : 'Active';
+
+        html += `
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 12px;">
+                    <div style="font-weight: 600; color: var(--text-primary);">${item.name}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">${item.designation}</div>
+                    <span class="badge" style="background-color: ${statusColor}20; color: ${statusColor}; font-size: 0.75rem;">${statusText}</span>
+                </td>
+                <td style="padding: 12px; font-weight: 500;">
+                    ${item.mobile_model}
+                </td>
+                <td style="padding: 12px;">
+                    <div style="font-size: 0.9rem;"><i data-lucide="phone" style="width:14px; height:14px;"></i> ${item.phone}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                        <div>1: ${item.imei1}</div>
+                        ${item.imei2 ? `<div>2: ${item.imei2}</div>` : ''}
+                    </div>
+                </td>
+                <td style="padding: 12px;">
+                    <div style="font-size: 0.9rem;"><strong>Iss:</strong> ${item.date_issue}</div>
+                    ${isReturned ? `<div style="font-size: 0.85rem; color: var(--text-secondary);"><strong>Ret:</strong> ${item.date_return}</div>` : ''}
+                </td>
+                <td style="padding: 12px;">
+                    <button onclick="editMobileRecord('${item._id}')" class="btn-icon" style="color: #f59e0b; border: 1px solid #f59e0b; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; background: #fff; cursor: pointer; margin-right: 5px;">
+                      <i data-lucide="edit" style="width:14px; height:14px;"></i> Edit
+                    </button>
+                    <button onclick="deleteMobileRecord('${item._id}')" class="btn-icon" style="color: #ef4444; border: 1px solid #ef4444; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; background: #fff; cursor: pointer;">
+                      <i data-lucide="trash-2" style="width:14px; height:14px;"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+    lucide.createIcons();
+  }
+
+  window.editMobileRecord = function(id) {
+    const item = mobilesData.find(m => m._id === id);
+    if (!item) return;
+
+    document.getElementById('editMobileId').value = item._id;
+    document.getElementById('mobileName').value = item.name;
+    document.getElementById('mobileDesignation').value = item.designation;
+    document.getElementById('mobileModelInput').value = item.mobile_model;
+    document.getElementById('mobilePhone').value = item.phone;
+    document.getElementById('mobileImei1').value = item.imei1;
+    document.getElementById('mobileImei2').value = item.imei2 || '';
+    document.getElementById('mobileDateIssue').value = item.date_issue;
+    document.getElementById('mobileDateReturn').value = item.date_return || '';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('mobileSubmitBtn').innerHTML = 'Update Record';
+  }
+
+  window.deleteMobileRecord = async function(id) {
+    if (!confirm('Are you sure you want to delete this record?')) return;
+    try {
+        const response = await fetch(`${MOBILE_API_URL}/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+            await window.fetchMobiles();
+        } else {
+            alert('Error deleting record');
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        alert('Connection error');
+    }
+  }
+
+  window.resetMobileForm = function() {
+    if (document.getElementById('mobileForm')) {
+      document.getElementById('mobileForm').reset();
+      document.getElementById('editMobileId').value = '';
+      if(document.getElementById('mobileDateIssue')) {
+         document.getElementById('mobileDateIssue').valueAsDate = new Date();
+      }
+      document.getElementById('mobileSubmitBtn').innerHTML = 'Save Record';
+    }
+  }
+
+  // Fetch mobile data initially if needed or when tab is clicked
+  const tabLinksForMobile = document.querySelectorAll('.nav-container nav a[data-tab]');
+  tabLinksForMobile.forEach(link => {
+    link.addEventListener('click', (e) => {
+        if(e.currentTarget.getAttribute('data-tab') === 'mobileregister') {
+           window.fetchMobiles();
+           window.resetMobileForm();
+        }
+    });
+  });
+
 });

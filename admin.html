@@ -35,6 +35,7 @@
         <a href="#" data-tab="vendor"><i data-lucide="file-check"></i> Vendor Management</a>
         <a href="#" data-tab="procurement"><i data-lucide="shopping-cart"></i> Procurement</a>
         <a href="laptop-report.html"><i data-lucide="laptop"></i> Laptop Report</a>
+        <a href="#" data-tab="mobileregister"><i data-lucide="smartphone"></i> Mobile Register</a>
         <a href="#" onclick="logout()" style="color: #ef4444; margin-top: auto;"><i data-lucide="log-out"></i> Logout</a>
         <a href="#" data-tab="help"><i data-lucide="life-buoy" class="nav-icon"></i> Help</a>
       </nav>
@@ -509,6 +510,82 @@
             <p style="margin-bottom: 0.5rem; font-size: 1.1rem;">sysadmin@iibsonline.com</p>
             <p style="font-size: 1.1rem; font-weight: 500; color: var(--text-primary);"><i data-lucide="phone" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;"></i> 9901733369</p>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: MOBILE REGISTER -->
+    <div id="mobileregister" class="tab-content">
+      <div class="form-container">
+        <div class="form-header">
+          <div class="form-header-icon"><i data-lucide="smartphone"></i></div>
+          <h2>Issue New Mobile Phone</h2>
+          <p>Register a mobile phone given to staff.</p>
+        </div>
+        <form id="mobileForm">
+          <input type="hidden" id="editMobileId">
+          <div class="form-grid">
+            <div class="form-column">
+              <div class="form-group">
+                <label>Staff Name *</label>
+                <input type="text" id="mobileName" required placeholder="e.g. John Doe">
+              </div>
+              <div class="form-group">
+                <label>Designation *</label>
+                <input type="text" id="mobileDesignation" required placeholder="e.g. IT Administrator">
+              </div>
+              <div class="form-group">
+                <label>Mobile Model *</label>
+                <input type="text" id="mobileModelInput" required placeholder="e.g. Samsung Galaxy S23">
+              </div>
+              <div class="form-group">
+                <label>Phone Number *</label>
+                <input type="text" id="mobilePhone" required placeholder="e.g. +91 9876543210">
+              </div>
+            </div>
+            <div class="form-column">
+              <div class="form-group">
+                <label>IMEI No 1 *</label>
+                <input type="text" id="mobileImei1" required placeholder="Enter 15-digit IMEI">
+              </div>
+              <div class="form-group">
+                <label>IMEI No 2 (Optional)</label>
+                <input type="text" id="mobileImei2" placeholder="Enter second IMEI if dual SIM">
+              </div>
+              <div class="form-group">
+                <label>Date of Issue *</label>
+                <input type="date" id="mobileDateIssue" required>
+              </div>
+              <div class="form-group">
+                <label>Date of Return</label>
+                <input type="date" id="mobileDateReturn">
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
+            <button type="button" class="btn-secondary" onclick="resetMobileForm()">Clear</button>
+            <button type="submit" class="btn-primary" id="mobileSubmitBtn">Save Record</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="form-container" style="margin-top: 2rem;">
+        <h3 class="section-title">Issued Mobiles Directory</h3>
+        <div class="table-responsive" style="overflow-x: auto;">
+          <table class="inventory-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th style="text-align:left; padding:12px; border-bottom:1px solid var(--border-color);">Staff Details</th>
+                <th style="text-align:left; padding:12px; border-bottom:1px solid var(--border-color);">Device Info</th>
+                <th style="text-align:left; padding:12px; border-bottom:1px solid var(--border-color);">IMEI & Phone</th>
+                <th style="text-align:left; padding:12px; border-bottom:1px solid var(--border-color);">Timeline</th>
+                <th style="text-align:left; padding:12px; border-bottom:1px solid var(--border-color);">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="mobileTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
