@@ -1659,8 +1659,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ===== Laptop Stats (Dashboard) =====
+  async function fetchLaptopStats() {
+    try {
+      const res = await fetch('/api/laptop/list');
+      if (!res.ok) throw new Error('API failed');
+      const laptops = await res.json();
+      
+      let givenRegular = 0;
+      let givenLetter = 0;
+      let canceled = 0;
+
+      const regularCourses = ['PGDM', 'MBA', 'UG'];
+      const letterCourse = 'Student taken Laptop with Letter';
+      const allCourses = [...regularCourses, letterCourse];
+
+      laptops.forEach(laptop => {
+        if (allCourses.includes(laptop.course)) {
+          if (laptop.status === 'Received') {
+            if (laptop.course === letterCourse) {
+              givenLetter++;
+            } else {
+              givenRegular++;
+            }
+          } else if (laptop.status === 'Cancel') {
+            canceled++;
+          }
+        }
+      });
+
+      const statGiven = document.getElementById('statLaptopGiven');
+      const statLetter = document.getElementById('statLaptopLetter');
+      const statCancel = document.getElementById('statLaptopCancel');
+
+      if (statGiven) statGiven.textContent = givenRegular;
+      if (statLetter) statLetter.textContent = givenLetter;
+      if (statCancel) statCancel.textContent = canceled;
+    } catch (error) {
+      console.error('Error fetching laptop stats:', error);
+    }
+  }
+
   // ===== Init =====
   fetchTicketsFromSupabase();
+  fetchLaptopStats();
   window.deleteProcurement = async function(id) {
     if (!confirm('Are you sure you want to delete this procurement document? This action cannot be undone.')) return;
     try {
