@@ -80,6 +80,7 @@
 
     .batch-section {
       margin-bottom: 3rem;
+      overflow-x: auto;
     }
 
     .batch-title {
@@ -394,15 +395,15 @@
             <table class="report-table">
               <thead>
                 <tr>
-                  <th style="width: 50px;">Sl.No</th>
-                  <th>${courseKey === 'Faculty' ? 'Staff Name' : 'Student Name'}</th>
-                  <th style="width: 120px;">Status</th>
-                  ${courseKey === 'Faculty' ? `<th style="width: 150px;">Laptop Model No.</th>` : ''}
-                  <th style="width: 150px;">Serial No.</th>
+                  <th style="min-width: 50px;">Sl.No</th>
+                  <th style="min-width: 150px;">${courseKey === 'Faculty' ? 'Staff Name' : 'Student Name'}</th>
+                  <th style="min-width: 120px;">Status</th>
+                  ${courseKey === 'Faculty' ? `<th style="min-width: 300px;">Laptop Model No.</th>` : ''}
+                  <th style="min-width: 150px;">Serial No.</th>
                   ${courseKey === 'Faculty' ? `
-                    <th style="width: 120px;">Given Date</th>
-                    <th style="width: 120px;">Return Date</th>
-                    <th style="width: 200px;">Acceptance Link</th>
+                    <th style="min-width: 120px;">Given Date</th>
+                    <th style="min-width: 120px;">Return Date</th>
+                    <th style="min-width: 160px;">Acceptance Link</th>
                   ` : ''}
                   <th style="width: 40px;" class="report-controls-cell"></th>
                 </tr>
