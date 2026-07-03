@@ -569,7 +569,7 @@ app.post('/api/laptop/update', async (req, res) => {
     const updateData = { updatedAt: new Date() };
 
     if (status !== undefined) {
-      if (!['Pending', 'Received', 'Cancel'].includes(status)) {
+      if (!['Pending', 'Received', 'Cancel', 'Purchased'].includes(status)) {
         return res.status(400).json({ error: 'Invalid status' });
       }
       updateData.status = status;

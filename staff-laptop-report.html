@@ -146,6 +146,7 @@
     .status-select.Received { color: #059669; }
     .status-select.Cancel { color: #dc2626; }
     .status-select.Pending { color: #d97706; }
+    .status-select.Purchased { color: #8b5cf6; }
 
     .editable-input {
       border: 1px solid transparent;
@@ -261,6 +262,7 @@
         <select id="statusFilter" onchange="renderReport()">
           <option value="All">All Statuses</option>
           <option value="Received">Received Only</option>
+          <option value="Purchased">Purchased Only</option>
           <option value="Cancel">Cancelled Only</option>
           <option value="Pending">Pending Only</option>
         </select>
@@ -421,6 +423,7 @@
                     <select class="status-select ${statusClass}" onchange="updateStudentField('${student._id}', 'status', this.value); this.className = 'status-select ' + this.value;">
                       <option value="Pending" ${student.status === 'Pending' ? 'selected' : ''}>Pending</option>
                       <option value="Received" ${student.status === 'Received' ? 'selected' : ''}>Received</option>
+                      <option value="Purchased" ${student.status === 'Purchased' ? 'selected' : ''}>Purchased</option>
                       <option value="Cancel" ${student.status === 'Cancel' ? 'selected' : ''}>Cancelled</option>
                     </select>
           `;
