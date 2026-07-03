@@ -544,6 +544,23 @@ app.get('/api/laptop/list', async (req, res) => {
   }
 });
 
+// Add new laptop record manually
+app.post('/api/laptop/add', async (req, res) => {
+  try {
+    const { name, course, status, serialNo, laptopModel, givenDate, returnDate } = req.body;
+    if (!name || !course) {
+      return res.status(400).json({ error: 'Name and Course are required' });
+    }
+    const newRecord = new LaptopEligibility({
+      name, course, status: status || 'Pending', serialNo, laptopModel, givenDate, returnDate
+    });
+    await newRecord.save();
+    res.json({ success: true, message: 'Record added successfully', data: newRecord });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/laptop/update', async (req, res) => {
   try {
     const { id, status, name, serialNo, givenDate, returnDate, laptopModel, acceptanceLink } = req.body;

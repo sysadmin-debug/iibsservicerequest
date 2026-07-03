@@ -271,6 +271,7 @@
         </select>
       </div>
       <div>
+        <button id="addStaffBtn" class="btn-print" onclick="openAddModal()" style="display:none; background:#10b981; color:white; border:none; margin-right:1rem;"><i data-lucide="plus"></i> Add Staff</button>
         <button class="btn-print" onclick="window.print()"><i data-lucide="printer"></i> Print Report</button>
         <a href="admin.html" style="margin-left: 1rem; color: #4f46e5; text-decoration: none; font-weight: 500;">Back to Admin</a>
       </div>
@@ -295,6 +296,29 @@
   <div class="toast" id="toastMessage" style="position: fixed; bottom: 20px; right: 20px; background: rgba(16, 185, 129, 0.9); color: white; padding: 1rem 1.5rem; border-radius: 8px; display: flex; align-items: center; gap: 0.5rem; transform: translateY(150%); transition: transform 0.3s; z-index: 1000; font-weight: 500;">
     <i data-lucide="check-circle" id="toastIcon"></i>
     <span id="toastText">Action successful!</span>
+  </div>
+
+  <!-- Add Staff Modal -->
+  <div id="addModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:12px; width:100%; max-width:400px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+      <h3 style="margin-top:0; margin-bottom:1.5rem; font-family:'Outfit';">Add New Staff Laptop</h3>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; margin-bottom:0.5rem; font-size:0.9rem; color:#475569;">Staff Name *</label>
+        <input type="text" id="addName" style="width:100%; padding:0.75rem; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; outline:none;" placeholder="Enter name">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; margin-bottom:0.5rem; font-size:0.9rem; color:#475569;">Laptop Model No.</label>
+        <input type="text" id="addModel" style="width:100%; padding:0.75rem; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; outline:none;" placeholder="Enter model">
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <label style="display:block; margin-bottom:0.5rem; font-size:0.9rem; color:#475569;">Serial No.</label>
+        <input type="text" id="addSerial" style="width:100%; padding:0.75rem; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; outline:none;" placeholder="Enter serial">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:1rem;">
+        <button onclick="closeAddModal()" style="background:#f1f5f9; color:#475569; border:none; padding:0.75rem 1.5rem; border-radius:6px; font-weight:500; cursor:pointer;">Cancel</button>
+        <button onclick="submitNewStaff()" style="background:#4f46e5; color:white; border:none; padding:0.75rem 1.5rem; border-radius:6px; font-weight:600; cursor:pointer;">Save Record</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -463,25 +487,72 @@
     }
 
     async function updateStudentField(id, field, value) {
+      if (isReadOnly) return;
+      
       try {
         const response = await fetch('/api/laptop/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id, [field]: value })
         });
-        
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error);
-        
-        // Update local data cache
-        const student = allData.find(s => s._id === id);
-        if (student) student[field] = value;
-        
-        showToast('Updated successfully');
+        const result = await response.json();
+        if (result.success) {
+          showToast('Updated successfully');
+          // Update local data seamlessly
+          const rec = allData.find(d => d._id === id);
+          if (rec) rec[field] = value;
+          // renderReport(); // Optional: uncomment if full re-render is preferred
+        } else {
+          showToast('Failed to update', true);
+        }
       } catch (err) {
-        showToast('Error updating data', true);
-        // Revert UI on failure
-        fetchLaptops(); 
+        showToast('Error updating record', true);
+      }
+    }
+
+    function openAddModal() {
+      document.getElementById('addModal').style.display = 'flex';
+      document.getElementById('addName').value = '';
+      document.getElementById('addModel').value = '';
+      document.getElementById('addSerial').value = '';
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').style.display = 'none';
+    }
+
+    async function submitNewStaff() {
+      const name = document.getElementById('addName').value.trim();
+      const laptopModel = document.getElementById('addModel').value.trim();
+      const serialNo = document.getElementById('addSerial').value.trim();
+
+      if (!name) {
+        alert('Staff Name is required.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/laptop/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            name, 
+            laptopModel, 
+            serialNo, 
+            course: 'Faculty' 
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showToast('Staff added successfully!');
+          closeAddModal();
+          fetchLaptops(); // refresh the table
+        } else {
+          showToast('Failed to add staff', true);
+        }
+      } catch (err) {
+        showToast('Error adding staff', true);
       }
     }
 
@@ -509,6 +580,9 @@
         isReadOnly = (pwd === 'iibs@2025');
         document.getElementById('authOverlay').style.display = 'none';
         document.body.style.overflow = 'visible';
+        if (!isReadOnly) {
+          document.getElementById('addStaffBtn').style.display = 'inline-flex';
+        }
         fetchLaptops();
       } else {
         document.getElementById('authError').style.display = 'block';
