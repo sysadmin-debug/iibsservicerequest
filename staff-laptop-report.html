@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Laptop Eligibility Report - Admin</title>
+  <title>Staff Laptop Report - Admin</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -244,8 +244,8 @@
       <div style="display: flex; justify-content: center; margin-bottom: 1.5rem;">
         <i data-lucide="lock" style="width: 48px; height: 48px; color: #4f46e5;"></i>
       </div>
-      <h2 style="font-family: 'Outfit'; margin-bottom: 0.5rem; color: #0f172a;">Laptop Report</h2>
-      <p style="color: #64748b; margin-bottom: 2rem; font-size: 0.95rem;">Please enter the department password to view the laptop eligibility list.</p>
+      <h2 style="font-family: 'Outfit'; margin-bottom: 0.5rem; color: #0f172a;">Staff Laptop Report</h2>
+      <p style="color: #64748b; margin-bottom: 2rem; font-size: 0.95rem;">Please enter the department password to view the staff laptop list.</p>
       <input type="password" id="reportPassword" style="width: 100%; padding: 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 1rem; font-family: inherit; font-size: 1rem; box-sizing: border-box; outline: none;" placeholder="Enter password" onkeydown="if(event.key === 'Enter') checkPassword()" />
       <button onclick="checkPassword()" style="width: 100%; background: #4f46e5; color: white; border: none; padding: 0.85rem; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s;">Unlock Report</button>
       <p id="authError" style="color: #ef4444; margin-top: 1rem; font-size: 0.9rem; display: none; font-weight: 500;">Incorrect password. Please try again.</p>
@@ -264,31 +264,10 @@
           <option value="Pending">Pending Only</option>
         </select>
       </div>
-      <div class="filter-group" style="margin-left: 1rem;">
+      <div class="filter-group" style="margin-left: 1rem; display: none;">
         <label style="font-weight: 600;"><i data-lucide="layers"></i> Filter Batch:</label>
         <select id="batchFilter" onchange="renderReport()">
-          <option value="All">All Batches</option>
-          <option disabled>── 2023 Batches ──</option>
-          <option value="PGDM 2023-2025">PGDM 2023-2025</option>
-          <option value="AIMA PGDM 2023-2025">AIMA PGDM 2023-2025</option>
-          <option value="MBA 2023-2025">MBA 2023-2025</option>
-          <option value="UG 2023-2026">UG 2023-2026</option>
-          <option disabled>── 2024 Batches ──</option>
-          <option value="PGDM 2024-2026">PGDM 2024-2026</option>
-          <option value="MBA 2024-2026">MBA 2024-2026</option>
-          <option value="UG 2024-2027">UG 2024-2027</option>
-          <option disabled>── 2025 Batches ──</option>
-          <option value="PGDM">PGDM 2025-2027</option>
-          <option value="MBA">MBA 2025-2027</option>
-          <option value="UG">UG 2025-2028</option>
-          <option disabled>── Others ──</option>
-
-          <option value="Letter (PGDM 2025)">Letter (PGDM 2025)</option>
-          <option value="Letter (MBA 2025)">Letter (MBA 2025)</option>
-          <option value="Letter (UG 2025)">Letter (UG 2025)</option>
-          <option value="Letter (PGDM 2024)">Letter (PGDM 2024)</option>
-          <option value="Letter (MBA 2024)">Letter (MBA 2024)</option>
-          <option value="Student taken Laptop with Letter">Student taken laptop giving letter 2025-2027</option>
+          <option value="Faculty" selected>Staff</option>
         </select>
       </div>
       <div>
@@ -302,8 +281,8 @@
       <img src="letterhead.jpg" alt="IIBS Letterhead" class="letterhead">
       
       <div style="text-align: center; margin-bottom: 2rem;">
-        <h2 style="font-family: 'Outfit'; font-size: 2rem; color: #0f172a; margin: 0;">Laptop Eligibility List</h2>
-        <p style="color: #64748b; margin-top: 0.5rem;" id="reportSubtitle">All Batches (2025-2026)</p>
+        <h2 style="font-family: 'Outfit'; font-size: 2rem; color: #0f172a; margin: 0;">Staff Laptop List</h2>
+        <p style="color: #64748b; margin-top: 0.5rem;" id="reportSubtitle">Staff</p>
       </div>
 
       <div id="reportContent">
@@ -323,15 +302,9 @@
 
     let allData = [];
 
-    // Map DB course names to nice display names
     const courseLabels = {
-      'PGDM': 'PGDM 2025-2027',
-      'MBA': 'MBA 2025-2027',
-      'UG': 'UG 2025-2028',
-      'Student taken Laptop with Letter': 'Student taken Laptop with Letter'
+      'Faculty': 'Staff'
     };
-
-    async function fetchLaptops() {
       document.getElementById('reportContent').innerHTML = '<p style="text-align: center; padding: 2rem;">Loading data...</p>';
       try {
         const response = await fetch('/api/laptop/list');
@@ -348,7 +321,7 @@
       const content = document.getElementById('reportContent');
       const subtitle = document.getElementById('reportSubtitle');
 
-      let subtitleText = batchFilter === 'All' ? 'All Batches (2025-2026)' : courseLabels[batchFilter] || batchFilter;
+      let subtitleText = 'Staff';
       if (statusFilter !== 'All') subtitleText += ` — ${statusFilter} Laptops Only`;
       
       subtitle.textContent = subtitleText;
@@ -366,9 +339,7 @@
       if (statusFilter !== 'All') {
         filtered = filtered.filter(item => item.status === statusFilter);
       }
-      if (batchFilter !== 'All') {
-        filtered = filtered.filter(item => item.course === batchFilter);
-      }
+      filtered = filtered.filter(item => item.course === 'Faculty');
 
       // Group by course
       const grouped = {};
@@ -382,14 +353,7 @@
         return;
       }
 
-      const order = [
-        'PGDM', 'MBA', 'UG', 
-        'PGDM 2024-2026', 'MBA 2024-2026', 'UG 2024-2027',
-        'PGDM 2023-2025', 'AIMA PGDM 2023-2025', 'MBA 2023-2025', 'UG 2023-2026',
-        'Letter (PGDM 2025)', 'Letter (MBA 2025)', 'Letter (UG 2025)',
-        'Letter (PGDM 2024)', 'Letter (MBA 2024)',
-        'Student taken Laptop with Letter'
-      ];
+      const order = ['Faculty'];
       
       let html = '';
 
@@ -406,9 +370,15 @@
               <thead>
                 <tr>
                   <th style="width: 50px;">Sl.No</th>
-                  <th>Student Name</th>
+                  <th>${courseKey === 'Faculty' ? 'Staff Name' : 'Student Name'}</th>
                   <th style="width: 120px;">Status</th>
+                  ${courseKey === 'Faculty' ? `<th style="width: 150px;">Laptop Model No.</th>` : ''}
                   <th style="width: 150px;">Serial No.</th>
+                  ${courseKey === 'Faculty' ? `
+                    <th style="width: 120px;">Given Date</th>
+                    <th style="width: 120px;">Return Date</th>
+                    <th style="width: 200px;">Acceptance Link</th>
+                  ` : ''}
                   <th style="width: 40px;" class="report-controls-cell"></th>
                 </tr>
               </thead>
@@ -431,7 +401,23 @@
 
           let serialField = isReadOnly ? `<span>${student.serialNo || '-'}</span>` : `<input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" />`;
 
+          let laptopModelField = '';
+          if (courseKey === 'Faculty') {
+             laptopModelField = isReadOnly ? `<td><span>${student.laptopModel || '-'}</span></td>` : `<td><input type="text" class="editable-input" value="${student.laptopModel || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'laptopModel', this.value)" /></td>`;
+          }
 
+          let facultyFields = '';
+          if (courseKey === 'Faculty') {
+             facultyFields = isReadOnly ? `
+                    <td><span>${student.givenDate || '-'}</span></td>
+                    <td><span>${student.returnDate || '-'}</span></td>
+                    <td><a href="${student.acceptanceLink || '#'}" target="_blank" style="color:#4f46e5; text-decoration:none;">${student.acceptanceLink ? 'Link' : '-'}</a></td>
+             ` : `
+                    <td><input type="text" class="editable-input" value="${student.givenDate || ''}" placeholder="DD/MM/YYYY" onchange="updateStudentField('${student._id}', 'givenDate', this.value)" /></td>
+                    <td><input type="text" class="editable-input" value="${student.returnDate || ''}" placeholder="DD/MM/YYYY" onchange="updateStudentField('${student._id}', 'returnDate', this.value)" /></td>
+                    <td><input type="text" class="editable-input" value="${student.acceptanceLink || ''}" placeholder="URL" onchange="updateStudentField('${student._id}', 'acceptanceLink', this.value)" /></td>
+             `;
+          }
 
           let deleteBtn = isReadOnly ? '' : `
                     <button class="delete-btn" onclick="deleteStudent('${student._id}', '${student.name.replace(/'/g, "\\'")}')" title="Delete Record">
@@ -444,7 +430,9 @@
                   <td>${index + 1}</td>
                   <td>${nameField}</td>
                   <td>${statusField}</td>
+                  ${laptopModelField}
                   <td>${serialField}</td>
+                  ${facultyFields}
                   <td class="report-controls-cell">${deleteBtn}</td>
                 </tr>
           `;
