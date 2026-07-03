@@ -409,14 +409,19 @@
 
           let facultyFields = '';
           if (courseKey === 'Faculty') {
+             const acceptLink = `${window.location.origin}/accept-laptop.html?id=${student._id}`;
+             let acceptDisplay = student.acceptanceLink === 'Accepted electronically' ? 
+                `<span style="color: #10b981; font-weight: 500; display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="check-circle" style="width:16px;height:16px;"></i> Accepted</span>` : 
+                `<button onclick="navigator.clipboard.writeText('${acceptLink}'); showToast('Link Copied!')" style="background:#e0e7ff;color:#4f46e5;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:500;font-size:0.85rem;display:flex;align-items:center;gap:0.25rem;"><i data-lucide="copy" style="width:14px;height:14px;"></i> Copy Link</button>`;
+
              facultyFields = isReadOnly ? `
                     <td><span>${student.givenDate || '-'}</span></td>
                     <td><span>${student.returnDate || '-'}</span></td>
-                    <td><a href="${student.acceptanceLink || '#'}" target="_blank" style="color:#4f46e5; text-decoration:none;">${student.acceptanceLink ? 'Link' : '-'}</a></td>
+                    <td>${acceptDisplay}</td>
              ` : `
                     <td><input type="text" class="editable-input" value="${student.givenDate || ''}" placeholder="DD/MM/YYYY" onchange="updateStudentField('${student._id}', 'givenDate', this.value)" /></td>
                     <td><input type="text" class="editable-input" value="${student.returnDate || ''}" placeholder="DD/MM/YYYY" onchange="updateStudentField('${student._id}', 'returnDate', this.value)" /></td>
-                    <td><input type="text" class="editable-input" value="${student.acceptanceLink || ''}" placeholder="URL" onchange="updateStudentField('${student._id}', 'acceptanceLink', this.value)" /></td>
+                    <td>${acceptDisplay}</td>
              `;
           }
 

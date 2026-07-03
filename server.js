@@ -610,6 +610,34 @@ app.post('/api/laptop/import', async (req, res) => {
   }
 });
 
+app.get('/api/laptop/:id', async (req, res) => {
+  try {
+    const laptop = await LaptopEligibility.findById(req.params.id);
+    if (!laptop) return res.status(404).json({ error: 'Not found' });
+    res.json(laptop);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/laptop/accept/:id', async (req, res) => {
+  try {
+    const laptop = await LaptopEligibility.findById(req.params.id);
+    if (!laptop) return res.status(404).json({ error: 'Not found' });
+    
+    laptop.status = 'Received';
+    if (!laptop.givenDate) {
+      laptop.givenDate = new Date().toLocaleDateString('en-GB');
+    }
+    laptop.acceptanceLink = 'Accepted electronically';
+    
+    await laptop.save();
+    res.json({ success: true, message: 'Laptop accepted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // --- VENDOR REPORT ---
 
 app.get('/api/vendor-report', async (req, res) => {

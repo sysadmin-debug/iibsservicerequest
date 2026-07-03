@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laptop Acceptance Form</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      color: #0f172a;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
+      padding: 3rem 2rem;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .logo {
+      width: 120px;
+      margin-bottom: 1.5rem;
+    }
+    
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.75rem;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+    }
+    
+    p.subtitle {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+    
+    .details-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: left;
+      margin-bottom: 2rem;
+    }
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .detail-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    
+    .detail-label {
+      color: #64748b;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    .detail-value {
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 1rem;
+      text-align: right;
+    }
+    
+    .accept-btn {
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+    
+    .accept-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+    }
+    
+    .accept-btn:active {
+      transform: translateY(0);
+    }
+    
+    .accept-btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .success-icon {
+      color: #10b981;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem auto;
+      display: none;
+    }
+    
+    .loader {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top: 3px solid white;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container" id="mainContainer">
+    <img src="logo.jpeg" alt="IIBS Logo" class="logo" />
+    <div id="contentLoading">
+      <p>Loading your details...</p>
+    </div>
+    
+    <div id="contentData" style="display: none;">
+      <h1>Laptop Acceptance</h1>
+      <p class="subtitle">Please verify the details below and confirm your acceptance of the assigned laptop.</p>
+      
+      <div class="details-card">
+        <div class="detail-row">
+          <span class="detail-label">Staff Name</span>
+          <span class="detail-value" id="staffName"></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Laptop Model</span>
+          <span class="detail-value" id="laptopModel"></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Serial Number</span>
+          <span class="detail-value" id="serialNo"></span>
+        </div>
+      </div>
+      
+      <button class="accept-btn" id="acceptBtn" onclick="acceptLaptop()">
+        <span id="btnText">I Accept This Laptop</span>
+        <div class="loader" id="btnLoader"></div>
+      </button>
+    </div>
+    
+    <div id="contentSuccess" style="display: none;">
+      <i data-lucide="check-circle" class="success-icon" style="display: block;"></i>
+      <h1>Accepted Successfully</h1>
+      <p class="subtitle" style="margin-bottom: 0;">Thank you! Your laptop has been marked as received in the system.</p>
+    </div>
+    
+    <div id="contentError" style="display: none;">
+      <i data-lucide="alert-circle" style="color: #ef4444; width: 64px; height: 64px; margin: 0 auto 1.5rem auto; display: block;"></i>
+      <h1 style="color: #ef4444;">Error</h1>
+      <p class="subtitle" id="errorMsg">Could not load laptop details. Please ensure you used the correct link.</p>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const laptopId = urlParams.get('id');
+    
+    if (!laptopId) {
+      showError('No ID provided in the link.');
+    } else {
+      fetchLaptopDetails();
+    }
+    
+    async function fetchLaptopDetails() {
+      try {
+        const response = await fetch('/api/laptop/' + laptopId);
+        if (!response.ok) throw new Error('Laptop record not found.');
+        
+        const data = await response.json();
+        
+        if (data.status === 'Received') {
+          showSuccess();
+          return;
+        }
+        
+        document.getElementById('staffName').textContent = data.name || '-';
+        document.getElementById('laptopModel').textContent = data.laptopModel || '-';
+        document.getElementById('serialNo').textContent = data.serialNo || '-';
+        
+        document.getElementById('contentLoading').style.display = 'none';
+        document.getElementById('contentData').style.display = 'block';
+      } catch (err) {
+        showError(err.message);
+      }
+    }
+    
+    async function acceptLaptop() {
+      const btn = document.getElementById('acceptBtn');
+      const btnText = document.getElementById('btnText');
+      const btnLoader = document.getElementById('btnLoader');
+      
+      btn.disabled = true;
+      btnText.style.display = 'none';
+      btnLoader.style.display = 'block';
+      
+      try {
+        const response = await fetch('/api/laptop/accept/' + laptopId, {
+          method: 'POST'
+        });
+        
+        if (!response.ok) throw new Error('Failed to submit acceptance.');
+        
+        showSuccess();
+      } catch (err) {
+        alert(err.message);
+        btn.disabled = false;
+        btnText.style.display = 'block';
+        btnLoader.style.display = 'none';
+      }
+    }
+    
+    function showSuccess() {
+      document.getElementById('contentLoading').style.display = 'none';
+      document.getElementById('contentData').style.display = 'none';
+      document.getElementById('contentError').style.display = 'none';
+      document.getElementById('contentSuccess').style.display = 'block';
+      lucide.createIcons();
+    }
+    
+    function showError(msg) {
+      document.getElementById('errorMsg').textContent = msg;
+      document.getElementById('contentLoading').style.display = 'none';
+      document.getElementById('contentData').style.display = 'none';
+      document.getElementById('contentSuccess').style.display = 'none';
+      document.getElementById('contentError').style.display = 'block';
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
