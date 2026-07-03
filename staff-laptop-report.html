@@ -305,6 +305,7 @@
     const courseLabels = {
       'Faculty': 'Staff'
     };
+    async function fetchLaptops() {
       document.getElementById('reportContent').innerHTML = '<p style="text-align: center; padding: 2rem;">Loading data...</p>';
       try {
         const response = await fetch('/api/laptop/list');
