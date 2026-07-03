@@ -282,7 +282,7 @@
           <option value="MBA">MBA 2025-2027</option>
           <option value="UG">UG 2025-2028</option>
           <option disabled>── Others ──</option>
-          <option value="Faculty">Faculty</option>
+          <option value="Faculty">Staff</option>
           <option value="Letter (PGDM 2025)">Letter (PGDM 2025)</option>
           <option value="Letter (MBA 2025)">Letter (MBA 2025)</option>
           <option value="Letter (UG 2025)">Letter (UG 2025)</option>
@@ -329,7 +329,7 @@
       'MBA': 'MBA 2025-2027',
       'UG': 'UG 2025-2028',
       'Student taken Laptop with Letter': 'Student taken Laptop with Letter',
-      'Faculty': 'Faculty'
+      'Faculty': 'Staff'
     };
 
     async function fetchLaptops() {
@@ -407,12 +407,14 @@
               <thead>
                 <tr>
                   <th style="width: 50px;">Sl.No</th>
-                  <th>${courseKey === 'Faculty' ? 'Faculty Name' : 'Student Name'}</th>
+                  <th>${courseKey === 'Faculty' ? 'Staff Name' : 'Student Name'}</th>
                   <th style="width: 120px;">Status</th>
+                  ${courseKey === 'Faculty' ? `<th style="width: 150px;">Laptop Model No.</th>` : ''}
                   <th style="width: 150px;">Serial No.</th>
                   ${courseKey === 'Faculty' ? `
                     <th style="width: 120px;">Given Date</th>
                     <th style="width: 120px;">Return Date</th>
+                    <th style="width: 200px;">Acceptance Link</th>
                   ` : ''}
                   <th style="width: 40px;" class="report-controls-cell"></th>
                 </tr>
@@ -436,14 +438,21 @@
 
           let serialField = isReadOnly ? `<span>${student.serialNo || '-'}</span>` : `<input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" />`;
 
+          let laptopModelField = '';
+          if (courseKey === 'Faculty') {
+             laptopModelField = isReadOnly ? `<td><span>${student.laptopModel || '-'}</span></td>` : `<td><input type="text" class="editable-input" value="${student.laptopModel || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'laptopModel', this.value)" /></td>`;
+          }
+
           let facultyFields = '';
           if (courseKey === 'Faculty') {
              facultyFields = isReadOnly ? `
                     <td><span>${student.givenDate || '-'}</span></td>
                     <td><span>${student.returnDate || '-'}</span></td>
+                    <td><a href="${student.acceptanceLink || '#'}" target="_blank" style="color:#4f46e5; text-decoration:none;">${student.acceptanceLink ? 'Link' : '-'}</a></td>
              ` : `
                     <td><input type="text" class="editable-input" value="${student.givenDate || ''}" placeholder="DD/MM/YYYY" onchange="updateStudentField('${student._id}', 'givenDate', this.value)" /></td>
                     <td><input type="text" class="editable-input" value="${student.returnDate || ''}" placeholder="DD/MM/YYYY" onchange="updateStudentField('${student._id}', 'returnDate', this.value)" /></td>
+                    <td><input type="text" class="editable-input" value="${student.acceptanceLink || ''}" placeholder="URL" onchange="updateStudentField('${student._id}', 'acceptanceLink', this.value)" /></td>
              `;
           }
 
@@ -458,6 +467,7 @@
                   <td>${index + 1}</td>
                   <td>${nameField}</td>
                   <td>${statusField}</td>
+                  ${laptopModelField}
                   <td>${serialField}</td>
                   ${facultyFields}
                   <td class="report-controls-cell">${deleteBtn}</td>

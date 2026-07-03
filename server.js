@@ -186,8 +186,10 @@ const laptopEligibilitySchema = new mongoose.Schema({
   course: { type: String, required: true },
   status: { type: String, default: 'Pending' },
   serialNo: { type: String, default: '' },
+  laptopModel: { type: String, default: '' },
   givenDate: { type: String, default: '' },
   returnDate: { type: String, default: '' },
+  acceptanceLink: { type: String, default: '' },
   updatedAt: { type: Date, default: Date.now }
 });
 const LaptopEligibility = mongoose.models.LaptopEligibility || mongoose.model('LaptopEligibility', laptopEligibilitySchema);
@@ -544,7 +546,7 @@ app.get('/api/laptop/list', async (req, res) => {
 
 app.post('/api/laptop/update', async (req, res) => {
   try {
-    const { id, status, name, serialNo, givenDate, returnDate } = req.body;
+    const { id, status, name, serialNo, givenDate, returnDate, laptopModel, acceptanceLink } = req.body;
     if (!id) return res.status(400).json({ error: 'ID is required' });
     
     const updateData = { updatedAt: new Date() };
@@ -560,6 +562,8 @@ app.post('/api/laptop/update', async (req, res) => {
     if (serialNo !== undefined) updateData.serialNo = serialNo;
     if (givenDate !== undefined) updateData.givenDate = givenDate;
     if (returnDate !== undefined) updateData.returnDate = returnDate;
+    if (laptopModel !== undefined) updateData.laptopModel = laptopModel;
+    if (acceptanceLink !== undefined) updateData.acceptanceLink = acceptanceLink;
 
     const student = await LaptopEligibility.findByIdAndUpdate(
       id,
