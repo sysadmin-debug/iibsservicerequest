@@ -373,10 +373,17 @@
       
       subtitle.textContent = subtitleText;
 
-      // Calculate Canceled
+      // Calculate Canceled (2025 Batch Only)
       let canceledCount = 0;
+      const is2025Batch = (c) => {
+        if (!c) return false;
+        return ['PGDM', 'MBA', 'UG', 'Student taken Laptop with Letter'].includes(c) || c.includes('2025');
+      };
+
       allData.forEach(item => {
-        if (item.status === 'Cancel') canceledCount++;
+        if (item.status === 'Cancel' && is2025Batch(item.course)) {
+          canceledCount++;
+        }
       });
       const statCanceled = document.getElementById('statCanceled');
       if (statCanceled) statCanceled.textContent = canceledCount;
