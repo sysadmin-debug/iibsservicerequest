@@ -1692,9 +1692,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const statLetter = document.getElementById('statLaptopLetter');
       const statCancel = document.getElementById('statLaptopCancel');
 
-      if (statGiven) statGiven.textContent = givenRegular;
-      if (statLetter) statLetter.textContent = givenLetter;
-      if (statCancel) statCancel.textContent = canceled;
+      // (Stats are hardcoded based on user request)
+      // if (statGiven) statGiven.textContent = givenRegular;
+      // if (statLetter) statLetter.textContent = givenLetter;
+      // if (statCancel) statCancel.textContent = canceled;
     } catch (error) {
       console.error('Error fetching laptop stats:', error);
     }
