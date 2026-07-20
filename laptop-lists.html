@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laptop Eligibility PDF Lists - IIBS</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    .list-container {
+      max-width: 800px;
+      margin: 3rem auto;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      padding: 2rem;
+    }
+    
+    .list-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 1.5rem;
+    }
+    
+    .list-header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .list-header p {
+      color: var(--text-secondary);
+    }
+    
+    .pdf-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .pdf-list-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 1rem;
+      transition: all 0.2s;
+    }
+    
+    .pdf-list-item:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .pdf-icon {
+      color: #ef4444; /* Red for PDF */
+      margin-right: 1rem;
+    }
+    
+    .pdf-details {
+      flex: 1;
+    }
+    
+    .pdf-title {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 0.25rem 0;
+    }
+    
+    .pdf-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--primary-color);
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    
+    .pdf-action:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient Background Orbs -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- Navigation Header -->
+  <header id="mainHeader">
+    <div class="nav-container">
+      <div class="logo">
+        <img src="logo.jpeg" alt="IIBS Logo" class="logo-img" style="height: 40px; border-radius: 8px;">
+        <span>IIBS <span class="logo-accent">ServiceDesk</span></span>
+      </div>
+      <nav id="navLinks">
+        <a href="index.html"><i data-lucide="home" class="nav-icon"></i> Home</a>
+        <a href="laptop-status.html"><i data-lucide="laptop" class="nav-icon"></i> Laptop Tracker</a>
+      </nav>
+    </div>
+  </header>
+
+  <main style="padding: 0 1rem;">
+    <div class="list-container">
+      <div class="list-header">
+        <h1>Laptop Eligibility Lists (PDF)</h1>
+        <p>View and download the official laptop eligibility lists without any modifications.</p>
+      </div>
+      
+      <ul class="pdf-list">
+        
+        <li class="pdf-list-item">
+          <div class="pdf-icon">
+            <i data-lucide="file-text" style="width: 32px; height: 32px;"></i>
+          </div>
+          <div class="pdf-details">
+            <h3 class="pdf-title">PGDM Lot 1 (2025-2027)</h3>
+          </div>
+          <a href="/laptop/PGDM LOT 1-2025-2027.pdf" target="_blank" class="pdf-action">
+            <i data-lucide="external-link" style="width: 16px; height: 16px;"></i> View PDF
+          </a>
+        </li>
+        
+        <li class="pdf-list-item">
+          <div class="pdf-icon">
+            <i data-lucide="file-text" style="width: 32px; height: 32px;"></i>
+          </div>
+          <div class="pdf-details">
+            <h3 class="pdf-title">PGDM Lot 2 (2025-2027)</h3>
+          </div>
+          <a href="/laptop/PGDM LOT 2-2025-2027.pdf" target="_blank" class="pdf-action">
+            <i data-lucide="external-link" style="width: 16px; height: 16px;"></i> View PDF
+          </a>
+        </li>
+
+        <li class="pdf-list-item">
+          <div class="pdf-icon">
+            <i data-lucide="file-text" style="width: 32px; height: 32px;"></i>
+          </div>
+          <div class="pdf-details">
+            <h3 class="pdf-title">MBA Lot 1 (2025-2027)</h3>
+          </div>
+          <a href="/laptop/Mba Lot 1-2025-2027.pdf" target="_blank" class="pdf-action">
+            <i data-lucide="external-link" style="width: 16px; height: 16px;"></i> View PDF
+          </a>
+        </li>
+        
+        <li class="pdf-list-item">
+          <div class="pdf-icon">
+            <i data-lucide="file-text" style="width: 32px; height: 32px;"></i>
+          </div>
+          <div class="pdf-details">
+            <h3 class="pdf-title">MBA Lot 2 (2025-2027)</h3>
+          </div>
+          <a href="/laptop/Mba lot 2-2025-2027.pdf" target="_blank" class="pdf-action">
+            <i data-lucide="external-link" style="width: 16px; height: 16px;"></i> View PDF
+          </a>
+        </li>
+        
+        <li class="pdf-list-item">
+          <div class="pdf-icon">
+            <i data-lucide="file-text" style="width: 32px; height: 32px;"></i>
+          </div>
+          <div class="pdf-details">
+            <h3 class="pdf-title">UG (2025-2028)</h3>
+          </div>
+          <a href="/laptop/UG -2025-2028.pdf" target="_blank" class="pdf-action">
+            <i data-lucide="external-link" style="width: 16px; height: 16px;"></i> View PDF
+          </a>
+        </li>
+
+      </ul>
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

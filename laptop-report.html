@@ -306,6 +306,26 @@
         <p style="color: #64748b; margin-top: 0.5rem;" id="reportSubtitle">All Batches (2025-2026)</p>
       </div>
 
+      <!-- Laptop Status Summary -->
+      <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center;">
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; flex: 1; min-width: 150px;">
+          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Laptop Status (2025-2027)</h3>
+          <p style="font-size: 2rem; font-weight: 700; color: #0f172a; margin: 0;">412</p>
+        </div>
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; flex: 1; min-width: 150px;">
+          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Given (PGDM, MBA, UG)</h3>
+          <p style="font-size: 2rem; font-weight: 700; color: #059669; margin: 0;">26</p>
+        </div>
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; flex: 1; min-width: 150px;">
+          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Collected with Letter</h3>
+          <p style="font-size: 2rem; font-weight: 700; color: #4f46e5; margin: 0;">57</p>
+        </div>
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; flex: 1; min-width: 150px;">
+          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Canceled</h3>
+          <p id="statCanceled" style="font-size: 2rem; font-weight: 700; color: #dc2626; margin: 0;">-</p>
+        </div>
+      </div>
+
       <div id="reportContent">
         <!-- Injected via JS -->
       </div>
@@ -352,6 +372,14 @@
       if (statusFilter !== 'All') subtitleText += ` — ${statusFilter} Laptops Only`;
       
       subtitle.textContent = subtitleText;
+
+      // Calculate Canceled
+      let canceledCount = 0;
+      allData.forEach(item => {
+        if (item.status === 'Cancel') canceledCount++;
+      });
+      const statCanceled = document.getElementById('statCanceled');
+      if (statCanceled) statCanceled.textContent = canceledCount;
 
       // Filter data
       let filtered = allData;
