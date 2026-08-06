@@ -405,6 +405,12 @@
         <button id="addStockBtn" class="btn-primary" style="margin-bottom: 0;">
           <i data-lucide="plus"></i> Add New Item
         </button>
+      <!-- Stock Search & Filter Bar -->
+      <div class="filter-bar" style="margin-top: 1rem;">
+        <div class="search-box" style="flex: 1;">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="inventorySearchInput" placeholder="Search stock by item name or laptop serial number...">
+        </div>
       </div>
 
       <!-- Inventory List -->
@@ -713,6 +719,10 @@
           </div>
         </div>
       </div>
+      <div class="form-group" style="margin-top: 1rem;">
+        <label><i data-lucide="barcode" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Laptop / Item Serial Numbers</label>
+        <textarea id="invNewSerials" rows="3" placeholder="Enter serial numbers (separated by commas or new lines, e.g. SN1001, SN1002)" style="width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-body); color: var(--text-primary); font-family: inherit; font-size: 0.9rem; margin-top: 0.3rem;"></textarea>
+      </div>
       <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
         <button class="btn-secondary" id="invAddCloseBtn">Cancel</button>
         <button class="btn-primary" id="invAddSaveBtn">Save Entry</button>
@@ -757,6 +767,10 @@
             <input type="number" id="invUpdateClosing" value="0" min="0" required>
           </div>
         </div>
+      </div>
+      <div class="form-group" style="margin-top: 1rem;">
+        <label><i data-lucide="barcode" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Laptop / Item Serial Numbers</label>
+        <textarea id="invUpdateSerials" rows="3" placeholder="Enter serial numbers (separated by commas or new lines, e.g. SN1001, SN1002)" style="width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-body); color: var(--text-primary); font-family: inherit; font-size: 0.9rem; margin-top: 0.3rem;"></textarea>
       </div>
       <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
         <button class="btn-secondary" id="invUpdateCloseBtn">Cancel</button>

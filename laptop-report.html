@@ -488,23 +488,34 @@
 
     async function updateStudentField(id, field, value) {
       try {
+        const student = allData.find(s => s._id === id);
+        const payload = { id, [field]: value };
+        
+        // If serialNo is entered and non-empty, mark status as Received (Issued) if currently Pending or unset
+        if (field === 'serialNo' && value.trim() !== '' && (!student || student.status === 'Pending')) {
+          payload.status = 'Received';
+        }
+
         const response = await fetch('/api/laptop/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, [field]: value })
+          body: JSON.stringify(payload)
         });
         
         const data = await response.json();
         if (!response.ok) throw new Error(data.error);
         
         // Update local data cache
-        const student = allData.find(s => s._id === id);
-        if (student) student[field] = value;
+        if (student) {
+          student[field] = value;
+          if (data.status) student.status = data.status;
+          if (data.givenDate) student.givenDate = data.givenDate;
+        }
         
-        showToast('Updated successfully');
+        renderReport();
+        showToast(payload.status === 'Received' ? 'Laptop Serial Saved & Marked as Issued (Received)!' : 'Updated successfully');
       } catch (err) {
         showToast('Error updating data', true);
-        // Revert UI on failure
         fetchLaptops(); 
       }
     }

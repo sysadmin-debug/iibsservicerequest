@@ -134,6 +134,7 @@ const inventorySchema = new mongoose.Schema({
   arrivals: { type: Number, default: 0 },
   issues: { type: Number, default: 0 },
   closing_stock: { type: Number, default: 0 },
+  serial_numbers: { type: String, default: '' },
   last_updated: { type: Date, default: Date.now }
 });
 const Inventory = mongoose.model('Inventory', inventorySchema);
@@ -551,8 +552,14 @@ app.post('/api/laptop/add', async (req, res) => {
     if (!name || !course) {
       return res.status(400).json({ error: 'Name and Course are required' });
     }
+    let finalStatus = status || 'Pending';
+    let finalGivenDate = givenDate || '';
+    if (serialNo && serialNo.trim() !== '' && (!status || status === 'Pending')) {
+      finalStatus = 'Received';
+      if (!finalGivenDate) finalGivenDate = new Date().toLocaleDateString('en-GB');
+    }
     const newRecord = new LaptopEligibility({
-      name, course, status: status || 'Pending', serialNo, laptopModel, givenDate, returnDate
+      name, course, status: finalStatus, serialNo, laptopModel, givenDate: finalGivenDate, returnDate
     });
     await newRecord.save();
     res.json({ success: true, message: 'Record added successfully', data: newRecord });
@@ -576,7 +583,16 @@ app.post('/api/laptop/update', async (req, res) => {
     }
 
     if (name !== undefined) updateData.name = name;
-    if (serialNo !== undefined) updateData.serialNo = serialNo;
+    if (serialNo !== undefined) {
+      updateData.serialNo = serialNo;
+      // Auto mark as Received (Issued) when serialNo is provided and non-empty
+      if (serialNo.trim() !== '' && (status === undefined || status === 'Pending')) {
+        updateData.status = 'Received';
+        if (!givenDate) {
+          updateData.givenDate = new Date().toLocaleDateString('en-GB');
+        }
+      }
+    }
     if (givenDate !== undefined) updateData.givenDate = givenDate;
     if (returnDate !== undefined) updateData.returnDate = returnDate;
     if (laptopModel !== undefined) updateData.laptopModel = laptopModel;

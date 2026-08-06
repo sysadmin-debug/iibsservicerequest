@@ -719,12 +719,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const list = document.getElementById('inventoryList');
     if (!list) return;
 
-    if (inventoryItems.length === 0) {
+    const searchInput = document.getElementById('inventorySearchInput');
+    const searchTerm = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+    let filtered = [...inventoryItems];
+    if (searchTerm) {
+      filtered = filtered.filter(item => {
+        const name = (item.particulars || item.item_name || item.item_description || '').toLowerCase();
+        const serials = (item.serial_numbers || '').toLowerCase();
+        return name.includes(searchTerm) || serials.includes(searchTerm);
+      });
+    }
+
+    if (filtered.length === 0) {
       list.innerHTML = `
         <div class="empty-state">
           <i data-lucide="box"></i>
           <p>No inventory items found</p>
-          <small>Click "Add New Item" to start tracking stock</small>
+          <small>${searchTerm ? 'Try clearing your search query' : 'Click "Add New Item" to start tracking stock'}</small>
         </div>
       `;
       lucide.createIcons();
@@ -742,11 +754,12 @@ document.addEventListener('DOMContentLoaded', () => {
               <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Arrivals / Receipts</th>
               <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Totals</th>
               <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Closing</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Serial Numbers</th>
               <th style="padding: 1rem 0.5rem; color: var(--text-secondary); text-align: right;">Actions</th>
             </tr>
           </thead>
           <tbody>
-            ${inventoryItems.map(item => {
+            ${filtered.map(item => {
               let dateString = item.date || item.last_updated;
               try {
                 const d = new Date(dateString);
@@ -761,6 +774,16 @@ document.addEventListener('DOMContentLoaded', () => {
               }
               const closing = item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0);
 
+              let serialsHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>';
+              if (item.serial_numbers && item.serial_numbers.trim()) {
+                const serialList = item.serial_numbers.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+                if (serialList.length > 0) {
+                  serialsHtml = serialList.map(sn => 
+                    `<span style="display: inline-block; background: var(--bg-body, #f1f5f9); color: var(--primary-color, #4f46e5); font-family: monospace; font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-color, #cbd5e1); margin: 2px 2px 2px 0;">${sn}</span>`
+                  ).join(' ');
+                }
+              }
+
               return `
                 <tr style="border-bottom: 1px solid var(--border-color);">
                   <td style="padding: 1rem 0.5rem;">${dateString}</td>
@@ -769,7 +792,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td style="padding: 1rem 0.5rem; color: #10b981;">${arrivals > 0 ? '+' + arrivals : arrivals}</td>
                   <td style="padding: 1rem 0.5rem; font-weight: bold; background: rgba(0,0,0,0.02);">${total}</td>
                   <td style="padding: 1rem 0.5rem; font-weight: 700; color: #4f46e5;">${closing}</td>
-                  <td style="padding: 1rem 0.5rem; text-align: right;">
+                  <td style="padding: 1rem 0.5rem; max-width: 250px;">${serialsHtml}</td>
+                  <td style="padding: 1rem 0.5rem; text-align: right; white-space: nowrap;">
                     <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem;"><i data-lucide="edit-3" style="width: 14px; height: 14px; display: inline-block;"></i> Update</button>
                     <button class="btn-secondary btn-delete-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);"><i data-lucide="trash-2" style="width: 14px; height: 14px; display: inline-block;"></i> Delete</button>
                   </td>
@@ -806,7 +830,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const item = inventoryItems.find(i => i.id === id);
         if (!item) return;
         
-        if (confirm(`Are you sure you want to permanently delete "${item.item_name}"?\nThis will also delete all of its history logs.`)) {
+        if (confirm(`Are you sure you want to permanently delete "${item.particulars || item.item_name}"?\nThis will also delete all of its history logs.`)) {
           btn.textContent = 'Deleting...';
           btn.disabled = true;
           try {
@@ -822,6 +846,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  document.getElementById('inventorySearchInput')?.addEventListener('input', () => renderInventory());
 
   // Auto-calculate for Add Modal
   function calcAddModal() {
@@ -850,6 +876,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('invNewIssues').value = '0';
     document.getElementById('invNewTotal').value = '0';
     document.getElementById('invNewClosing').value = '0';
+    if (document.getElementById('invNewSerials')) document.getElementById('invNewSerials').value = '';
     addInventoryModal.classList.add('visible');
   });
 
@@ -864,6 +891,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const arrivals = parseInt(document.getElementById('invNewArrivals').value) || 0;
     const issues = parseInt(document.getElementById('invNewIssues').value) || 0;
     const closing_stock = parseInt(document.getElementById('invNewClosing').value) || 0;
+    const serial_numbers = document.getElementById('invNewSerials')?.value.trim() || '';
 
     if (!particulars || !date) {
       alert("Please fill required fields (Date, Particulars).");
@@ -885,6 +913,7 @@ document.addEventListener('DOMContentLoaded', () => {
           arrivals: arrivals,
           issues: issues,
           closing_stock: closing_stock,
+          serial_numbers: serial_numbers,
           item_name: particulars,
           quantity: closing_stock
         })
@@ -941,6 +970,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('invUpdateArrivals').value = item.arrivals || 0;
     document.getElementById('invUpdateIssues').value = item.issues || 0;
     document.getElementById('invUpdateClosing').value = item.closing_stock || item.quantity || 0;
+    if (document.getElementById('invUpdateSerials')) document.getElementById('invUpdateSerials').value = item.serial_numbers || '';
     calcUpdateModal();
 
     updateInventoryModal.classList.add('visible');
@@ -961,6 +991,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const arrivals = parseInt(document.getElementById('invUpdateArrivals').value) || 0;
     const issues = parseInt(document.getElementById('invUpdateIssues').value) || 0;
     const closing_stock = parseInt(document.getElementById('invUpdateClosing').value) || 0;
+    const serial_numbers = document.getElementById('invUpdateSerials')?.value.trim() || '';
 
     if (!particulars || !date) {
       alert("Please fill required fields (Date, Particulars).");
@@ -982,6 +1013,7 @@ document.addEventListener('DOMContentLoaded', () => {
           arrivals: arrivals,
           issues: issues,
           closing_stock: closing_stock,
+          serial_numbers: serial_numbers,
           item_name: particulars,
           quantity: closing_stock
         })

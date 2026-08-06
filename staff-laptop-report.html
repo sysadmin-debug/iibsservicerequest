@@ -494,18 +494,28 @@
       if (isReadOnly) return;
       
       try {
+        const student = allData.find(d => d._id === id);
+        const payload = { id, [field]: value };
+
+        if (field === 'serialNo' && value.trim() !== '' && (!student || student.status === 'Pending')) {
+          payload.status = 'Received';
+        }
+
         const response = await fetch('/api/laptop/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, [field]: value })
+          body: JSON.stringify(payload)
         });
         const result = await response.json();
-        if (result.success) {
-          showToast('Updated successfully');
-          // Update local data seamlessly
+        if (response.ok) {
           const rec = allData.find(d => d._id === id);
-          if (rec) rec[field] = value;
-          // renderReport(); // Optional: uncomment if full re-render is preferred
+          if (rec) {
+            rec[field] = value;
+            if (result.status) rec.status = result.status;
+            if (result.givenDate) rec.givenDate = result.givenDate;
+          }
+          renderReport();
+          showToast(payload.status === 'Received' ? 'Laptop Serial Saved & Marked as Issued (Received)!' : 'Updated successfully');
         } else {
           showToast('Failed to update', true);
         }

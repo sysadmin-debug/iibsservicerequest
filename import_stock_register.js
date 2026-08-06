@@ -10,6 +10,7 @@ const inventorySchema = new mongoose.Schema({
   arrivals: { type: Number, default: 0 },
   issues: { type: Number, default: 0 },
   closing_stock: { type: Number, default: 0 },
+  serial_numbers: { type: String, default: '' },
   last_updated: { type: Date, default: Date.now }
 });
 
