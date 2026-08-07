@@ -774,14 +774,17 @@ document.addEventListener('DOMContentLoaded', () => {
               }
               const closing = item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0);
 
-              let serialsHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>';
-              if (item.serial_numbers && item.serial_numbers.trim()) {
-                const serialList = item.serial_numbers.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
-                if (serialList.length > 0) {
-                  serialsHtml = serialList.map(sn => 
-                    `<span style="display: inline-block; background: var(--bg-body, #f1f5f9); color: var(--primary-color, #4f46e5); font-family: monospace; font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-color, #cbd5e1); margin: 2px 2px 2px 0;">${sn}</span>`
-                  ).join(' ');
-                }
+              let serialsHtml = '';
+              const serialList = item.serial_numbers ? item.serial_numbers.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : [];
+              if (serialList.length > 0) {
+                const visibleSerials = serialList.slice(0, 3).map(sn => 
+                  `<span style="display: inline-block; background: var(--bg-body, #f1f5f9); color: var(--primary-color, #4f46e5); font-family: monospace; font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-color, #cbd5e1); margin: 2px 2px 2px 0;">${sn}</span>`
+                ).join(' ');
+                const remaining = serialList.length - 3;
+                const moreBadge = remaining > 0 ? `<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">+${remaining} more</span>` : '';
+                serialsHtml = `<div>${visibleSerials} ${moreBadge}</div><button class="btn-secondary btn-serials-stock" data-id="${item.id}" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; font-weight: 500; border-color: rgba(79, 70, 229, 0.4); color: #4f46e5; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px;"><i data-lucide="barcode" style="width: 12px; height: 12px;"></i> Edit Serials (${serialList.length})</button>`;
+              } else {
+                serialsHtml = `<button class="btn-secondary btn-serials-stock" data-id="${item.id}" style="padding: 0.25rem 0.5rem; font-size: 0.78rem; font-weight: 500; border-color: rgba(79, 70, 229, 0.4); color: #4f46e5; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="plus" style="width: 12px; height: 12px;"></i> Add Serials</button>`;
               }
 
               return `
@@ -794,6 +797,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td style="padding: 1rem 0.5rem; font-weight: 700; color: #4f46e5;">${closing}</td>
                   <td style="padding: 1rem 0.5rem; max-width: 250px;">${serialsHtml}</td>
                   <td style="padding: 1rem 0.5rem; text-align: right; white-space: nowrap;">
+                    <button class="btn-secondary btn-serials-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem; color: #4f46e5; border-color: rgba(79, 70, 229, 0.3);"><i data-lucide="barcode" style="width: 14px; height: 14px; display: inline-block;"></i> Serials</button>
                     <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem;"><i data-lucide="edit-3" style="width: 14px; height: 14px; display: inline-block;"></i> Update</button>
                     <button class="btn-secondary btn-delete-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);"><i data-lucide="trash-2" style="width: 14px; height: 14px; display: inline-block;"></i> Delete</button>
                   </td>
@@ -806,6 +810,14 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     lucide.createIcons();
+
+    // Attach serials listeners
+    document.querySelectorAll('.btn-serials-stock').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        openSerialsInventoryModal(id);
+      });
+    });
 
     // Attach update listeners
     document.querySelectorAll('.btn-update-stock').forEach(btn => {
@@ -1027,6 +1039,124 @@ document.addEventListener('DOMContentLoaded', () => {
       alert("Error updating entry. Please try again.");
     }
     btn.textContent = 'Save Changes';
+    btn.disabled = false;
+  });
+
+  // Manage Serials Modal Logic
+  const serialsInventoryModal = document.getElementById('serialsInventoryModal');
+  let currentSerialsItemId = null;
+
+  function updateSerialsPreview() {
+    const text = document.getElementById('invManageSerialsInput')?.value || '';
+    const container = document.getElementById('serialsPreviewContainer');
+    const badge = document.getElementById('serialsCountBadge');
+    
+    const item = inventoryItems.find(i => i.id === currentSerialsItemId);
+    const closingQty = item ? (item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0)) : 0;
+    
+    const serialList = text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    
+    if (badge) {
+      badge.textContent = closingQty > 0 ? `${serialList.length} / ${closingQty} Serials` : `${serialList.length} Serials`;
+      if (closingQty > 0 && serialList.length === closingQty) {
+        badge.style.background = 'rgba(16, 185, 129, 0.15)';
+        badge.style.color = '#10b981';
+      } else {
+        badge.style.background = 'rgba(79, 70, 229, 0.1)';
+        badge.style.color = 'var(--primary-color)';
+      }
+    }
+    
+    if (!container) return;
+    
+    if (serialList.length === 0) {
+      container.innerHTML = `<span style="color: var(--text-muted); font-size: 0.85rem;">No serial numbers added yet. Enter or paste them above.</span>`;
+      return;
+    }
+    
+    container.innerHTML = `
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+        ${serialList.map((sn, idx) => `
+          <span style="display: inline-flex; align-items: center; gap: 4px; background: var(--bg-body, #f1f5f9); color: var(--primary-color, #4f46e5); font-family: monospace; font-size: 0.82rem; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border-color, #cbd5e1);">
+            ${sn}
+            <i data-lucide="x" data-idx="${idx}" class="btn-remove-serial" style="width: 12px; height: 12px; cursor: pointer; opacity: 0.6; margin-left: 2px;" title="Remove"></i>
+          </span>
+        `).join('')}
+      </div>
+    `;
+    lucide.createIcons();
+    
+    container.querySelectorAll('.btn-remove-serial').forEach(icon => {
+      icon.addEventListener('click', (e) => {
+        const idxToRemove = parseInt(e.target.getAttribute('data-idx'));
+        if (!isNaN(idxToRemove)) {
+          serialList.splice(idxToRemove, 1);
+          document.getElementById('invManageSerialsInput').value = serialList.join('\n');
+          updateSerialsPreview();
+        }
+      });
+    });
+  }
+
+  function openSerialsInventoryModal(id) {
+    const item = inventoryItems.find(i => i.id === id);
+    if (!item) return;
+
+    currentSerialsItemId = id;
+    const titleEl = document.getElementById('serialsInvItemTitle');
+    if (titleEl) {
+      const closingQty = item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0);
+      titleEl.textContent = `${item.particulars || item.item_name || 'Item'} (${closingQty} units)`;
+    }
+    
+    const input = document.getElementById('invManageSerialsInput');
+    if (input) {
+      const rawSerials = item.serial_numbers || '';
+      const serialList = rawSerials.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+      input.value = serialList.join('\n');
+    }
+    
+    updateSerialsPreview();
+    if (serialsInventoryModal) serialsInventoryModal.classList.add('visible');
+  }
+
+  document.getElementById('invManageSerialsInput')?.addEventListener('input', updateSerialsPreview);
+  
+  document.getElementById('serialsCloseBtn')?.addEventListener('click', () => {
+    if (serialsInventoryModal) serialsInventoryModal.classList.remove('visible');
+  });
+
+  document.getElementById('serialsSaveBtn')?.addEventListener('click', async () => {
+    if (!currentSerialsItemId) return;
+    const item = inventoryItems.find(i => i.id === currentSerialsItemId);
+    if (!item) return;
+
+    const rawText = document.getElementById('invManageSerialsInput')?.value || '';
+    const serialList = rawText.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    const serial_numbers = serialList.join(', ');
+
+    const btn = document.getElementById('serialsSaveBtn');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+
+    try {
+      const resInv = await fetch(`/api/inventory/${currentSerialsItemId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          ...item,
+          serial_numbers: serial_numbers
+        })
+      });
+      
+      if (!resInv.ok) throw new Error('Failed to update serial numbers');
+
+      if (serialsInventoryModal) serialsInventoryModal.classList.remove('visible');
+      fetchInventoryFromSupabase();
+    } catch (error) {
+      alert("Error saving serial numbers. Please try again.");
+    }
+    btn.innerHTML = `<i data-lucide="check" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;"></i> Save Serial Numbers`;
     btn.disabled = false;
   });
 
