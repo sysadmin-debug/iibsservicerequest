@@ -746,19 +746,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     list.innerHTML = `
-      <div style="overflow-x: auto; background: var(--bg-secondary); border-radius: 8px; padding: 1rem;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
+      <div class="inventory-table-card">
+        <table class="stock-table">
           <thead>
-            <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Month & Date</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Particulars</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Vendor & Bill Details</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Opening Stock</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Arrivals / Receipts</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Totals</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Closing</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Serial Numbers</th>
-              <th style="padding: 1rem 0.5rem; color: var(--text-secondary); text-align: right;">Actions</th>
+            <tr>
+              <th style="min-width: 110px;">Date</th>
+              <th style="min-width: 160px;">Particulars</th>
+              <th style="min-width: 180px;">Vendor & Bill Details</th>
+              <th class="col-center" style="width: 90px;">Opening</th>
+              <th class="col-center" style="width: 90px;">Arrivals</th>
+              <th class="col-center" style="width: 90px;">Total</th>
+              <th class="col-center" style="width: 90px;">Closing</th>
+              <th style="min-width: 220px;">Serial Numbers</th>
+              <th class="col-right" style="min-width: 170px;">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -779,9 +779,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
               let vendorBillHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>';
               if (item.vendor_name || item.bill_no || item.bill_amount) {
-                const vName = item.vendor_name ? `<strong>${item.vendor_name}</strong>` : '';
-                const bNo = item.bill_no ? `<span style="font-size: 0.8rem; color: var(--text-secondary);">Bill: ${item.bill_no}</span>` : '';
-                const bAmt = item.bill_amount ? `<span style="font-weight: 600; color: #10b981; font-size: 0.8rem;">₹${Number(item.bill_amount).toLocaleString('en-IN')}</span>` : '';
+                const vName = item.vendor_name ? `<div style="font-weight: 600; color: var(--text-primary);">${item.vendor_name}</div>` : '';
+                const bNo = item.bill_no ? `<div style="font-size: 0.8rem; color: var(--text-secondary);">Bill: ${item.bill_no}</div>` : '';
+                const bAmt = item.bill_amount ? `<div style="font-weight: 600; color: #10b981; font-size: 0.8rem;">₹${Number(item.bill_amount).toLocaleString('en-IN')}</div>` : '';
                 let bDateStr = '';
                 if (item.bill_date) {
                   try {
@@ -789,10 +789,10 @@ document.addEventListener('DOMContentLoaded', () => {
                   } catch(e){}
                 }
                 vendorBillHtml = `
-                  <div style="font-size: 0.85rem; line-height: 1.3;">
-                    ${vName ? `<div>${vName}</div>` : ''}
+                  <div style="line-height: 1.35;">
+                    ${vName}
                     ${bNo || bDateStr ? `<div>${bNo} ${bDateStr}</div>` : ''}
-                    ${bAmt ? `<div>${bAmt}</div>` : ''}
+                    ${bAmt}
                   </div>
                 `;
               }
@@ -801,27 +801,27 @@ document.addEventListener('DOMContentLoaded', () => {
               const serialList = item.serial_numbers ? item.serial_numbers.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : [];
               if (serialList.length > 0) {
                 const visibleSerials = serialList.slice(0, 3).map(sn => 
-                  `<span style="display: inline-block; background: var(--bg-body, #f1f5f9); color: var(--primary-color, #4f46e5); font-family: monospace; font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-color, #cbd5e1); margin: 2px 2px 2px 0;">${sn}</span>`
+                  `<span style="display: inline-block; background: var(--bg-body, #f1f5f9); color: var(--primary-color, #4f46e5); font-family: monospace; font-size: 0.78rem; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-color, #cbd5e1); margin: 2px 2px 2px 0;">${sn}</span>`
                 ).join(' ');
                 const remaining = serialList.length - 3;
-                const moreBadge = remaining > 0 ? `<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">+${remaining} more</span>` : '';
+                const moreBadge = remaining > 0 ? `<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-left: 4px;">+${remaining} more</span>` : '';
                 serialsHtml = `<div>${visibleSerials} ${moreBadge}</div>`;
               }
 
               return `
-                <tr style="border-bottom: 1px solid var(--border-color);">
-                  <td style="padding: 1rem 0.5rem;">${dateString}</td>
-                  <td style="padding: 1rem 0.5rem; font-weight: 500;">${item.particulars || item.item_name || item.item_description || '-'}</td>
-                  <td style="padding: 1rem 0.5rem;">${vendorBillHtml}</td>
-                  <td style="padding: 1rem 0.5rem;">${opening}</td>
-                  <td style="padding: 1rem 0.5rem; color: #10b981;">${arrivals > 0 ? '+' + arrivals : arrivals}</td>
-                  <td style="padding: 1rem 0.5rem; font-weight: bold; background: rgba(0,0,0,0.02);">${total}</td>
-                  <td style="padding: 1rem 0.5rem; font-weight: 700; color: #4f46e5;">${closing}</td>
-                  <td style="padding: 1rem 0.5rem; max-width: 250px;">${serialsHtml}</td>
-                  <td style="padding: 1rem 0.5rem; text-align: right; white-space: nowrap;">
-                    <button class="btn-secondary btn-serials-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem; color: #4f46e5; border-color: rgba(79, 70, 229, 0.3);"><i data-lucide="barcode" style="width: 14px; height: 14px; display: inline-block;"></i> Serials</button>
-                    <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem;"><i data-lucide="edit-3" style="width: 14px; height: 14px; display: inline-block;"></i> Update</button>
-                    <button class="btn-secondary btn-delete-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);"><i data-lucide="trash-2" style="width: 14px; height: 14px; display: inline-block;"></i> Delete</button>
+                <tr>
+                  <td style="white-space: nowrap; color: var(--text-secondary);">${dateString}</td>
+                  <td style="font-weight: 600; color: var(--text-primary);">${item.particulars || item.item_name || item.item_description || '-'}</td>
+                  <td>${vendorBillHtml}</td>
+                  <td class="col-num">${opening}</td>
+                  <td class="col-num stock-badge-arrivals">${arrivals > 0 ? '+' + arrivals : arrivals}</td>
+                  <td class="col-num" style="background: rgba(0,0,0,0.01);">${total}</td>
+                  <td class="col-center"><span class="stock-badge-closing">${closing}</span></td>
+                  <td>${serialsHtml}</td>
+                  <td class="col-right" style="white-space: nowrap;">
+                    <button class="btn-secondary btn-serials-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem; color: #4f46e5; border-color: rgba(79, 70, 229, 0.3);"><i data-lucide="barcode" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Serials</button>
+                    <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem;"><i data-lucide="edit-3" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Update</button>
+                    <button class="btn-secondary btn-delete-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);"><i data-lucide="trash-2" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Delete</button>
                   </td>
                 </tr>
               `;
