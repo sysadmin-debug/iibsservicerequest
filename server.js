@@ -135,6 +135,10 @@ const inventorySchema = new mongoose.Schema({
   issues: { type: Number, default: 0 },
   closing_stock: { type: Number, default: 0 },
   serial_numbers: { type: String, default: '' },
+  vendor_name: { type: String, default: '' },
+  bill_no: { type: String, default: '' },
+  bill_date: { type: Date },
+  bill_amount: { type: Number, default: 0 },
   last_updated: { type: Date, default: Date.now }
 });
 const Inventory = mongoose.model('Inventory', inventorySchema);

@@ -721,7 +721,36 @@
           </div>
         </div>
       </div>
-      <div class="form-group" style="margin-top: 1rem;">
+      <!-- Vendor & Bill Details Section -->
+      <div style="margin-top: 0.8rem; border-top: 1px dashed var(--border-color); padding-top: 0.8rem;">
+        <h4 style="margin-bottom: 0.6rem; color: var(--primary-color); font-size: 0.9rem; font-weight: 600;">
+          <i data-lucide="file-text" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Vendor & Bill Details
+        </h4>
+        <div class="form-grid">
+          <div class="form-column">
+            <div class="form-group" style="margin-bottom: 0.8rem;">
+              <label>Vendor / Supplier Name</label>
+              <input type="text" id="invNewVendor" placeholder="e.g. Dell India Pvt Ltd">
+            </div>
+            <div class="form-group" style="margin-bottom: 0.8rem;">
+              <label>Bill / Invoice Number</label>
+              <input type="text" id="invNewBillNo" placeholder="e.g. INV-2026-9812">
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="form-group" style="margin-bottom: 0.8rem;">
+              <label>Bill Date</label>
+              <input type="date" id="invNewBillDate">
+            </div>
+            <div class="form-group" style="margin-bottom: 0.8rem;">
+              <label>Bill Amount (₹)</label>
+              <input type="number" id="invNewBillAmount" placeholder="0" min="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top: 0.8rem;">
         <label><i data-lucide="barcode" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Laptop / Item Serial Numbers</label>
         <textarea id="invNewSerials" rows="3" placeholder="Enter serial numbers (separated by commas or new lines, e.g. SN1001, SN1002)" style="width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-body); color: var(--text-primary); font-family: inherit; font-size: 0.9rem; margin-top: 0.3rem;"></textarea>
       </div>
@@ -770,7 +799,37 @@
           </div>
         </div>
       </div>
-      <div class="form-group" style="margin-top: 1rem;">
+
+      <!-- Vendor & Bill Details Section -->
+      <div style="margin-top: 0.8rem; border-top: 1px dashed var(--border-color); padding-top: 0.8rem;">
+        <h4 style="margin-bottom: 0.6rem; color: var(--primary-color); font-size: 0.9rem; font-weight: 600;">
+          <i data-lucide="file-text" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Vendor & Bill Details
+        </h4>
+        <div class="form-grid">
+          <div class="form-column">
+            <div class="form-group" style="margin-bottom: 0.8rem;">
+              <label>Vendor / Supplier Name</label>
+              <input type="text" id="invUpdateVendor" placeholder="e.g. Dell India Pvt Ltd">
+            </div>
+            <div class="form-group" style="margin-bottom: 0.8rem;">
+              <label>Bill / Invoice Number</label>
+              <input type="text" id="invUpdateBillNo" placeholder="e.g. INV-2026-9812">
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="form-group" style="margin-bottom: 0.8rem;">
+              <label>Bill Date</label>
+              <input type="date" id="invUpdateBillDate">
+            </div>
+            <div class="form-group" style="margin-bottom: 0.8rem;">
+              <label>Bill Amount (₹)</label>
+              <input type="number" id="invUpdateBillAmount" placeholder="0" min="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top: 0.8rem;">
         <label><i data-lucide="barcode" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Laptop / Item Serial Numbers</label>
         <textarea id="invUpdateSerials" rows="3" placeholder="Enter serial numbers (separated by commas or new lines, e.g. SN1001, SN1002)" style="width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-body); color: var(--text-primary); font-family: inherit; font-size: 0.9rem; margin-top: 0.3rem;"></textarea>
       </div>

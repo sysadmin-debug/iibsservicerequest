@@ -727,7 +727,9 @@ document.addEventListener('DOMContentLoaded', () => {
       filtered = filtered.filter(item => {
         const name = (item.particulars || item.item_name || item.item_description || '').toLowerCase();
         const serials = (item.serial_numbers || '').toLowerCase();
-        return name.includes(searchTerm) || serials.includes(searchTerm);
+        const vendor = (item.vendor_name || '').toLowerCase();
+        const billNo = (item.bill_no || '').toLowerCase();
+        return name.includes(searchTerm) || serials.includes(searchTerm) || vendor.includes(searchTerm) || billNo.includes(searchTerm);
       });
     }
 
@@ -750,6 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
               <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Month & Date</th>
               <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Particulars</th>
+              <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Vendor & Bill Details</th>
               <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Opening Stock</th>
               <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Arrivals / Receipts</th>
               <th style="padding: 1rem 0.5rem; color: var(--text-secondary);">Totals</th>
@@ -774,6 +777,26 @@ document.addEventListener('DOMContentLoaded', () => {
               }
               const closing = item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0);
 
+              let vendorBillHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>';
+              if (item.vendor_name || item.bill_no || item.bill_amount) {
+                const vName = item.vendor_name ? `<strong>${item.vendor_name}</strong>` : '';
+                const bNo = item.bill_no ? `<span style="font-size: 0.8rem; color: var(--text-secondary);">Bill: ${item.bill_no}</span>` : '';
+                const bAmt = item.bill_amount ? `<span style="font-weight: 600; color: #10b981; font-size: 0.8rem;">₹${Number(item.bill_amount).toLocaleString('en-IN')}</span>` : '';
+                let bDateStr = '';
+                if (item.bill_date) {
+                  try {
+                    bDateStr = `<span style="font-size: 0.75rem; color: var(--text-muted);">${new Date(item.bill_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</span>`;
+                  } catch(e){}
+                }
+                vendorBillHtml = `
+                  <div style="font-size: 0.85rem; line-height: 1.3;">
+                    ${vName ? `<div>${vName}</div>` : ''}
+                    ${bNo || bDateStr ? `<div>${bNo} ${bDateStr}</div>` : ''}
+                    ${bAmt ? `<div>${bAmt}</div>` : ''}
+                  </div>
+                `;
+              }
+
               let serialsHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>';
               const serialList = item.serial_numbers ? item.serial_numbers.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : [];
               if (serialList.length > 0) {
@@ -789,6 +812,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <tr style="border-bottom: 1px solid var(--border-color);">
                   <td style="padding: 1rem 0.5rem;">${dateString}</td>
                   <td style="padding: 1rem 0.5rem; font-weight: 500;">${item.particulars || item.item_name || item.item_description || '-'}</td>
+                  <td style="padding: 1rem 0.5rem;">${vendorBillHtml}</td>
                   <td style="padding: 1rem 0.5rem;">${opening}</td>
                   <td style="padding: 1rem 0.5rem; color: #10b981;">${arrivals > 0 ? '+' + arrivals : arrivals}</td>
                   <td style="padding: 1rem 0.5rem; font-weight: bold; background: rgba(0,0,0,0.02);">${total}</td>
@@ -886,6 +910,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('invNewIssues').value = '0';
     document.getElementById('invNewTotal').value = '0';
     document.getElementById('invNewClosing').value = '0';
+    if (document.getElementById('invNewVendor')) document.getElementById('invNewVendor').value = '';
+    if (document.getElementById('invNewBillNo')) document.getElementById('invNewBillNo').value = '';
+    if (document.getElementById('invNewBillDate')) document.getElementById('invNewBillDate').value = '';
+    if (document.getElementById('invNewBillAmount')) document.getElementById('invNewBillAmount').value = '';
     if (document.getElementById('invNewSerials')) document.getElementById('invNewSerials').value = '';
     addInventoryModal.classList.add('visible');
   });
@@ -901,6 +929,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const arrivals = parseInt(document.getElementById('invNewArrivals').value) || 0;
     const issues = parseInt(document.getElementById('invNewIssues').value) || 0;
     const closing_stock = parseInt(document.getElementById('invNewClosing').value) || 0;
+    const vendor_name = document.getElementById('invNewVendor')?.value.trim() || '';
+    const bill_no = document.getElementById('invNewBillNo')?.value.trim() || '';
+    const bill_date = document.getElementById('invNewBillDate')?.value || null;
+    const bill_amount = parseFloat(document.getElementById('invNewBillAmount')?.value) || 0;
     const serial_numbers = document.getElementById('invNewSerials')?.value.trim() || '';
 
     if (!particulars || !date) {
@@ -923,6 +955,10 @@ document.addEventListener('DOMContentLoaded', () => {
           arrivals: arrivals,
           issues: issues,
           closing_stock: closing_stock,
+          vendor_name: vendor_name,
+          bill_no: bill_no,
+          bill_date: bill_date,
+          bill_amount: bill_amount,
           serial_numbers: serial_numbers,
           item_name: particulars,
           quantity: closing_stock
@@ -980,13 +1016,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('invUpdateArrivals').value = item.arrivals || 0;
     document.getElementById('invUpdateIssues').value = item.issues || 0;
     document.getElementById('invUpdateClosing').value = item.closing_stock || item.quantity || 0;
+    if (document.getElementById('invUpdateVendor')) document.getElementById('invUpdateVendor').value = item.vendor_name || '';
+    if (document.getElementById('invUpdateBillNo')) document.getElementById('invUpdateBillNo').value = item.bill_no || '';
+    if (document.getElementById('invUpdateBillDate')) {
+      document.getElementById('invUpdateBillDate').value = item.bill_date ? new Date(item.bill_date).toISOString().split('T')[0] : '';
+    }
+    if (document.getElementById('invUpdateBillAmount')) document.getElementById('invUpdateBillAmount').value = item.bill_amount || '';
     if (document.getElementById('invUpdateSerials')) document.getElementById('invUpdateSerials').value = item.serial_numbers || '';
     calcUpdateModal();
 
     updateInventoryModal.classList.add('visible');
   }
-
-  // removed purchase details toggle
 
   document.getElementById('invUpdateCloseBtn')?.addEventListener('click', () => {
     updateInventoryModal.classList.remove('visible');
@@ -1001,6 +1041,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const arrivals = parseInt(document.getElementById('invUpdateArrivals').value) || 0;
     const issues = parseInt(document.getElementById('invUpdateIssues').value) || 0;
     const closing_stock = parseInt(document.getElementById('invUpdateClosing').value) || 0;
+    const vendor_name = document.getElementById('invUpdateVendor')?.value.trim() || '';
+    const bill_no = document.getElementById('invUpdateBillNo')?.value.trim() || '';
+    const bill_date = document.getElementById('invUpdateBillDate')?.value || null;
+    const bill_amount = parseFloat(document.getElementById('invUpdateBillAmount')?.value) || 0;
     const serial_numbers = document.getElementById('invUpdateSerials')?.value.trim() || '';
 
     if (!particulars || !date) {
@@ -1023,6 +1067,10 @@ document.addEventListener('DOMContentLoaded', () => {
           arrivals: arrivals,
           issues: issues,
           closing_stock: closing_stock,
+          vendor_name: vendor_name,
+          bill_no: bill_no,
+          bill_date: bill_date,
+          bill_amount: bill_amount,
           serial_numbers: serial_numbers,
           item_name: particulars,
           quantity: closing_stock
