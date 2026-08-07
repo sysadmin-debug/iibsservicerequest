@@ -195,6 +195,7 @@ const laptopEligibilitySchema = new mongoose.Schema({
   givenDate: { type: String, default: '' },
   returnDate: { type: String, default: '' },
   acceptanceLink: { type: String, default: '' },
+  signature: { type: String, default: '' },
   updatedAt: { type: Date, default: Date.now }
 });
 const LaptopEligibility = mongoose.models.LaptopEligibility || mongoose.model('LaptopEligibility', laptopEligibilitySchema);
@@ -662,6 +663,15 @@ app.post('/api/laptop/accept/:id', async (req, res) => {
     const laptop = await LaptopEligibility.findById(req.params.id);
     if (!laptop) return res.status(404).json({ error: 'Not found' });
     
+    const { serialNo, signature } = req.body;
+    
+    if (serialNo && serialNo.trim()) {
+      laptop.serialNo = serialNo.trim();
+    }
+    if (signature) {
+      laptop.signature = signature;
+    }
+    
     laptop.status = 'Received';
     if (!laptop.givenDate) {
       laptop.givenDate = new Date().toLocaleDateString('en-GB');
@@ -669,6 +679,47 @@ app.post('/api/laptop/accept/:id', async (req, res) => {
     laptop.acceptanceLink = 'Accepted electronically';
     
     await laptop.save();
+
+    // Automatically sync with Stock Register (Inventory) if serialNo is set
+    if (laptop.serialNo) {
+      try {
+        // Find matching inventory stock (e.g. Dell Laptops or item containing laptop model / particular)
+        const invItems = await Inventory.find();
+        let targetInv = invItems.find(i => 
+          (i.particulars && laptop.laptopModel && i.particulars.toLowerCase().includes(laptop.laptopModel.toLowerCase())) ||
+          (laptop.laptopModel && i.particulars && laptop.laptopModel.toLowerCase().includes(i.particulars.toLowerCase()))
+        );
+        
+        if (!targetInv && invItems.length > 0) {
+          // Fallback to first inventory item with stock available
+          targetInv = invItems.find(i => (i.closing_stock || i.quantity || 0) > 0) || invItems[0];
+        }
+
+        if (targetInv) {
+          // Add serial number to inventory if not already listed
+          let currentSerials = targetInv.serial_numbers ? targetInv.serial_numbers.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : [];
+          if (!currentSerials.includes(laptop.serialNo)) {
+            currentSerials.push(laptop.serialNo);
+            targetInv.serial_numbers = currentSerials.join(', ');
+          }
+          
+          // Increment issues count and recalculate closing stock
+          targetInv.issues = (targetInv.issues || 0) + 1;
+          const opening = targetInv.opening_stock || 0;
+          const arrivals = targetInv.arrivals || 0;
+          let total = opening + arrivals;
+          if (opening === arrivals && opening > 0) total = opening;
+          targetInv.closing_stock = Math.max(0, total - targetInv.issues);
+          targetInv.quantity = targetInv.closing_stock;
+          targetInv.last_updated = new Date();
+          
+          await targetInv.save();
+        }
+      } catch (invErr) {
+        console.error('Error auto-syncing with Stock Register:', invErr);
+      }
+    }
+
     res.json({ success: true, message: 'Laptop accepted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
