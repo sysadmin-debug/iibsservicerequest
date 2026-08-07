@@ -427,6 +427,7 @@
                   <th>Student Name</th>
                   <th style="width: 120px;">Status</th>
                   <th style="width: 150px;">Serial No.</th>
+                  <th style="width: 160px;">Signature / Link</th>
                   <th style="width: 40px;" class="report-controls-cell"></th>
                 </tr>
               </thead>
@@ -449,7 +450,13 @@
 
           let serialField = isReadOnly ? `<span>${student.serialNo || '-'}</span>` : `<input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" />`;
 
-
+          let signatureCell = '';
+          if (student.signature) {
+            signatureCell = `<img src="${student.signature}" alt="Signature" style="max-height: 28px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; background: white; vertical-align: middle;" title="Digitally signed by student" />`;
+          } else {
+            const shareUrl = window.location.origin + '/accept-laptop.html?id=' + student._id;
+            signatureCell = `<button type="button" class="btn-copy-link report-controls-cell" onclick="copyStudentLink('${shareUrl}')" style="padding: 3px 8px; font-size: 0.75rem; background: #e0e7ff; color: #4f46e5; border: 1px solid #c7d2fe; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Copy acceptance link for student"><i data-lucide="share-2" style="width: 12px; height: 12px;"></i> Copy Link</button>`;
+          }
 
           let deleteBtn = isReadOnly ? '' : `
                     <button class="delete-btn" onclick="deleteStudent('${student._id}', '${student.name.replace(/'/g, "\\'")}')" title="Delete Record">
@@ -463,6 +470,7 @@
                   <td>${nameField}</td>
                   <td>${statusField}</td>
                   <td>${serialField}</td>
+                  <td>${signatureCell}</td>
                   <td class="report-controls-cell">${deleteBtn}</td>
                 </tr>
           `;
@@ -517,6 +525,18 @@
       } catch (err) {
         showToast('Error updating data', true);
         fetchLaptops(); 
+      }
+    }
+
+    function copyStudentLink(url) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('Student link copied to clipboard!');
+        }).catch(() => {
+          prompt('Copy student acceptance link:', url);
+        });
+      } else {
+        prompt('Copy student acceptance link:', url);
       }
     }
 

@@ -883,6 +883,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('inventorySearchInput')?.addEventListener('input', () => renderInventory());
 
+  // Export Stock Register to CSV
+  document.getElementById('exportStockBtn')?.addEventListener('click', () => {
+    if (!inventoryItems || inventoryItems.length === 0) {
+      alert("No stock items available to export.");
+      return;
+    }
+    const headers = ["Date", "Particulars", "Vendor Name", "Bill No", "Bill Date", "Bill Amount", "Opening Stock", "Arrivals", "Issues", "Closing Stock", "Serial Numbers"];
+    const rows = inventoryItems.map(item => {
+      let dateString = item.date || item.last_updated || '';
+      try { dateString = new Date(dateString).toISOString().split('T')[0]; } catch(e){}
+      let billDateStr = item.bill_date ? new Date(item.bill_date).toISOString().split('T')[0] : '';
+      return [
+        `"${dateString}"`,
+        `"${(item.particulars || item.item_name || '').replace(/"/g, '""')}"`,
+        `"${(item.vendor_name || '').replace(/"/g, '""')}"`,
+        `"${(item.bill_no || '').replace(/"/g, '""')}"`,
+        `"${billDateStr}"`,
+        item.bill_amount || 0,
+        item.opening_stock || 0,
+        item.arrivals || 0,
+        item.issues || 0,
+        item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0),
+        `"${(item.serial_numbers || '').replace(/"/g, '""')}"`
+      ];
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Stock_Register_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
   // Auto-calculate for Add Modal
   function calcAddModal() {
     const op = parseInt(document.getElementById('invNewOpening').value) || 0;
