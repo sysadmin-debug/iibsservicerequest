@@ -774,7 +774,7 @@ document.addEventListener('DOMContentLoaded', () => {
               }
               const closing = item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0);
 
-              let serialsHtml = '';
+              let serialsHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>';
               const serialList = item.serial_numbers ? item.serial_numbers.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : [];
               if (serialList.length > 0) {
                 const visibleSerials = serialList.slice(0, 3).map(sn => 
@@ -782,9 +782,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ).join(' ');
                 const remaining = serialList.length - 3;
                 const moreBadge = remaining > 0 ? `<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">+${remaining} more</span>` : '';
-                serialsHtml = `<div>${visibleSerials} ${moreBadge}</div><button class="btn-secondary btn-serials-stock" data-id="${item.id}" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; font-weight: 500; border-color: rgba(79, 70, 229, 0.4); color: #4f46e5; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px;"><i data-lucide="barcode" style="width: 12px; height: 12px;"></i> Edit Serials (${serialList.length})</button>`;
-              } else {
-                serialsHtml = `<button class="btn-secondary btn-serials-stock" data-id="${item.id}" style="padding: 0.25rem 0.5rem; font-size: 0.78rem; font-weight: 500; border-color: rgba(79, 70, 229, 0.4); color: #4f46e5; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="plus" style="width: 12px; height: 12px;"></i> Add Serials</button>`;
+                serialsHtml = `<div>${visibleSerials} ${moreBadge}</div>`;
               }
 
               return `
