@@ -442,6 +442,15 @@ app.post('/api/inventory/import', async (req, res) => {
 
 app.post(['/api/inventory', '/inventory'], async (req, res) => {
   try {
+    if (Array.isArray(req.body)) {
+      const itemsToInsert = req.body.map(item => ({
+        ...item,
+        id: item.id || crypto.randomUUID(),
+        last_updated: new Date()
+      }));
+      const created = await Inventory.insertMany(itemsToInsert);
+      return res.status(201).json(created);
+    }
     const newItem = new Inventory({ ...req.body, last_updated: new Date() });
     await newItem.save();
     res.status(201).json([newItem]);

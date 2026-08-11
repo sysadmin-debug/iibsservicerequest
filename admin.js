@@ -919,86 +919,276 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.removeChild(link);
   });
 
-  // Auto-calculate for Add Modal
-  function calcAddModal() {
-    const op = parseInt(document.getElementById('invNewOpening').value) || 0;
-    const arr = parseInt(document.getElementById('invNewArrivals').value) || 0;
-    const iss = parseInt(document.getElementById('invNewIssues').value) || 0;
-    
+  // ===== MULTIPLE STOCK ITEMS ENTRY LOGIC =====
+  const invMultiItemsContainer = document.getElementById('invMultiItemsContainer');
+  const addStockItemRowBtn = document.getElementById('addStockItemRowBtn');
+  const invAddTopCloseBtn = document.getElementById('invAddTopCloseBtn');
+
+  function calcStockRow(row) {
+    const op = parseInt(row.querySelector('.stock-row-opening')?.value) || 0;
+    const arr = parseInt(row.querySelector('.stock-row-arrivals')?.value) || 0;
+    const iss = parseInt(row.querySelector('.stock-row-issues')?.value) || 0;
+
     let total = op + arr;
     if (op === arr && op > 0) {
       total = op;
     }
-    
-    document.getElementById('invNewTotal').value = total;
-    document.getElementById('invNewClosing').value = total - iss;
-  }
-  document.getElementById('invNewOpening')?.addEventListener('input', calcAddModal);
-  document.getElementById('invNewArrivals')?.addEventListener('input', calcAddModal);
-  document.getElementById('invNewIssues')?.addEventListener('input', calcAddModal);
 
-  // Add Item Modal
+    const closing = Math.max(0, total - iss);
+    
+    const totalEl = row.querySelector('.stock-row-total');
+    const closingEl = row.querySelector('.stock-row-closing');
+    if (totalEl) totalEl.value = total;
+    if (closingEl) closingEl.value = closing;
+
+    updateStockOverallSummary();
+  }
+
+  function updateStockRowSerialsCount(row) {
+    const textarea = row.querySelector('.stock-row-serials');
+    const badge = row.querySelector('.stock-row-serials-badge');
+    if (!textarea || !badge) return;
+
+    const list = textarea.value.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    const count = list.length;
+    badge.textContent = count === 1 ? '1 Serial' : `${count} Serials`;
+    badge.style.color = count > 0 ? '#4f46e5' : 'var(--text-muted)';
+    badge.style.background = count > 0 ? 'rgba(79, 70, 229, 0.1)' : 'rgba(0,0,0,0.05)';
+  }
+
+  function updateStockRowIndices() {
+    if (!invMultiItemsContainer) return;
+    const rows = invMultiItemsContainer.querySelectorAll('.stock-entry-card');
+    const total = rows.length;
+
+    rows.forEach((row, idx) => {
+      const badge = row.querySelector('.stock-item-badge');
+      if (badge) badge.innerHTML = `<i data-lucide="box" style="width: 12px; height: 12px;"></i> #${idx + 1} Item`;
+      
+      const removeBtn = row.querySelector('.btn-remove-stock-row');
+      if (removeBtn) {
+        removeBtn.style.display = total > 1 ? 'inline-flex' : 'none';
+      }
+    });
+
+    const countEl = document.getElementById('invItemCount');
+    if (countEl) countEl.textContent = total;
+
+    const saveBtnText = document.getElementById('invAddSaveBtnText');
+    if (saveBtnText) {
+      saveBtnText.textContent = total > 1 ? `Save ${total} Stock Items` : 'Save Stock Entry';
+    }
+
+    lucide.createIcons();
+    updateStockOverallSummary();
+  }
+
+  function updateStockOverallSummary() {
+    if (!invMultiItemsContainer) return;
+    const rows = invMultiItemsContainer.querySelectorAll('.stock-entry-card');
+    let totalItems = rows.length;
+    let totalArrivals = 0;
+    let totalClosing = 0;
+
+    rows.forEach(row => {
+      totalArrivals += parseInt(row.querySelector('.stock-row-arrivals')?.value) || 0;
+      totalClosing += parseInt(row.querySelector('.stock-row-closing')?.value) || 0;
+    });
+
+    const totItemsEl = document.getElementById('invSummaryTotalItems');
+    const totArrEl = document.getElementById('invSummaryArrivals');
+    const totClosEl = document.getElementById('invSummaryClosing');
+
+    if (totItemsEl) totItemsEl.textContent = totalItems;
+    if (totArrEl) totArrEl.textContent = `${totalArrivals} units`;
+    if (totClosEl) totClosEl.textContent = `${totalClosing} units`;
+  }
+
+  function createStockItemRow(initialData = {}) {
+    if (!invMultiItemsContainer) return null;
+
+    const row = document.createElement('div');
+    row.className = 'stock-entry-card';
+    row.innerHTML = `
+      <div class="stock-entry-card-header">
+        <span class="stock-item-badge">
+          <i data-lucide="box" style="width: 12px; height: 12px;"></i> #1 Item
+        </span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="stock-row-serials-badge" style="font-size: 0.76rem; font-weight: 600; padding: 2px 7px; border-radius: 12px; background: rgba(0,0,0,0.05); color: var(--text-muted);">0 Serials</span>
+          <button type="button" class="btn-remove-stock-row" title="Remove this item row">
+            <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i> Remove
+          </button>
+        </div>
+      </div>
+
+      <div class="stock-fields-row">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.8rem; font-weight: 600;">Particulars / Item Name *</label>
+          <input type="text" class="stock-row-particulars" placeholder="e.g. Dell Latitude 3420 / Keyboard" value="${initialData.particulars || ''}" required style="margin-top: 3px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.8rem; font-weight: 600; text-align: center; display: block;">Opening</label>
+          <input type="number" class="stock-row-opening" value="${initialData.opening_stock !== undefined ? initialData.opening_stock : 0}" min="0" style="margin-top: 3px; text-align: center;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.8rem; font-weight: 600; text-align: center; display: block;">Arrivals</label>
+          <input type="number" class="stock-row-arrivals" value="${initialData.arrivals !== undefined ? initialData.arrivals : 0}" min="0" style="margin-top: 3px; text-align: center; color: #10b981; font-weight: 600;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.8rem; font-weight: 600; text-align: center; display: block;">Issues</label>
+          <input type="number" class="stock-row-issues" value="${initialData.issues !== undefined ? initialData.issues : 0}" min="0" style="margin-top: 3px; text-align: center;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.8rem; font-weight: 600; text-align: center; display: block;">Total</label>
+          <input type="number" class="stock-row-total stock-calc-field" value="0" readonly style="margin-top: 3px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.8rem; font-weight: 600; text-align: center; display: block;">Closing</label>
+          <input type="number" class="stock-row-closing stock-calc-field" value="0" readonly style="margin-top: 3px; font-weight: 700; color: #4f46e5;">
+        </div>
+      </div>
+
+      <div class="stock-serials-collapse">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">
+            <i data-lucide="barcode" style="width: 13px; height: 13px; color: var(--primary-color);"></i> Item Serial Numbers (Optional)
+          </label>
+          <span style="font-size: 0.74rem; color: var(--text-muted);">Separate by commas or new lines</span>
+        </div>
+        <textarea class="stock-row-serials" rows="2" placeholder="e.g. SN1001, SN1002, SN1003..." style="width: 100%; box-sizing: border-box; padding: 0.45rem 0.7rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-body); color: var(--text-primary); font-family: inherit; font-size: 0.84rem; resize: vertical;">${initialData.serial_numbers || ''}</textarea>
+      </div>
+    `;
+
+    invMultiItemsContainer.appendChild(row);
+
+    // Attach listeners for calculations
+    const openingInput = row.querySelector('.stock-row-opening');
+    const arrivalsInput = row.querySelector('.stock-row-arrivals');
+    const issuesInput = row.querySelector('.stock-row-issues');
+    const serialsInput = row.querySelector('.stock-row-serials');
+    const removeBtn = row.querySelector('.btn-remove-stock-row');
+
+    openingInput?.addEventListener('input', () => calcStockRow(row));
+    arrivalsInput?.addEventListener('input', () => calcStockRow(row));
+    issuesInput?.addEventListener('input', () => calcStockRow(row));
+    serialsInput?.addEventListener('input', () => updateStockRowSerialsCount(row));
+
+    removeBtn?.addEventListener('click', () => {
+      row.remove();
+      if (invMultiItemsContainer.querySelectorAll('.stock-entry-card').length === 0) {
+        createStockItemRow();
+      } else {
+        updateStockRowIndices();
+      }
+    });
+
+    calcStockRow(row);
+    updateStockRowSerialsCount(row);
+    updateStockRowIndices();
+    return row;
+  }
+
+  if (addStockItemRowBtn) {
+    addStockItemRowBtn.addEventListener('click', () => {
+      const newRow = createStockItemRow();
+      if (newRow) {
+        const input = newRow.querySelector('.stock-row-particulars');
+        if (input) input.focus();
+      }
+    });
+  }
+
+  // Open Add Modal
   document.getElementById('addStockBtn')?.addEventListener('click', () => {
     document.getElementById('invNewDate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('invNewParticulars').value = '';
-    document.getElementById('invNewOpening').value = '0';
-    document.getElementById('invNewArrivals').value = '0';
-    document.getElementById('invNewIssues').value = '0';
-    document.getElementById('invNewTotal').value = '0';
-    document.getElementById('invNewClosing').value = '0';
     if (document.getElementById('invNewVendor')) document.getElementById('invNewVendor').value = '';
     if (document.getElementById('invNewBillNo')) document.getElementById('invNewBillNo').value = '';
     if (document.getElementById('invNewBillDate')) document.getElementById('invNewBillDate').value = '';
     if (document.getElementById('invNewBillAmount')) document.getElementById('invNewBillAmount').value = '';
-    if (document.getElementById('invNewSerials')) document.getElementById('invNewSerials').value = '';
+
+    if (invMultiItemsContainer) {
+      invMultiItemsContainer.innerHTML = '';
+      createStockItemRow();
+    }
+
     addInventoryModal.classList.add('visible');
   });
+
+  if (invAddTopCloseBtn) {
+    invAddTopCloseBtn.addEventListener('click', () => {
+      addInventoryModal.classList.remove('visible');
+    });
+  }
 
   document.getElementById('invAddCloseBtn')?.addEventListener('click', () => {
     addInventoryModal.classList.remove('visible');
   });
 
+  // Save All Items
   document.getElementById('invAddSaveBtn')?.addEventListener('click', async () => {
-    const date = document.getElementById('invNewDate').value;
-    const particulars = document.getElementById('invNewParticulars').value.trim();
-    const opening_stock = parseInt(document.getElementById('invNewOpening').value) || 0;
-    const arrivals = parseInt(document.getElementById('invNewArrivals').value) || 0;
-    const issues = parseInt(document.getElementById('invNewIssues').value) || 0;
-    const closing_stock = parseInt(document.getElementById('invNewClosing').value) || 0;
+    const date = document.getElementById('invNewDate')?.value;
     const vendor_name = document.getElementById('invNewVendor')?.value.trim() || '';
     const bill_no = document.getElementById('invNewBillNo')?.value.trim() || '';
     const bill_date = document.getElementById('invNewBillDate')?.value || null;
     const bill_amount = parseFloat(document.getElementById('invNewBillAmount')?.value) || 0;
-    const serial_numbers = document.getElementById('invNewSerials')?.value.trim() || '';
 
-    if (!particulars || !date) {
-      alert("Please fill required fields (Date, Particulars).");
+    if (!date) {
+      alert("Please specify the Date of Entry.");
+      document.getElementById('invNewDate')?.focus();
       return;
     }
 
+    const rows = invMultiItemsContainer ? Array.from(invMultiItemsContainer.querySelectorAll('.stock-entry-card')) : [];
+    if (rows.length === 0) {
+      alert("Please add at least one stock item.");
+      return;
+    }
+
+    const itemsPayload = [];
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const particulars = row.querySelector('.stock-row-particulars')?.value.trim();
+      if (!particulars) {
+        alert(`Please enter Particulars / Item Name for Item #${i + 1}.`);
+        row.querySelector('.stock-row-particulars')?.focus();
+        return;
+      }
+
+      const opening_stock = parseInt(row.querySelector('.stock-row-opening')?.value) || 0;
+      const arrivals = parseInt(row.querySelector('.stock-row-arrivals')?.value) || 0;
+      const issues = parseInt(row.querySelector('.stock-row-issues')?.value) || 0;
+      const closing_stock = parseInt(row.querySelector('.stock-row-closing')?.value) || 0;
+      const serial_numbers = row.querySelector('.stock-row-serials')?.value.trim() || '';
+
+      itemsPayload.push({
+        date: date,
+        particulars: particulars,
+        opening_stock: opening_stock,
+        arrivals: arrivals,
+        issues: issues,
+        closing_stock: closing_stock,
+        vendor_name: vendor_name,
+        bill_no: bill_no,
+        bill_date: bill_date,
+        bill_amount: bill_amount,
+        serial_numbers: serial_numbers,
+        item_name: particulars,
+        quantity: closing_stock
+      });
+    }
+
     const btn = document.getElementById('invAddSaveBtn');
-    btn.textContent = 'Saving...';
+    const origBtnHtml = btn.innerHTML;
+    btn.innerHTML = `<i data-lucide="loader" class="spin" style="width: 16px; height: 16px;"></i> Saving ${itemsPayload.length} Items...`;
     btn.disabled = true;
+    lucide.createIcons();
 
     try {
       const res = await fetch('/api/inventory', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          date: date,
-          particulars: particulars,
-          opening_stock: opening_stock,
-          arrivals: arrivals,
-          issues: issues,
-          closing_stock: closing_stock,
-          vendor_name: vendor_name,
-          bill_no: bill_no,
-          bill_date: bill_date,
-          bill_amount: bill_amount,
-          serial_numbers: serial_numbers,
-          item_name: particulars,
-          quantity: closing_stock
-        })
+        body: JSON.stringify(itemsPayload.length === 1 ? itemsPayload[0] : itemsPayload)
       });
 
       if (!res.ok) throw new Error('API failed');
@@ -1006,11 +1196,12 @@ document.addEventListener('DOMContentLoaded', () => {
       addInventoryModal.classList.remove('visible');
       fetchInventoryFromSupabase();
     } catch (error) {
-      alert("Error adding entry. Please try again.");
+      alert("Error adding stock entries. Please check server logs and try again.");
+    } finally {
+      btn.innerHTML = origBtnHtml;
+      btn.disabled = false;
+      lucide.createIcons();
     }
-
-    btn.textContent = 'Save Entry';
-    btn.disabled = false;
   });
 
   // Auto-calculate for Update Modal

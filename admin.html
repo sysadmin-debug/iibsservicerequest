@@ -662,80 +662,87 @@
     </div>
   </div>
 
-  <!-- Add Inventory Modal -->
+  <!-- Add Inventory Modal (Multiple Items Entry) -->
   <div class="modal-overlay" id="addInventoryModal">
-    <div class="modal-content" style="max-width: 600px; text-align: left;">
-      <h2 style="margin-bottom: 1rem;"><i data-lucide="plus-square" style="vertical-align: middle; margin-right: 8px;"></i>Add New Stock Item</h2>
-      <div class="form-grid">
-        <div class="form-column">
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label>Month & Date *</label>
-            <input type="date" id="invNewDate" required>
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label>Particulars *</label>
-            <input type="text" id="invNewParticulars" placeholder="e.g. Dell Laptops" required>
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label>Opening Stock *</label>
-            <input type="number" id="invNewOpening" value="0" min="0" required>
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label>Arrivals / Receipts</label>
-            <input type="number" id="invNewArrivals" value="0" min="0">
-          </div>
+    <div class="modal-content" style="max-width: 960px; width: 95%; text-align: left; max-height: 90vh; overflow-y: auto; padding: 1.75rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+        <div>
+          <h2 style="margin: 0; font-size: 1.4rem; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="boxes" style="color: var(--primary-color);"></i> Add Stock Register Entry
+          </h2>
+          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.88rem;">
+            Record single or multiple stock items with shared invoice details and item-level serial numbers.
+          </p>
         </div>
-        <div class="form-column">
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label>Issues / Consumed</label>
-            <input type="number" id="invNewIssues" value="0" min="0">
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label>Totals</label>
-            <input type="number" id="invNewTotal" value="0" readonly style="background: rgba(0,0,0,0.05); font-weight: bold;">
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label>Closing Stock *</label>
-            <input type="number" id="invNewClosing" value="0" min="0" required>
-          </div>
-        </div>
+        <button type="button" class="btn-icon" id="invAddTopCloseBtn" style="border: none; background: transparent; cursor: pointer; color: var(--text-secondary);" title="Close">
+          <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+        </button>
       </div>
-      <!-- Vendor & Bill Details Section -->
-      <div style="margin-top: 0.8rem; border-top: 1px dashed var(--border-color); padding-top: 0.8rem;">
-        <h4 style="margin-bottom: 0.6rem; color: var(--primary-color); font-size: 0.9rem; font-weight: 600;">
-          <i data-lucide="file-text" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Vendor & Bill Details
+
+      <!-- Vendor & Bill Details (Shared for this entry) -->
+      <div class="stock-header-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.1rem; margin-bottom: 1.25rem;">
+        <h4 style="margin: 0 0 0.8rem 0; color: var(--primary-color); font-size: 0.92rem; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+          <i data-lucide="receipt" style="width: 16px; height: 16px;"></i> Invoice & Vendor Details
         </h4>
-        <div class="form-grid">
-          <div class="form-column">
-            <div class="form-group" style="margin-bottom: 0.8rem;">
-              <label>Vendor / Supplier Name</label>
-              <input type="text" id="invNewVendor" placeholder="e.g. Dell India Pvt Ltd">
-            </div>
-            <div class="form-group" style="margin-bottom: 0.8rem;">
-              <label>Bill / Invoice Number</label>
-              <input type="text" id="invNewBillNo" placeholder="e.g. INV-2026-9812">
-            </div>
+        <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 0.82rem; font-weight: 600;">Date of Entry *</label>
+            <input type="date" id="invNewDate" required style="margin-top: 4px;">
           </div>
-          <div class="form-column">
-            <div class="form-group" style="margin-bottom: 0.8rem;">
-              <label>Bill Date</label>
-              <input type="date" id="invNewBillDate">
-            </div>
-            <div class="form-group" style="margin-bottom: 0.8rem;">
-              <label>Bill Amount (₹)</label>
-              <input type="number" id="invNewBillAmount" placeholder="0" min="0">
-            </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 0.82rem; font-weight: 600;">Vendor / Supplier</label>
+            <input type="text" id="invNewVendor" list="vendorNamesList" placeholder="e.g. Dell India Pvt Ltd" style="margin-top: 4px;">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 0.82rem; font-weight: 600;">Bill / Invoice No</label>
+            <input type="text" id="invNewBillNo" placeholder="e.g. INV-2026-9812" style="margin-top: 4px;">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 0.82rem; font-weight: 600;">Bill Date</label>
+            <input type="date" id="invNewBillDate" style="margin-top: 4px;">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 0.82rem; font-weight: 600;">Total Bill Amount (₹)</label>
+            <input type="number" id="invNewBillAmount" placeholder="0" min="0" style="margin-top: 4px;">
           </div>
         </div>
       </div>
 
-      <div class="form-group" style="margin-top: 0.8rem;">
-        <label><i data-lucide="barcode" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Laptop / Item Serial Numbers</label>
-        <textarea id="invNewSerials" rows="3" placeholder="Enter serial numbers (separated by commas or new lines, e.g. SN1001, SN1002)" style="width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-body); color: var(--text-primary); font-family: inherit; font-size: 0.9rem; margin-top: 0.3rem;"></textarea>
+      <!-- Multiple Stock Line Items Section -->
+      <div style="margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 8px;">
+          <h4 style="margin: 0; font-size: 0.98rem; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+            <i data-lucide="layers" style="width: 16px; height: 16px; color: var(--primary-color);"></i> Stock Items (<span id="invItemCount" style="color: var(--primary-color); font-weight: 700;">1</span>)
+          </h4>
+          <button type="button" class="btn-primary" id="addStockItemRowBtn" style="padding: 0.42rem 0.85rem; font-size: 0.84rem; background: #10b981; border: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(16,185,129,0.25); cursor: pointer; border-radius: 6px;">
+            <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> Add Another Item
+          </button>
+        </div>
+
+        <!-- Container where multiple item rows will be dynamically injected -->
+        <div id="invMultiItemsContainer" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Dynamically populated via JS -->
+        </div>
       </div>
-      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
-        <button class="btn-secondary" id="invAddCloseBtn">Cancel</button>
-        <button class="btn-primary" id="invAddSaveBtn">Save Entry</button>
+
+      <!-- Entry Summary Strip -->
+      <div class="stock-summary-strip" style="display: flex; justify-content: space-between; align-items: center; background: rgba(79, 70, 229, 0.05); border: 1px dashed rgba(79, 70, 229, 0.3); border-radius: 8px; padding: 0.8rem 1.2rem; margin: 1.25rem 0; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.88rem;">
+          <div><span style="color: var(--text-secondary);">Total Items:</span> <strong id="invSummaryTotalItems" style="color: var(--text-primary);">1</strong></div>
+          <div><span style="color: var(--text-secondary);">Total Arrivals / Receipts:</span> <strong id="invSummaryArrivals" style="color: #10b981;">0</strong></div>
+          <div><span style="color: var(--text-secondary);">Total Closing Stock:</span> <strong id="invSummaryClosing" style="color: var(--primary-color);">0</strong></div>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">
+          <i data-lucide="info" style="width: 13px; height: 13px; display: inline-block; vertical-align: middle;"></i> Totals and closing stock calculate automatically
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; gap: 10px; justify-content: flex-end; align-items: center; margin-top: 1rem;">
+        <button type="button" class="btn-secondary" id="invAddCloseBtn">Cancel</button>
+        <button type="button" class="btn-primary" id="invAddSaveBtn" style="display: flex; align-items: center; gap: 6px; padding: 0.6rem 1.2rem;">
+          <i data-lucide="check" style="width: 16px; height: 16px;"></i> <span id="invAddSaveBtnText">Save Stock Entry</span>
+        </button>
       </div>
     </div>
   </div>
