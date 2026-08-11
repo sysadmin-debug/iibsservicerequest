@@ -139,6 +139,11 @@ const inventorySchema = new mongoose.Schema({
   bill_no: { type: String, default: '' },
   bill_date: { type: Date },
   bill_amount: { type: Number, default: 0 },
+  department: { type: String, default: '' },
+  assigned_to: { type: String, default: '' },
+  issue_date: { type: Date },
+  status: { type: String, default: 'In Stock' },
+  remarks: { type: String, default: '' },
   last_updated: { type: Date, default: Date.now }
 });
 const Inventory = mongoose.model('Inventory', inventorySchema);

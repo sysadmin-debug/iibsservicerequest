@@ -729,7 +729,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const serials = (item.serial_numbers || '').toLowerCase();
         const vendor = (item.vendor_name || '').toLowerCase();
         const billNo = (item.bill_no || '').toLowerCase();
-        return name.includes(searchTerm) || serials.includes(searchTerm) || vendor.includes(searchTerm) || billNo.includes(searchTerm);
+        const dept = (item.department || '').toLowerCase();
+        const assigned = (item.assigned_to || '').toLowerCase();
+        return name.includes(searchTerm) || serials.includes(searchTerm) || vendor.includes(searchTerm) || billNo.includes(searchTerm) || dept.includes(searchTerm) || assigned.includes(searchTerm);
       });
     }
 
@@ -750,14 +752,15 @@ document.addEventListener('DOMContentLoaded', () => {
         <table class="stock-table">
           <thead>
             <tr>
-              <th style="min-width: 110px;">Date</th>
-              <th style="min-width: 160px;">Particulars</th>
-              <th style="min-width: 180px;">Vendor & Bill Details</th>
-              <th class="col-center" style="width: 90px;">Opening</th>
-              <th class="col-center" style="width: 90px;">Arrivals</th>
-              <th class="col-center" style="width: 90px;">Total</th>
-              <th class="col-center" style="width: 90px;">Closing</th>
-              <th style="min-width: 220px;">Serial Numbers</th>
+              <th style="min-width: 105px;">Date</th>
+              <th style="min-width: 150px;">Particulars</th>
+              <th style="min-width: 190px;">Allocation / In Use By</th>
+              <th style="min-width: 160px;">Vendor & Bill</th>
+              <th class="col-center" style="width: 80px;">Opening</th>
+              <th class="col-center" style="width: 80px;">Arrivals</th>
+              <th class="col-center" style="width: 80px;">Total</th>
+              <th class="col-center" style="width: 80px;">Closing</th>
+              <th style="min-width: 200px;">Serial Numbers</th>
               <th class="col-right" style="min-width: 170px;">Actions</th>
             </tr>
           </thead>
@@ -797,6 +800,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
               }
 
+              let allocationHtml = '<span style="color: var(--text-muted); font-size: 0.82rem; font-style: italic;">Unallocated</span>';
+              if (item.department || item.assigned_to) {
+                const deptBadge = item.department ? `<div class="stock-dept-badge"><i data-lucide="building-2" style="width: 12px; height: 12px;"></i> ${item.department}</div>` : '';
+                const userBadge = item.assigned_to ? `<div class="stock-user-badge"><i data-lucide="user" style="width: 12px; height: 12px; color: var(--primary-color);"></i> ${item.assigned_to}</div>` : '';
+                
+                let statusPill = '';
+                if (item.status) {
+                  let statusClass = 'stock-status-other';
+                  if (item.status === 'In Use') statusClass = 'stock-status-in-use';
+                  else if (item.status === 'In Stock') statusClass = 'stock-status-in-stock';
+                  else if (item.status === 'Under Maintenance') statusClass = 'stock-status-maintenance';
+                  statusPill = `<span class="stock-status-pill ${statusClass}">${item.status}</span>`;
+                }
+                
+                allocationHtml = `
+                  <div style="line-height: 1.35;">
+                    ${deptBadge}
+                    ${userBadge}
+                    ${statusPill}
+                  </div>
+                `;
+              }
+
               let serialsHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>';
               const serialList = item.serial_numbers ? item.serial_numbers.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : [];
               if (serialList.length > 0) {
@@ -814,6 +840,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <tr>
                   <td style="white-space: nowrap; color: var(--text-secondary);">${dateString}</td>
                   <td style="font-weight: 600; color: var(--text-primary);">${item.particulars || item.item_name || item.item_description || '-'}</td>
+                  <td>${allocationHtml}</td>
                   <td>${vendorBillHtml}</td>
                   <td class="col-num">${opening}</td>
                   <td class="col-num stock-badge-arrivals">${arrivals > 0 ? '+' + arrivals : arrivals}</td>
@@ -891,7 +918,7 @@ document.addEventListener('DOMContentLoaded', () => {
       alert("No stock items available to export.");
       return;
     }
-    const headers = ["Date", "Particulars", "Vendor Name", "Bill No", "Bill Date", "Bill Amount", "Opening Stock", "Arrivals", "Issues", "Closing Stock", "Serial Numbers"];
+    const headers = ["Date", "Particulars", "Department", "Assigned To / In Use By", "Allocation Status", "Vendor Name", "Bill No", "Bill Date", "Bill Amount", "Opening Stock", "Arrivals", "Issues", "Closing Stock", "Serial Numbers"];
     const rows = inventoryItems.map(item => {
       let dateString = item.date || item.last_updated || '';
       try { dateString = new Date(dateString).toISOString().split('T')[0]; } catch(e){}
@@ -899,6 +926,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return [
         `"${dateString}"`,
         `"${(item.particulars || item.item_name || '').replace(/"/g, '""')}"`,
+        `"${(item.department || '').replace(/"/g, '""')}"`,
+        `"${(item.assigned_to || '').replace(/"/g, '""')}"`,
+        `"${(item.status || 'In Stock').replace(/"/g, '""')}"`,
         `"${(item.vendor_name || '').replace(/"/g, '""')}"`,
         `"${(item.bill_no || '').replace(/"/g, '""')}"`,
         `"${billDateStr}"`,
@@ -1051,6 +1081,22 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
 
+      <!-- Department & In-Use Person Allocation -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(0,0,0,0.06);">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.78rem; font-weight: 600; color: #0284c7; display: flex; align-items: center; gap: 4px;">
+            <i data-lucide="building" style="width: 12px; height: 12px;"></i> Given to Department (Optional)
+          </label>
+          <input type="text" class="stock-row-department" list="stockDepartmentList" placeholder="e.g. Accounts / IT / Admin" value="${initialData.department || ''}" style="margin-top: 3px; font-size: 0.84rem;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.78rem; font-weight: 600; color: #0284c7; display: flex; align-items: center; gap: 4px;">
+            <i data-lucide="user-check" style="width: 12px; height: 12px;"></i> In Use By (Person / Staff Name)
+          </label>
+          <input type="text" class="stock-row-assigned-to" placeholder="e.g. Prof. Sharma / Dr. Ramesh" value="${initialData.assigned_to || ''}" style="margin-top: 3px; font-size: 0.84rem;">
+        </div>
+      </div>
+
       <div class="stock-serials-collapse">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">
@@ -1161,7 +1207,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const arrivals = parseInt(row.querySelector('.stock-row-arrivals')?.value) || 0;
       const issues = parseInt(row.querySelector('.stock-row-issues')?.value) || 0;
       const closing_stock = parseInt(row.querySelector('.stock-row-closing')?.value) || 0;
+      const department = row.querySelector('.stock-row-department')?.value.trim() || '';
+      const assigned_to = row.querySelector('.stock-row-assigned-to')?.value.trim() || '';
       const serial_numbers = row.querySelector('.stock-row-serials')?.value.trim() || '';
+      const status = (assigned_to || department) ? 'In Use' : 'In Stock';
 
       itemsPayload.push({
         date: date,
@@ -1170,6 +1219,9 @@ document.addEventListener('DOMContentLoaded', () => {
         arrivals: arrivals,
         issues: issues,
         closing_stock: closing_stock,
+        department: department,
+        assigned_to: assigned_to,
+        status: status,
         vendor_name: vendor_name,
         bill_no: bill_no,
         bill_date: bill_date,
@@ -1261,6 +1313,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('invUpdateArrivals').value = item.arrivals || 0;
     document.getElementById('invUpdateIssues').value = item.issues || 0;
     document.getElementById('invUpdateClosing').value = item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0);
+    
+    if (document.getElementById('invUpdateDepartment')) {
+      document.getElementById('invUpdateDepartment').value = item.department || '';
+    }
+    if (document.getElementById('invUpdateAssignedTo')) {
+      document.getElementById('invUpdateAssignedTo').value = item.assigned_to || '';
+    }
+    if (document.getElementById('invUpdateIssueDate')) {
+      document.getElementById('invUpdateIssueDate').value = item.issue_date ? new Date(item.issue_date).toISOString().split('T')[0] : '';
+    }
+    if (document.getElementById('invUpdateStatus')) {
+      document.getElementById('invUpdateStatus').value = item.status || (item.assigned_to || item.department ? 'In Use' : 'In Stock');
+    }
+
     if (document.getElementById('invUpdateVendor')) document.getElementById('invUpdateVendor').value = item.vendor_name || '';
     if (document.getElementById('invUpdateBillNo')) document.getElementById('invUpdateBillNo').value = item.bill_no || '';
     if (document.getElementById('invUpdateBillDate')) {
@@ -1288,6 +1354,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const arrivals = parseInt(document.getElementById('invUpdateArrivals').value) || 0;
     const issues = parseInt(document.getElementById('invUpdateIssues').value) || 0;
     const closing_stock = parseInt(document.getElementById('invUpdateClosing').value) || 0;
+    const department = document.getElementById('invUpdateDepartment')?.value.trim() || '';
+    const assigned_to = document.getElementById('invUpdateAssignedTo')?.value.trim() || '';
+    const issue_date = document.getElementById('invUpdateIssueDate')?.value || null;
+    const status = document.getElementById('invUpdateStatus')?.value || 'In Stock';
     const vendor_name = document.getElementById('invUpdateVendor')?.value.trim() || '';
     const bill_no = document.getElementById('invUpdateBillNo')?.value.trim() || '';
     const bill_date = document.getElementById('invUpdateBillDate')?.value || null;
@@ -1316,6 +1386,10 @@ document.addEventListener('DOMContentLoaded', () => {
           arrivals: arrivals,
           issues: issues,
           closing_stock: closing_stock,
+          department: department,
+          assigned_to: assigned_to,
+          issue_date: issue_date,
+          status: status,
           vendor_name: vendor_name,
           bill_no: bill_no,
           bill_date: bill_date,

@@ -1598,3 +1598,63 @@ footer {
   border-color: #ef4444;
 }
 
+/* Allocation & Department Badges */
+.stock-dept-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(2, 132, 199, 0.09);
+  color: #0284c7;
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+  margin-bottom: 2px;
+}
+
+.stock-user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-primary, #1e293b);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.stock-status-pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-top: 3px;
+}
+
+.stock-status-in-use {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.stock-status-in-stock {
+  background: rgba(79, 70, 229, 0.1);
+  color: #4f46e5;
+  border: 1px solid rgba(79, 70, 229, 0.2);
+}
+
+.stock-status-maintenance {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.stock-status-other {
+  background: rgba(100, 116, 139, 0.1);
+  color: #64748b;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+
