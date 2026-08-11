@@ -808,6 +808,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 serialsHtml = `<div>${visibleSerials} ${moreBadge}</div>`;
               }
 
+              const itemId = item.id || item._id;
+
               return `
                 <tr>
                   <td style="white-space: nowrap; color: var(--text-secondary);">${dateString}</td>
@@ -819,9 +821,9 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td class="col-center"><span class="stock-badge-closing">${closing}</span></td>
                   <td>${serialsHtml}</td>
                   <td class="col-right" style="white-space: nowrap;">
-                    <button class="btn-secondary btn-serials-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem; color: #4f46e5; border-color: rgba(79, 70, 229, 0.3);"><i data-lucide="barcode" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Serials</button>
-                    <button class="btn-secondary btn-update-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem;"><i data-lucide="edit-3" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Update</button>
-                    <button class="btn-secondary btn-delete-stock" data-id="${item.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);"><i data-lucide="trash-2" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Delete</button>
+                    <button class="btn-secondary btn-serials-stock" data-id="${itemId}" style="padding: 0.32rem 0.65rem; font-size: 0.82rem; margin-right: 0.25rem; color: #4f46e5; border-color: rgba(79, 70, 229, 0.3); font-weight: 500;"><i data-lucide="barcode" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Serials</button>
+                    <button class="btn-secondary btn-update-stock" data-id="${itemId}" style="padding: 0.32rem 0.65rem; font-size: 0.82rem; margin-right: 0.25rem; color: var(--primary-color); border-color: rgba(79, 70, 229, 0.4); font-weight: 600; background: rgba(79, 70, 229, 0.05);"><i data-lucide="edit" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Edit</button>
+                    <button class="btn-secondary btn-delete-stock" data-id="${itemId}" style="padding: 0.32rem 0.65rem; font-size: 0.82rem; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3); font-weight: 500;"><i data-lucide="trash-2" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></i> Delete</button>
                   </td>
                 </tr>
               `;
@@ -841,7 +843,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Attach update listeners
+    // Attach edit listeners
     document.querySelectorAll('.btn-update-stock').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
@@ -861,7 +863,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.btn-delete-stock').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
-        const item = inventoryItems.find(i => i.id === id);
+        const item = inventoryItems.find(i => (i.id || i._id) === id);
         if (!item) return;
         
         if (confirm(`Are you sure you want to permanently delete "${item.particulars || item.item_name}"?\nThis will also delete all of its history logs.`)) {
@@ -1222,9 +1224,25 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('invUpdateArrivals')?.addEventListener('input', calcUpdateModal);
   document.getElementById('invUpdateIssues')?.addEventListener('input', calcUpdateModal);
 
-  // Update Stock Modal
+  const invUpdateTopCloseBtn = document.getElementById('invUpdateTopCloseBtn');
+  if (invUpdateTopCloseBtn) {
+    invUpdateTopCloseBtn.addEventListener('click', () => {
+      updateInventoryModal.classList.remove('visible');
+    });
+  }
+
+  function updateEditModalSerialsCount() {
+    const text = document.getElementById('invUpdateSerials')?.value || '';
+    const badge = document.getElementById('invUpdateSerialsCountBadge');
+    if (!badge) return;
+    const list = text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    badge.textContent = list.length === 1 ? '1 Serial' : `${list.length} Serials`;
+  }
+  document.getElementById('invUpdateSerials')?.addEventListener('input', updateEditModalSerialsCount);
+
+  // Update / Edit Stock Modal
   function openUpdateInventoryModal(id) {
-    const item = inventoryItems.find(i => i.id === id);
+    const item = inventoryItems.find(i => (i.id || i._id) === id);
     if (!item) return;
 
     currentUpdatingItemId = id;
@@ -1242,7 +1260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('invUpdateOpening').value = item.opening_stock || 0;
     document.getElementById('invUpdateArrivals').value = item.arrivals || 0;
     document.getElementById('invUpdateIssues').value = item.issues || 0;
-    document.getElementById('invUpdateClosing').value = item.closing_stock || item.quantity || 0;
+    document.getElementById('invUpdateClosing').value = item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0);
     if (document.getElementById('invUpdateVendor')) document.getElementById('invUpdateVendor').value = item.vendor_name || '';
     if (document.getElementById('invUpdateBillNo')) document.getElementById('invUpdateBillNo').value = item.bill_no || '';
     if (document.getElementById('invUpdateBillDate')) {
@@ -1250,6 +1268,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (document.getElementById('invUpdateBillAmount')) document.getElementById('invUpdateBillAmount').value = item.bill_amount || '';
     if (document.getElementById('invUpdateSerials')) document.getElementById('invUpdateSerials').value = item.serial_numbers || '';
+    
+    updateEditModalSerialsCount();
     calcUpdateModal();
 
     updateInventoryModal.classList.add('visible');
@@ -1280,8 +1300,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const btn = document.getElementById('invUpdateSaveBtn');
-    btn.textContent = 'Updating...';
+    const origBtnHtml = btn.innerHTML;
+    btn.innerHTML = `<i data-lucide="loader" class="spin" style="width: 15px; height: 15px;"></i> Saving Changes...`;
     btn.disabled = true;
+    lucide.createIcons();
 
     try {
       const resInv = await fetch(`/api/inventory/${currentUpdatingItemId}`, {
@@ -1310,9 +1332,11 @@ document.addEventListener('DOMContentLoaded', () => {
       fetchInventoryFromSupabase();
     } catch (error) {
       alert("Error updating entry. Please try again.");
+    } finally {
+      btn.innerHTML = origBtnHtml;
+      btn.disabled = false;
+      lucide.createIcons();
     }
-    btn.textContent = 'Save Changes';
-    btn.disabled = false;
   });
 
   // Manage Serials Modal Logic
@@ -1324,7 +1348,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('serialsPreviewContainer');
     const badge = document.getElementById('serialsCountBadge');
     
-    const item = inventoryItems.find(i => i.id === currentSerialsItemId);
+    const item = inventoryItems.find(i => (i.id || i._id) === currentSerialsItemId);
     const closingQty = item ? (item.closing_stock !== undefined ? item.closing_stock : (item.quantity || 0)) : 0;
     
     const serialList = text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
@@ -1372,7 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openSerialsInventoryModal(id) {
-    const item = inventoryItems.find(i => i.id === id);
+    const item = inventoryItems.find(i => (i.id || i._id) === id);
     if (!item) return;
 
     currentSerialsItemId = id;
@@ -1401,7 +1425,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('serialsSaveBtn')?.addEventListener('click', async () => {
     if (!currentSerialsItemId) return;
-    const item = inventoryItems.find(i => i.id === currentSerialsItemId);
+    const item = inventoryItems.find(i => (i.id || i._id) === currentSerialsItemId);
     if (!item) return;
 
     const rawText = document.getElementById('invManageSerialsInput')?.value || '';
@@ -1435,7 +1459,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // History Modal Logic
   async function openHistoryInventoryModal(id) {
-    const item = inventoryItems.find(i => i.id === id);
+    const item = inventoryItems.find(i => (i.id || i._id) === id);
     if (!item) return;
 
     document.getElementById('historyInvTitle').textContent = `History: ${item.item_name}`;

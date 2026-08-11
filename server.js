@@ -470,8 +470,10 @@ app.get(['/api/inventory', '/inventory'], async (req, res) => {
 
 app.put(['/api/inventory/:id', '/inventory/:id'], async (req, res) => {
   try {
+    const id = req.params.id;
+    const filter = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id: id }, { _id: id }] } : { id: id };
     const updated = await Inventory.findOneAndUpdate(
-      { id: req.params.id }, 
+      filter, 
       { ...req.body, last_updated: new Date() }, 
       { new: true }
     );
@@ -483,8 +485,10 @@ app.put(['/api/inventory/:id', '/inventory/:id'], async (req, res) => {
 
 app.delete('/api/inventory/:id', async (req, res) => {
   try {
-    await Inventory.findOneAndDelete({ id: req.params.id });
-    await StockLog.deleteMany({ item_id: req.params.id });
+    const id = req.params.id;
+    const filter = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id: id }, { _id: id }] } : { id: id };
+    await Inventory.findOneAndDelete(filter);
+    await StockLog.deleteMany({ item_id: id });
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
