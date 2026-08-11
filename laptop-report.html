@@ -255,45 +255,51 @@
   <!-- Controls -->
   <div class="report-container">
     <div class="report-controls">
-      <div class="filter-group">
-        <label style="font-weight: 600;"><i data-lucide="filter"></i> Filter Status:</label>
-        <select id="statusFilter" onchange="renderReport()">
-          <option value="All">All Statuses</option>
-          <option value="Received">Received Only</option>
-          <option value="Cancel">Cancelled Only</option>
-          <option value="Pending">Pending Only</option>
-        </select>
-      </div>
-      <div class="filter-group" style="margin-left: 1rem;">
-        <label style="font-weight: 600;"><i data-lucide="layers"></i> Filter Batch:</label>
-        <select id="batchFilter" onchange="renderReport()">
-          <option value="All">All Batches</option>
-          <option disabled>── 2023 Batches ──</option>
-          <option value="PGDM 2023-2025">PGDM 2023-2025</option>
-          <option value="AIMA PGDM 2023-2025">AIMA PGDM 2023-2025</option>
-          <option value="MBA 2023-2025">MBA 2023-2025</option>
-          <option value="UG 2023-2026">UG 2023-2026</option>
-          <option disabled>── 2024 Batches ──</option>
-          <option value="PGDM 2024-2026">PGDM 2024-2026</option>
-          <option value="MBA 2024-2026">MBA 2024-2026</option>
-          <option value="UG 2024-2027">UG 2024-2027</option>
-          <option disabled>── 2025 Batches ──</option>
-          <option value="PGDM">PGDM 2025-2027</option>
-          <option value="MBA">MBA 2025-2027</option>
-          <option value="UG">UG 2025-2028</option>
-          <option disabled>── Others ──</option>
+      <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <div class="filter-group">
+          <label style="font-weight: 600;"><i data-lucide="filter"></i> Filter Status:</label>
+          <select id="statusFilter" onchange="renderReport()">
+            <option value="All">All Statuses</option>
+            <option value="Received">Received Only</option>
+            <option value="Cancel">Cancelled Only</option>
+            <option value="Pending">Pending Only</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label style="font-weight: 600;"><i data-lucide="layers"></i> Filter Batch:</label>
+          <select id="batchFilter" onchange="renderReport()">
+            <option value="All">All Batches</option>
+            <option disabled>── 2023 Batches ──</option>
+            <option value="PGDM 2023-2025">PGDM 2023-2025</option>
+            <option value="AIMA PGDM 2023-2025">AIMA PGDM 2023-2025</option>
+            <option value="MBA 2023-2025">MBA 2023-2025</option>
+            <option value="UG 2023-2026">UG 2023-2026</option>
+            <option disabled>── 2024 Batches ──</option>
+            <option value="PGDM 2024-2026">PGDM 2024-2026</option>
+            <option value="MBA 2024-2026">MBA 2024-2026</option>
+            <option value="UG 2024-2027">UG 2024-2027</option>
+            <option disabled>── 2025 Batches ──</option>
+            <option value="PGDM">PGDM 2025-2027</option>
+            <option value="MBA">MBA 2025-2027</option>
+            <option value="UG">UG 2025-2028</option>
+            <option disabled>── Others ──</option>
 
-          <option value="Letter (PGDM 2025)">Letter (PGDM 2025)</option>
-          <option value="Letter (MBA 2025)">Letter (MBA 2025)</option>
-          <option value="Letter (UG 2025)">Letter (UG 2025)</option>
-          <option value="Letter (PGDM 2024)">Letter (PGDM 2024)</option>
-          <option value="Letter (MBA 2024)">Letter (MBA 2024)</option>
-          <option value="Student taken Laptop with Letter">Student taken laptop giving letter 2025-2027</option>
-        </select>
+            <option value="Letter (PGDM 2025)">Letter (PGDM 2025)</option>
+            <option value="Letter (MBA 2025)">Letter (MBA 2025)</option>
+            <option value="Letter (UG 2025)">Letter (UG 2025)</option>
+            <option value="Letter (PGDM 2024)">Letter (PGDM 2024)</option>
+            <option value="Letter (MBA 2024)">Letter (MBA 2024)</option>
+            <option value="Student taken Laptop with Letter">Student taken laptop giving letter 2025-2027</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label style="font-weight: 600;"><i data-lucide="search"></i> Search Name:</label>
+          <input type="text" id="nameFilter" placeholder="Search student name..." oninput="renderReport()" style="padding: 0.5rem 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; font-family: 'Inter', sans-serif; font-size: 0.95rem; min-width: 220px; outline: none;" />
+        </div>
       </div>
-      <div>
+      <div style="display: flex; align-items: center; gap: 1rem;">
         <button class="btn-print" onclick="window.print()"><i data-lucide="printer"></i> Print Report</button>
-        <a href="admin.html" style="margin-left: 1rem; color: #4f46e5; text-decoration: none; font-weight: 500;">Back to Admin</a>
+        <a href="admin.html" style="color: #4f46e5; text-decoration: none; font-weight: 500;">Back to Admin</a>
       </div>
     </div>
 
@@ -361,6 +367,7 @@
     function renderReport() {
       const statusFilter = document.getElementById('statusFilter').value;
       const batchFilter = document.getElementById('batchFilter').value;
+      const nameFilter = (document.getElementById('nameFilter')?.value || '').trim().toLowerCase();
       const content = document.getElementById('reportContent');
       const subtitle = document.getElementById('reportSubtitle');
 
@@ -386,6 +393,9 @@
       }
       if (batchFilter !== 'All') {
         filtered = filtered.filter(item => item.course === batchFilter);
+      }
+      if (nameFilter) {
+        filtered = filtered.filter(item => item.name && item.name.toLowerCase().includes(nameFilter));
       }
 
       // Group by course
@@ -425,9 +435,8 @@
                 <tr>
                   <th style="width: 50px;">Sl.No</th>
                   <th>Student Name</th>
-                  <th style="width: 120px;">Status</th>
-                  <th style="width: 150px;">Serial No.</th>
-                  <th style="width: 160px;">Signature / Link</th>
+                  <th style="width: 130px;">Status</th>
+                  <th style="width: 180px;">Serial No.</th>
                   <th style="width: 40px;" class="report-controls-cell"></th>
                 </tr>
               </thead>
@@ -450,14 +459,6 @@
 
           let serialField = isReadOnly ? `<span>${student.serialNo || '-'}</span>` : `<input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" />`;
 
-          let signatureCell = '';
-          if (student.signature) {
-            signatureCell = `<img src="${student.signature}" alt="Signature" style="max-height: 28px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; background: white; vertical-align: middle;" title="Digitally signed by student" />`;
-          } else {
-            const shareUrl = window.location.origin + '/accept-laptop.html?id=' + student._id;
-            signatureCell = `<button type="button" class="btn-copy-link report-controls-cell" onclick="copyStudentLink('${shareUrl}')" style="padding: 3px 8px; font-size: 0.75rem; background: #e0e7ff; color: #4f46e5; border: 1px solid #c7d2fe; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Copy acceptance link for student"><i data-lucide="share-2" style="width: 12px; height: 12px;"></i> Copy Link</button>`;
-          }
-
           let deleteBtn = isReadOnly ? '' : `
                     <button class="delete-btn" onclick="deleteStudent('${student._id}', '${student.name.replace(/'/g, "\\'")}')" title="Delete Record">
                       <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
@@ -470,7 +471,6 @@
                   <td>${nameField}</td>
                   <td>${statusField}</td>
                   <td>${serialField}</td>
-                  <td>${signatureCell}</td>
                   <td class="report-controls-cell">${deleteBtn}</td>
                 </tr>
           `;
@@ -484,6 +484,7 @@
       });
 
       content.innerHTML = html;
+      lucide.createIcons();
     }
 
     function showToast(msg, isError = false) {
