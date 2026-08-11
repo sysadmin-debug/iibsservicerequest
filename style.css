@@ -1622,6 +1622,19 @@ footer {
   font-weight: 500;
 }
 
+.stock-person-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(79, 70, 229, 0.07);
+  color: var(--primary-color, #4f46e5);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(79, 70, 229, 0.2);
+}
+
 .stock-status-pill {
   display: inline-block;
   font-size: 0.72rem;

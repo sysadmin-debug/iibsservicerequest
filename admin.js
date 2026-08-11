@@ -803,7 +803,19 @@ document.addEventListener('DOMContentLoaded', () => {
               let allocationHtml = '<span style="color: var(--text-muted); font-size: 0.82rem; font-style: italic;">Unallocated</span>';
               if (item.department || item.assigned_to) {
                 const deptBadge = item.department ? `<div class="stock-dept-badge"><i data-lucide="building-2" style="width: 12px; height: 12px;"></i> ${item.department}</div>` : '';
-                const userBadge = item.assigned_to ? `<div class="stock-user-badge"><i data-lucide="user" style="width: 12px; height: 12px; color: var(--primary-color);"></i> ${item.assigned_to}</div>` : '';
+                
+                let userBadgesHtml = '';
+                const personList = item.assigned_to ? item.assigned_to.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : [];
+                if (personList.length === 1) {
+                  userBadgesHtml = `<div class="stock-user-badge"><i data-lucide="user" style="width: 12px; height: 12px; color: var(--primary-color);"></i> ${personList[0]}</div>`;
+                } else if (personList.length > 1) {
+                  const visiblePersons = personList.slice(0, 2).map(p => 
+                    `<span class="stock-person-chip"><i data-lucide="user" style="width: 10px; height: 10px;"></i> ${p}</span>`
+                  ).join(' ');
+                  const remaining = personList.length - 2;
+                  const moreBadge = remaining > 0 ? `<span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-left: 2px;" title="${personList.slice(2).join(', ')}">+${remaining} more</span>` : '';
+                  userBadgesHtml = `<div style="display: flex; flex-wrap: wrap; gap: 3px; align-items: center; margin-top: 2px;">${visiblePersons} ${moreBadge}</div>`;
+                }
                 
                 let statusPill = '';
                 if (item.status) {
@@ -817,7 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 allocationHtml = `
                   <div style="line-height: 1.35;">
                     ${deptBadge}
-                    ${userBadge}
+                    ${userBadgesHtml}
                     ${statusPill}
                   </div>
                 `;
@@ -1081,7 +1093,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
 
-      <!-- Department & In-Use Person Allocation -->
+      <!-- Department & In-Use Person Allocation (Multiple Persons Supported) -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(0,0,0,0.06);">
         <div class="form-group" style="margin-bottom: 0;">
           <label style="font-size: 0.78rem; font-weight: 600; color: #0284c7; display: flex; align-items: center; gap: 4px;">
@@ -1090,10 +1102,13 @@ document.addEventListener('DOMContentLoaded', () => {
           <input type="text" class="stock-row-department" list="stockDepartmentList" placeholder="e.g. Accounts / IT / Admin" value="${initialData.department || ''}" style="margin-top: 3px; font-size: 0.84rem;">
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-          <label style="font-size: 0.78rem; font-weight: 600; color: #0284c7; display: flex; align-items: center; gap: 4px;">
-            <i data-lucide="user-check" style="width: 12px; height: 12px;"></i> In Use By (Person / Staff Name)
-          </label>
-          <input type="text" class="stock-row-assigned-to" placeholder="e.g. Prof. Sharma / Dr. Ramesh" value="${initialData.assigned_to || ''}" style="margin-top: 3px; font-size: 0.84rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label style="font-size: 0.78rem; font-weight: 600; color: #0284c7; display: flex; align-items: center; gap: 4px;">
+              <i data-lucide="users" style="width: 12px; height: 12px;"></i> In Use By (Single or Multiple Persons)
+            </label>
+            <span class="stock-row-persons-badge" style="font-size: 0.72rem; color: var(--text-muted);">0 Persons</span>
+          </div>
+          <input type="text" class="stock-row-assigned-to" placeholder="e.g. Prof. Sharma, Dr. Ramesh, Priya (comma-separated)" value="${initialData.assigned_to || ''}" style="margin-top: 3px; font-size: 0.84rem;">
         </div>
       </div>
 
@@ -1114,12 +1129,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const openingInput = row.querySelector('.stock-row-opening');
     const arrivalsInput = row.querySelector('.stock-row-arrivals');
     const issuesInput = row.querySelector('.stock-row-issues');
+    const assignedToInput = row.querySelector('.stock-row-assigned-to');
     const serialsInput = row.querySelector('.stock-row-serials');
     const removeBtn = row.querySelector('.btn-remove-stock-row');
+
+    function updateStockRowPersonsCount(r) {
+      const text = r.querySelector('.stock-row-assigned-to')?.value || '';
+      const badge = r.querySelector('.stock-row-persons-badge');
+      if (!badge) return;
+      const list = text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+      badge.textContent = list.length === 1 ? '1 Person' : `${list.length} Persons`;
+      if (list.length > 0) {
+        badge.style.color = '#0284c7';
+        badge.style.fontWeight = '600';
+      } else {
+        badge.style.color = 'var(--text-muted)';
+        badge.style.fontWeight = 'normal';
+      }
+    }
 
     openingInput?.addEventListener('input', () => calcStockRow(row));
     arrivalsInput?.addEventListener('input', () => calcStockRow(row));
     issuesInput?.addEventListener('input', () => calcStockRow(row));
+    assignedToInput?.addEventListener('input', () => updateStockRowPersonsCount(row));
     serialsInput?.addEventListener('input', () => updateStockRowSerialsCount(row));
 
     removeBtn?.addEventListener('click', () => {
@@ -1132,6 +1164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     calcStockRow(row);
+    updateStockRowPersonsCount(row);
     updateStockRowSerialsCount(row);
     updateStockRowIndices();
     return row;
@@ -1292,6 +1325,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   document.getElementById('invUpdateSerials')?.addEventListener('input', updateEditModalSerialsCount);
 
+  function updateEditModalPersonsPreview() {
+    const text = document.getElementById('invUpdateAssignedTo')?.value || '';
+    const badge = document.getElementById('invUpdatePersonsCountBadge');
+    const preview = document.getElementById('invUpdatePersonsPreview');
+    const list = text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    
+    if (badge) {
+      badge.textContent = list.length === 1 ? '1 Person' : `${list.length} Persons`;
+    }
+    if (preview) {
+      if (list.length === 0) {
+        preview.innerHTML = '';
+      } else {
+        preview.innerHTML = `
+          <div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center;">
+            ${list.map(p => `<span class="stock-person-chip"><i data-lucide="user" style="width: 11px; height: 11px;"></i> ${p}</span>`).join('')}
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+  }
+  document.getElementById('invUpdateAssignedTo')?.addEventListener('input', updateEditModalPersonsPreview);
+
   // Update / Edit Stock Modal
   function openUpdateInventoryModal(id) {
     const item = inventoryItems.find(i => (i.id || i._id) === id);
@@ -1336,6 +1393,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('invUpdateSerials')) document.getElementById('invUpdateSerials').value = item.serial_numbers || '';
     
     updateEditModalSerialsCount();
+    updateEditModalPersonsPreview();
     calcUpdateModal();
 
     updateInventoryModal.classList.add('visible');

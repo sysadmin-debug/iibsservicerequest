@@ -827,19 +827,15 @@
         </div>
       </div>
 
-      <!-- Department & User Allocation Section (NEW) -->
+      <!-- Department & User Allocation Section (Multiple Persons Supported) -->
       <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.1rem; margin-bottom: 1.25rem;">
         <h4 style="margin: 0 0 0.8rem 0; color: #0284c7; font-size: 0.92rem; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-          <i data-lucide="building-2" style="width: 16px; height: 16px;"></i> Department Allocation & In-Use Person
+          <i data-lucide="building-2" style="width: 16px; height: 16px;"></i> Department Allocation & In-Use Person(s)
         </h4>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px;">
           <div class="form-group" style="margin-bottom: 0;">
             <label style="font-size: 0.82rem; font-weight: 600;"><i data-lucide="building" style="width: 13px; height: 13px; display: inline-block;"></i> Given to Department</label>
             <input type="text" id="invUpdateDepartment" list="stockDepartmentList" placeholder="e.g. Accounts / IT / Admin" style="margin-top: 4px;">
-          </div>
-          <div class="form-group" style="margin-bottom: 0;">
-            <label style="font-size: 0.82rem; font-weight: 600;"><i data-lucide="user-check" style="width: 13px; height: 13px; display: inline-block;"></i> In Use By (Person / Staff)</label>
-            <input type="text" id="invUpdateAssignedTo" placeholder="e.g. Prof. Sharma / Dr. Ramesh" style="margin-top: 4px;">
           </div>
           <div class="form-group" style="margin-bottom: 0;">
             <label style="font-size: 0.82rem; font-weight: 600;"><i data-lucide="calendar" style="width: 13px; height: 13px; display: inline-block;"></i> Issue / Allocation Date</label>
@@ -855,6 +851,17 @@
               <option value="Scrapped">Scrapped / Written Off</option>
             </select>
           </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <label style="font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+              <i data-lucide="users" style="width: 14px; height: 14px; color: #0284c7;"></i> In Use By (Single or Multiple Persons / Staff)
+            </label>
+            <span id="invUpdatePersonsCountBadge" style="font-size: 0.74rem; font-weight: 600; padding: 2px 8px; border-radius: 12px; background: rgba(2, 132, 199, 0.1); color: #0284c7;">0 Persons</span>
+          </div>
+          <textarea id="invUpdateAssignedTo" rows="2" placeholder="Enter one or multiple person names (separated by commas or new lines, e.g. Prof. Sharma, Dr. Ramesh, Priya)" style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-body); color: var(--text-primary); font-family: inherit; font-size: 0.88rem; resize: vertical; margin-top: 2px;"></textarea>
+          <div id="invUpdatePersonsPreview" style="margin-top: 6px;"></div>
         </div>
       </div>
 
