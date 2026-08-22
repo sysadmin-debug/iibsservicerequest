@@ -268,28 +268,28 @@
         <div class="filter-group">
           <label style="font-weight: 600;"><i data-lucide="layers"></i> Filter Batch:</label>
           <select id="batchFilter" onchange="renderReport()">
-            <option value="All">All Batches</option>
-            <option disabled>── 2023 Batches ──</option>
-            <option value="PGDM 2023-2025">PGDM 2023-2025</option>
-            <option value="AIMA PGDM 2023-2025">AIMA PGDM 2023-2025</option>
-            <option value="MBA 2023-2025">MBA 2023-2025</option>
-            <option value="UG 2023-2026">UG 2023-2026</option>
-            <option disabled>── 2024 Batches ──</option>
-            <option value="PGDM 2024-2026">PGDM 2024-2026</option>
-            <option value="MBA 2024-2026">MBA 2024-2026</option>
-            <option value="UG 2024-2027">UG 2024-2027</option>
-            <option disabled>── 2025 Batches ──</option>
-            <option value="PGDM">PGDM 2025-2027</option>
-            <option value="MBA">MBA 2025-2027</option>
-            <option value="UG">UG 2025-2028</option>
-            <option disabled>── Others ──</option>
-
-            <option value="Letter (PGDM 2025)">Letter (PGDM 2025)</option>
-            <option value="Letter (MBA 2025)">Letter (MBA 2025)</option>
-            <option value="Letter (UG 2025)">Letter (UG 2025)</option>
-            <option value="Letter (PGDM 2024)">Letter (PGDM 2024)</option>
-            <option value="Letter (MBA 2024)">Letter (MBA 2024)</option>
-            <option value="Student taken Laptop with Letter">Student taken laptop giving letter 2025-2027</option>
+            <option value="Active-2026-2028" selected>All Batches (2026-2028)</option>
+            <option value="MBA (2026-2028)">MBA (2026-2028)</option>
+            <option value="PGDM - NextGen Flagship (2026-2028)">PGDM - NextGen Flagship (2026-2028)</option>
+            <option value="PGDM - Prime (2026-2028)">PGDM - Prime (2026-2028)</option>
+            <optgroup label="── Archived Batches (Older) ──">
+              <option value="PGDM">PGDM 2025-2027</option>
+              <option value="MBA">MBA 2025-2027</option>
+              <option value="UG">UG 2025-2028</option>
+              <option value="PGDM 2024-2026">PGDM 2024-2026</option>
+              <option value="MBA 2024-2026">MBA 2024-2026</option>
+              <option value="UG 2024-2027">UG 2024-2027</option>
+              <option value="PGDM 2023-2025">PGDM 2023-2025</option>
+              <option value="AIMA PGDM 2023-2025">AIMA PGDM 2023-2025</option>
+              <option value="MBA 2023-2025">MBA 2023-2025</option>
+              <option value="UG 2023-2026">UG 2023-2026</option>
+              <option value="Letter (PGDM 2025)">Letter (PGDM 2025)</option>
+              <option value="Letter (MBA 2025)">Letter (MBA 2025)</option>
+              <option value="Letter (UG 2025)">Letter (UG 2025)</option>
+              <option value="Letter (PGDM 2024)">Letter (PGDM 2024)</option>
+              <option value="Letter (MBA 2024)">Letter (MBA 2024)</option>
+              <option value="Student taken Laptop with Letter">Student taken laptop giving letter 2025-2027</option>
+            </optgroup>
           </select>
         </div>
         <div class="filter-group">
@@ -297,9 +297,11 @@
           <input type="text" id="nameFilter" placeholder="Search student name..." oninput="renderReport()" style="padding: 0.5rem 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; font-family: 'Inter', sans-serif; font-size: 0.95rem; min-width: 220px; outline: none;" />
         </div>
       </div>
-      <div style="display: flex; align-items: center; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <a href="/laptop/Laptop Eligibility 2026-2028.pdf" target="_blank" class="btn-print" style="background: #0284c7; text-decoration: none;"><i data-lucide="file-text"></i> Official PDF</a>
         <button class="btn-print" onclick="window.print()"><i data-lucide="printer"></i> Print Report</button>
-        <a href="admin.html" style="color: #4f46e5; text-decoration: none; font-weight: 500;">Back to Admin</a>
+        <a href="laptop-lists.html" style="color: #4f46e5; text-decoration: none; font-weight: 600; font-size: 0.95rem;">PDF Lists</a>
+        <a href="admin.html" style="color: #64748b; text-decoration: none; font-weight: 500; font-size: 0.95rem;">Admin</a>
       </div>
     </div>
 
@@ -309,22 +311,22 @@
       
       <div style="text-align: center; margin-bottom: 2rem;">
         <h2 style="font-family: 'Outfit'; font-size: 2rem; color: #0f172a; margin: 0;">Laptop Eligibility List</h2>
-        <p style="color: #64748b; margin-top: 0.5rem;" id="reportSubtitle">All Batches (2025-2026)</p>
+        <p style="color: #64748b; margin-top: 0.5rem;" id="reportSubtitle">All Batches (2026-2028)</p>
       </div>
 
       <!-- Laptop Status Summary -->
       <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center;">
         <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; flex: 1; min-width: 150px;">
-          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Given (PGDM, MBA, UG)</h3>
-          <p style="font-size: 2rem; font-weight: 700; color: #059669; margin: 0;">412</p>
+          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Total Eligible (2026-2028)</h3>
+          <p id="statTotalEligible" style="font-size: 2rem; font-weight: 700; color: #059669; margin: 0;">194</p>
         </div>
         <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; flex: 1; min-width: 150px;">
-          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Collected with Letter</h3>
-          <p style="font-size: 2rem; font-weight: 700; color: #4f46e5; margin: 0;">26</p>
+          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Ready to Issue</h3>
+          <p id="statReadyToIssue" style="font-size: 2rem; font-weight: 700; color: #4f46e5; margin: 0;">166</p>
         </div>
         <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; flex: 1; min-width: 150px;">
-          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Canceled</h3>
-          <p id="statCanceled" style="font-size: 2rem; font-weight: 700; color: #dc2626; margin: 0;">57</p>
+          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Small Due Clearance (*)</h3>
+          <p id="statCanceled" style="font-size: 2rem; font-weight: 700; color: #dc2626; margin: 0;">28</p>
         </div>
       </div>
 
@@ -343,25 +345,2568 @@
   <script>
     lucide.createIcons();
 
-    let allData = [];
-
-    // Map DB course names to nice display names
+        // Map DB course names to nice display names
     const courseLabels = {
+      'MBA (2026-2028)': 'MBA (2026-2028 Batch)',
+      'PGDM - NextGen Flagship (2026-2028)': 'PGDM - NextGen Flagship (2026-2028 Batch)',
+      'PGDM - Prime (2026-2028)': 'PGDM - Prime (2026-2028 Batch)',
       'PGDM': 'PGDM 2025-2027',
       'MBA': 'MBA 2025-2027',
       'UG': 'UG 2025-2028',
       'Student taken Laptop with Letter': 'Student taken Laptop with Letter'
     };
 
+    const activeBatches = [
+      'MBA (2026-2028)',
+      'PGDM - NextGen Flagship (2026-2028)',
+      'PGDM - Prime (2026-2028)'
+    ];
+
+    const default2026Data = [
+  {
+    "_id": "rec_2026_1",
+    "slNo": 1,
+    "name": "Ankit Dutta",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_2",
+    "slNo": 2,
+    "name": "Azima Ashmin Khatoon",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_3",
+    "slNo": 3,
+    "name": "Aditya Chatterjee",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_4",
+    "slNo": 4,
+    "name": "Patel arpit dharmeshkumar",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_5",
+    "slNo": 5,
+    "name": "Riya Singh D/o Anant Prasad",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_6",
+    "slNo": 6,
+    "name": "Anonya Samantaray",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_7",
+    "slNo": 7,
+    "name": "Apoorvi Jaiswal",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_8",
+    "slNo": 8,
+    "name": "Arushi Sharma",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_9",
+    "slNo": 9,
+    "name": "Pratha Agarwal",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_10",
+    "slNo": 10,
+    "name": "SK Janani Saravanan",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_11",
+    "slNo": 11,
+    "name": "Srinidhi Sundarajan",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_12",
+    "slNo": 12,
+    "name": "Arghya Ghosh",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_13",
+    "slNo": 13,
+    "name": "Hitesh",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_14",
+    "slNo": 14,
+    "name": "Khushi Dixit",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_15",
+    "slNo": 15,
+    "name": "Abhijeet Dey",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_16",
+    "slNo": 16,
+    "name": "Ashutosh Kumar s/o Pradeep",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_17",
+    "slNo": 17,
+    "name": "T Pranith",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_18",
+    "slNo": 18,
+    "name": "Kruthikaa Shree B",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_19",
+    "slNo": 19,
+    "name": "Vedant Kawadkar",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_20",
+    "slNo": 20,
+    "name": "Devesh dubey",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_21",
+    "slNo": 21,
+    "name": "Khushi Manish Kumar Kesharwani",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_22",
+    "slNo": 22,
+    "name": "Poulami Mahato",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_23",
+    "slNo": 23,
+    "name": "Shreyase Biswas",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_24",
+    "slNo": 24,
+    "name": "Sujit Bairagi",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_25",
+    "slNo": 25,
+    "name": "Suprabha Mallick",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_26",
+    "slNo": 26,
+    "name": "Ubaid Sajidahamad Khalif",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_27",
+    "slNo": 27,
+    "name": "Pranjay Kaushik",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_28",
+    "slNo": 28,
+    "name": "Daniel Corraya",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_29",
+    "slNo": 29,
+    "name": "Jeba Nasrin Khatun",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_30",
+    "slNo": 30,
+    "name": "Sanket Kumar Pradhan",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_31",
+    "slNo": 31,
+    "name": "Naman Paroha",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_32",
+    "slNo": 32,
+    "name": "Shrey Urmaliya",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_33",
+    "slNo": 33,
+    "name": "Aneeta Kumari",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_34",
+    "slNo": 34,
+    "name": "Aryan Singh S/O Anubha singh",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_35",
+    "slNo": 35,
+    "name": "Lucky Sahadev Sharma",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_36",
+    "slNo": 36,
+    "name": "Priyanshu Tiwari",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_37",
+    "slNo": 37,
+    "name": "Vivek Mishra S/O Naresh Mishra",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_38",
+    "slNo": 38,
+    "name": "R Ashwini",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_39",
+    "slNo": 39,
+    "name": "Aaron Aloysius M",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_40",
+    "slNo": 40,
+    "name": "Aparna Tripathi",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_41",
+    "slNo": 41,
+    "name": "Bandana Giri",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_42",
+    "slNo": 42,
+    "name": "U Akash",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_43",
+    "slNo": 43,
+    "name": "Praagna M Sargur",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_44",
+    "slNo": 44,
+    "name": "Aalfin A Buwaji",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_45",
+    "slNo": 45,
+    "name": "Ayushmita Chakraborty",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_46",
+    "slNo": 46,
+    "name": "Nayonika Battacharjee",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_47",
+    "slNo": 47,
+    "name": "Srinanti Saha",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_48",
+    "slNo": 48,
+    "name": "Sushmitha GR",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_49",
+    "slNo": 49,
+    "name": "Vishakha Yadav",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_50",
+    "slNo": 50,
+    "name": "Kanan Garg",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_51",
+    "slNo": 51,
+    "name": "Shruti",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_52",
+    "slNo": 52,
+    "name": "Shubhangi Raj",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_53",
+    "slNo": 53,
+    "name": "Abha Fule",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_54",
+    "slNo": 54,
+    "name": "Abhi S/oSirjit Singh",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_55",
+    "slNo": 55,
+    "name": "Aman Kumar S/o Shailesh Kumar",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_56",
+    "slNo": 56,
+    "name": "Antarip Pattanayak",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_57",
+    "slNo": 57,
+    "name": "Anurima Kar",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_58",
+    "slNo": 58,
+    "name": "Ayush Alexander",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_59",
+    "slNo": 59,
+    "name": "Bipul Kumar",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_60",
+    "slNo": 60,
+    "name": "G Aditya",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_61",
+    "slNo": 61,
+    "name": "Gaurav Sharma S/O Sunil Sharma",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_62",
+    "slNo": 62,
+    "name": "Gopal Kumar",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_63",
+    "slNo": 63,
+    "name": "K Lavanya",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_64",
+    "slNo": 64,
+    "name": "Madhusudan Barman",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_65",
+    "slNo": 65,
+    "name": "Manvi Gautam",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_66",
+    "slNo": 66,
+    "name": "Mousumi Das",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_67",
+    "slNo": 67,
+    "name": "Mridul Krishna Tiwari",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_68",
+    "slNo": 68,
+    "name": "Paranthaman SD",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_69",
+    "slNo": 69,
+    "name": "Piyush Kumar S/O Parmeshwar",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_70",
+    "slNo": 70,
+    "name": "Shayan Kundu",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_71",
+    "slNo": 71,
+    "name": "Souptik Ghosh",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_72",
+    "slNo": 72,
+    "name": "Sowmya S",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_73",
+    "slNo": 73,
+    "name": "Tanmay Mandal",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_74",
+    "slNo": 74,
+    "name": "Abhijit Nath *",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_75",
+    "slNo": 75,
+    "name": "Kirit Kumari *",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_76",
+    "slNo": 76,
+    "name": "Shashank Shekar *",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_77",
+    "slNo": 77,
+    "name": "Purva Mishra *",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_78",
+    "slNo": 78,
+    "name": "Rumaiya Fardaus Mazumder *",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_79",
+    "slNo": 79,
+    "name": "Sangyag Paul *",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_80",
+    "slNo": 80,
+    "name": "Trisha Uttam *",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_81",
+    "slNo": 81,
+    "name": "Sibani Behera *",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_82",
+    "slNo": 82,
+    "name": "Subhadip Paul *",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_83",
+    "slNo": 83,
+    "name": "YASHASWINI K GOWDA *",
+    "course": "MBA (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_84",
+    "slNo": 1,
+    "name": "Srihariharan",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_85",
+    "slNo": 2,
+    "name": "Nayan Deb",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_86",
+    "slNo": 3,
+    "name": "Mohit Gowda L",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_87",
+    "slNo": 4,
+    "name": "Aman Kumar Gupta",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_88",
+    "slNo": 5,
+    "name": "Muttumeena",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_89",
+    "slNo": 6,
+    "name": "Deepthi P",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_90",
+    "slNo": 7,
+    "name": "Molleti Sujith",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_91",
+    "slNo": 8,
+    "name": "Guggilla Gnana Varsha",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_92",
+    "slNo": 9,
+    "name": "M Harshavardhan",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_93",
+    "slNo": 10,
+    "name": "Om Pritam Mohanty",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_94",
+    "slNo": 11,
+    "name": "Arun Kumar Singh S/O Sadan Singh",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_95",
+    "slNo": 12,
+    "name": "Akash Yadav S/o Ram Naresh Yadav",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_96",
+    "slNo": 13,
+    "name": "Manjeet Kumar Bera",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_97",
+    "slNo": 14,
+    "name": "Soma Kar",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_98",
+    "slNo": 15,
+    "name": "Gyanendra Dwivedi",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_99",
+    "slNo": 16,
+    "name": "Hetvi Dharmeshbhai Malsatar",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_100",
+    "slNo": 17,
+    "name": "Devansh Sharma",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_101",
+    "slNo": 18,
+    "name": "S Rajat Kumar",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_102",
+    "slNo": 19,
+    "name": "Mansi Raju Bennur",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_103",
+    "slNo": 20,
+    "name": "Pooja Agrawal",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_104",
+    "slNo": 21,
+    "name": "Naganathanahalli Sai Sudheer",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_105",
+    "slNo": 22,
+    "name": "Amisha Panigrahi",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_106",
+    "slNo": 23,
+    "name": "Debraj Gayen",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_107",
+    "slNo": 24,
+    "name": "Dudakiya Siddh Hirenbhai",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_108",
+    "slNo": 25,
+    "name": "Subhojit Sarkar",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_109",
+    "slNo": 26,
+    "name": "Sourav Kumar Suman",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_110",
+    "slNo": 27,
+    "name": "Pramod Gupta",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_111",
+    "slNo": 28,
+    "name": "Arkapravo Nag",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_112",
+    "slNo": 29,
+    "name": "Ritik Shivhare",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_113",
+    "slNo": 30,
+    "name": "Abhishek Munda",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_114",
+    "slNo": 31,
+    "name": "Sachin Kumar S/o Rakesh Chouhan",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_115",
+    "slNo": 32,
+    "name": "B Sai Sarayu",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_116",
+    "slNo": 33,
+    "name": "Korchipati Koshnitha",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_117",
+    "slNo": 34,
+    "name": "Rani Kumari",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_118",
+    "slNo": 35,
+    "name": "Amandeep Mishra",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_119",
+    "slNo": 36,
+    "name": "Arunava Chandra",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_120",
+    "slNo": 37,
+    "name": "Balaraju Bandari",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_121",
+    "slNo": 38,
+    "name": "R Dhivyashri",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_122",
+    "slNo": 39,
+    "name": "Shaik Darga Hussain",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_123",
+    "slNo": 40,
+    "name": "Shariq Akram",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_124",
+    "slNo": 41,
+    "name": "Suhani Singh D/O Mukul Kumar",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_125",
+    "slNo": 42,
+    "name": "Suraj Dey",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_126",
+    "slNo": 43,
+    "name": "Bhavana Mahankali *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_127",
+    "slNo": 44,
+    "name": "yashmita chaudhary *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_128",
+    "slNo": 45,
+    "name": "A Pradeep Kumar Reddy *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_129",
+    "slNo": 46,
+    "name": "D Lakshmi Sai Kiran *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_130",
+    "slNo": 47,
+    "name": "Pera Lokanath Reddy *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_131",
+    "slNo": 48,
+    "name": "C Bharath Kumar Reddy *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_132",
+    "slNo": 49,
+    "name": "Chandra Kaladar Pathapadu *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_133",
+    "slNo": 50,
+    "name": "Cherukuri Karthik *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_134",
+    "slNo": 51,
+    "name": "Giraka Nikhileshwar *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_135",
+    "slNo": 52,
+    "name": "Puchaginjala Theja *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_136",
+    "slNo": 53,
+    "name": "Suprit P *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_137",
+    "slNo": 54,
+    "name": "Aditya Anand *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_138",
+    "slNo": 55,
+    "name": "Ayush Kumar S/O Mahendra Prasad *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_139",
+    "slNo": 56,
+    "name": "Deep Bhadra *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_140",
+    "slNo": 57,
+    "name": "Piyanshu Chaudhary *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_141",
+    "slNo": 58,
+    "name": "Rishav Raj *",
+    "course": "PGDM - NextGen Flagship (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_142",
+    "slNo": 1,
+    "name": "Vishnu Verma",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_143",
+    "slNo": 2,
+    "name": "Rajdeep Roy (2026-2028)",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_144",
+    "slNo": 3,
+    "name": "Mahi Jose",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_145",
+    "slNo": 4,
+    "name": "Divya Sengar",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_146",
+    "slNo": 5,
+    "name": "Ankita Mondal",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_147",
+    "slNo": 6,
+    "name": "Nikhil Khatri",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_148",
+    "slNo": 7,
+    "name": "Raunak Sarkar",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_149",
+    "slNo": 8,
+    "name": "Rushikesh Sanjay Warade",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_150",
+    "slNo": 9,
+    "name": "Satyam Kumar Bharti",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_151",
+    "slNo": 10,
+    "name": "Abhinav Singh",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_152",
+    "slNo": 11,
+    "name": "Daggumati Kousik Reddy",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_153",
+    "slNo": 12,
+    "name": "Devendra Binekar",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_154",
+    "slNo": 13,
+    "name": "Nishant Kumar S/o Rakesh Kumar",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_155",
+    "slNo": 14,
+    "name": "Aditya Kumar Tripathi",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_156",
+    "slNo": 15,
+    "name": "Mittapally Omnath Reddy",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_157",
+    "slNo": 16,
+    "name": "Ankita Roy",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_158",
+    "slNo": 17,
+    "name": "Akash Kumar Roul",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_159",
+    "slNo": 18,
+    "name": "Anant Kesharwani",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_160",
+    "slNo": 19,
+    "name": "Isha Kumari",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_161",
+    "slNo": 20,
+    "name": "Prathi Kirtika",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_162",
+    "slNo": 21,
+    "name": "Rohan Raj Ambastha",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_163",
+    "slNo": 22,
+    "name": "Tarun",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_164",
+    "slNo": 23,
+    "name": "Marnani Arogya Akhil",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_165",
+    "slNo": 24,
+    "name": "Sahil Singh Karosiya",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_166",
+    "slNo": 25,
+    "name": "Sukalpa Dey",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_167",
+    "slNo": 26,
+    "name": "Shubham Mishra",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_168",
+    "slNo": 27,
+    "name": "Vivek Agrawal",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_169",
+    "slNo": 28,
+    "name": "Sudipta Roy S/O Manoranjan Roy",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_170",
+    "slNo": 29,
+    "name": "Nishant Kumar Rajput",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_171",
+    "slNo": 30,
+    "name": "Siddharth Banswar",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_172",
+    "slNo": 31,
+    "name": "Kumari Sneha Tanty",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_173",
+    "slNo": 32,
+    "name": "Gautam Matolia",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_174",
+    "slNo": 33,
+    "name": "Kothapalli Lakshmi Pranathi",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_175",
+    "slNo": 34,
+    "name": "Kajol Sarkar",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_176",
+    "slNo": 35,
+    "name": "Ankita Das",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_177",
+    "slNo": 36,
+    "name": "Rachna Gupta",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_178",
+    "slNo": 37,
+    "name": "Anirban Das S/O Chandra Sekhar Das",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_179",
+    "slNo": 38,
+    "name": "Anand Kumar S/o Manoj Kumar",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_180",
+    "slNo": 39,
+    "name": "Balabadruni Sai Bhanu",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_181",
+    "slNo": 40,
+    "name": "Chahat Kumar",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_182",
+    "slNo": 41,
+    "name": "Emmanuel Jaison",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_183",
+    "slNo": 42,
+    "name": "Jit Jana",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_184",
+    "slNo": 43,
+    "name": "Kantu Sharandeep Chowdary",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_185",
+    "slNo": 44,
+    "name": "KD Ajendra Gowd",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_186",
+    "slNo": 45,
+    "name": "MD Nawaz",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_187",
+    "slNo": 46,
+    "name": "Meenatchi.K.S",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_188",
+    "slNo": 47,
+    "name": "Monu Kumar Yadav",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_189",
+    "slNo": 48,
+    "name": "Nalla Kiran V Nagendra Pavan",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_190",
+    "slNo": 49,
+    "name": "Naman Sharma",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_191",
+    "slNo": 50,
+    "name": "Sweta Kumari D/O Rajesh Prasad Koiri",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_192",
+    "slNo": 51,
+    "name": "Papri Banik",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": false,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_193",
+    "slNo": 52,
+    "name": "Vangara Chandu *",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  },
+  {
+    "_id": "rec_2026_194",
+    "slNo": 53,
+    "name": "Himanshi Rajawat *",
+    "course": "PGDM - Prime (2026-2028)",
+    "status": "Pending",
+    "hasDue": true,
+    "serialNo": "",
+    "laptopModel": "",
+    "givenDate": "",
+    "returnDate": "",
+    "signature": ""
+  }
+];
+    let allData = [...default2026Data];
+
     async function fetchLaptops() {
-      document.getElementById('reportContent').innerHTML = '<p style="text-align: center; padding: 2rem;">Loading data...</p>';
       try {
         const response = await fetch('/api/laptop/list');
-        allData = await response.json();
-        renderReport();
+        if (response.ok) {
+          const serverData = await response.json();
+          if (serverData && serverData.length > 0) {
+            // Filter or append
+            const has2026 = serverData.some(i => i.course && i.course.includes('2026'));
+            if (has2026) {
+              allData = serverData;
+            } else {
+              allData = [...default2026Data, ...serverData];
+            }
+          }
+        }
       } catch (err) {
-        document.getElementById('reportContent').innerHTML = `<p style="color: red; text-align: center;">Error loading data: ${err.message}</p>`;
+        console.log("Using embedded 2026-2028 dataset.");
       }
+      renderReport();
     }
 
     function renderReport() {
@@ -371,12 +2916,10 @@
       const content = document.getElementById('reportContent');
       const subtitle = document.getElementById('reportSubtitle');
 
-      let subtitleText = batchFilter === 'All' ? 'All Batches (2025-2026)' : courseLabels[batchFilter] || batchFilter;
+      let subtitleText = (batchFilter === 'Active-2026-2028' || batchFilter === 'All') ? 'All Batches (2026-2028)' : courseLabels[batchFilter] || batchFilter;
       if (statusFilter !== 'All') subtitleText += ` — ${statusFilter} Laptops Only`;
       
       subtitle.textContent = subtitleText;
-
-      // (Stats are hardcoded based on user request)
 
       // Filter data
       let filtered = allData;
@@ -388,15 +2931,27 @@
         return lowerName !== 'student name' && lowerName !== 'student name ';
       });
 
+      if (batchFilter === 'Active-2026-2028') {
+        filtered = filtered.filter(item => activeBatches.includes(item.course));
+      } else if (batchFilter !== 'All') {
+        filtered = filtered.filter(item => item.course === batchFilter);
+      }
+
       if (statusFilter !== 'All') {
         filtered = filtered.filter(item => item.status === statusFilter);
-      }
-      if (batchFilter !== 'All') {
-        filtered = filtered.filter(item => item.course === batchFilter);
       }
       if (nameFilter) {
         filtered = filtered.filter(item => item.name && item.name.toLowerCase().includes(nameFilter));
       }
+
+      // Update dynamic stats for visible batch
+      const totalEligible = filtered.length;
+      const smallDues = filtered.filter(i => (i.name && i.name.includes('*')) || i.hasDue).length;
+      const readyToIssue = totalEligible - smallDues;
+      
+      if (document.getElementById('statTotalEligible')) document.getElementById('statTotalEligible').textContent = totalEligible;
+      if (document.getElementById('statReadyToIssue')) document.getElementById('statReadyToIssue').textContent = readyToIssue;
+      if (document.getElementById('statCanceled')) document.getElementById('statCanceled').textContent = smallDues;
 
       // Group by course
       const grouped = {};
@@ -411,6 +2966,9 @@
       }
 
       const order = [
+        'MBA (2026-2028)',
+        'PGDM - NextGen Flagship (2026-2028)',
+        'PGDM - Prime (2026-2028)',
         'PGDM', 'MBA', 'UG', 
         'PGDM 2024-2026', 'MBA 2024-2026', 'UG 2024-2027',
         'PGDM 2023-2025', 'AIMA PGDM 2023-2025', 'MBA 2023-2025', 'UG 2023-2026',
