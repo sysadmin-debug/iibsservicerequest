@@ -2995,6 +2995,9 @@
         const students = grouped[courseKey];
         if (!students || students.length === 0) return;
 
+        // Strictly preserve exact order from the official PDF (1, 2, 3, ...) - DO NOT alphabetize
+        students.sort((a, b) => (Number(a.slNo) || 0) - (Number(b.slNo) || 0));
+
         const title = courseLabels[courseKey] || courseKey;
 
         html += `
@@ -3041,7 +3044,7 @@
 
           html += `
                 <tr>
-                  <td style="text-align: center; font-weight: 600;">${index + 1}</td>
+                  <td style="text-align: center; font-weight: 600;">${student.slNo || (index + 1)}</td>
                   <td>${nameField}</td>
                   <td style="text-align: center;">${availField}</td>
                   <td style="text-align: center;">${cancelField}</td>

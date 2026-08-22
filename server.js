@@ -192,6 +192,7 @@ const stockLogSchema = new mongoose.Schema({
 const StockLog = mongoose.models.StockLog || mongoose.model('StockLog', stockLogSchema);
 
 const laptopEligibilitySchema = new mongoose.Schema({
+  slNo: { type: Number, default: 0 },
   name: { type: String, required: true },
   course: { type: String, required: true },
   status: { type: String, default: 'Pending' },
@@ -561,7 +562,7 @@ app.get('/api/laptop/search', async (req, res) => {
 
 app.get('/api/laptop/list', async (req, res) => {
   try {
-    const laptops = await LaptopEligibility.find({}).sort({ course: 1, name: 1 });
+    const laptops = await LaptopEligibility.find({}).sort({ course: 1, slNo: 1, _id: 1 });
     res.json(laptops);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -571,7 +572,7 @@ app.get('/api/laptop/list', async (req, res) => {
 // Add new laptop record manually
 app.post('/api/laptop/add', async (req, res) => {
   try {
-    const { name, course, status, serialNo, laptopModel, givenDate, returnDate } = req.body;
+    const { slNo, name, course, status, serialNo, laptopModel, givenDate, returnDate } = req.body;
     if (!name || !course) {
       return res.status(400).json({ error: 'Name and Course are required' });
     }
@@ -582,7 +583,7 @@ app.post('/api/laptop/add', async (req, res) => {
       if (!finalGivenDate) finalGivenDate = new Date().toLocaleDateString('en-GB');
     }
     const newRecord = new LaptopEligibility({
-      name, course, status: finalStatus, serialNo, laptopModel, givenDate: finalGivenDate, returnDate
+      slNo: slNo || 0, name, course, status: finalStatus, serialNo, laptopModel, givenDate: finalGivenDate, returnDate
     });
     await newRecord.save();
     res.json({ success: true, message: 'Record added successfully', data: newRecord });
