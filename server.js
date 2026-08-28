@@ -82,11 +82,143 @@ async function sendResolutionEmail(ticket) {
   }
 }
 
+// --- SECURITY HEADERS ---
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
+// --- SENSITIVE ASSET ACCESS PROTECTION ---
+// Block direct web downloads of sensitive spreadsheets, confidential docs, server scripts, and official signature assets
+const BLOCKED_EXTENSIONS = ['.xlsx', '.xls', '.docx', '.doc', '.csv', '.env', '.git', '.sql', '.bak', '.log', '.key'];
+const BLOCKED_FILES = new Set([
+  'executive_director_seal.png',
+  'signature_stamp_transparent.png',
+  'signature_stamp_transparent_cropped.png',
+  'signature_transparent.png',
+  'signature_transparent_cropped.png',
+  'headers.csv',
+  'package.json',
+  'package-lock.json',
+  'server.js',
+  'import.js',
+  'import_stock_register.js',
+  'migrate_data.js',
+  'migrate_laptops.js',
+  'push_2023.js',
+  'read_2023.js',
+  'search_letter_2024.js',
+  'fix_letters_2024.js',
+  'fix_admin.js',
+  'inspect_stock.js',
+  'dump_stock.js',
+  'test-email.js'
+]);
+
+app.use((req, res, next) => {
+  const cleanPath = decodeURIComponent(req.path || '').toLowerCase();
+  const filename = path.basename(cleanPath);
+  const ext = path.extname(cleanPath);
+
+  if (BLOCKED_EXTENSIONS.includes(ext) || BLOCKED_FILES.has(filename)) {
+    return res.status(403).json({ error: 'Access Denied: Protected Asset' });
+  }
+  next();
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Added for HTML form submissions
-app.use(express.static(__dirname)); // --- FILE UPLOAD (Vercel Compatible) ---
+app.use(express.static(__dirname)); // Static public files
+
+// --- AUTHENTICATION & SESSION MANAGEMENT ---
+const AUTH_SECRET = process.env.AUTH_SECRET || process.env.ADMIN_PASSWORD || 'iibs_secure_auth_session_secret_2025';
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'admin123';
+const STAFF_PASS = process.env.STAFF_PASSWORD || 'iibs@2025';
+
+function generateAuthToken(role) {
+  const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days validity
+  const payload = `${role}:${expiresAt}`;
+  const signature = crypto.createHmac('sha256', AUTH_SECRET).update(payload).digest('hex');
+  return Buffer.from(`${payload}:${signature}`).toString('base64url');
+}
+
+function verifyAuthToken(token) {
+  if (!token) return null;
+  try {
+    const decoded = Buffer.from(token, 'base64url').toString('utf8');
+    const parts = decoded.split(':');
+    if (parts.length !== 3) return null;
+    const [role, expiresAtStr, signature] = parts;
+    const expiresAt = parseInt(expiresAtStr, 10);
+    if (isNaN(expiresAt) || Date.now() > expiresAt) return null;
+
+    const expectedSig = crypto.createHmac('sha256', AUTH_SECRET).update(`${role}:${expiresAtStr}`).digest('hex');
+    const sigBuffer = Buffer.from(signature);
+    const expectedBuffer = Buffer.from(expectedSig);
+    if (sigBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(sigBuffer, expectedBuffer)) {
+      return { role, expiresAt };
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
+function requireAuth(req, res, next) {
+  const authHeader = req.headers['authorization'] || req.headers['x-api-key'] || req.query.auth_token;
+  let token = '';
+  if (authHeader && typeof authHeader === 'string') {
+    if (authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7).trim();
+    } else {
+      token = authHeader.trim();
+    }
+  }
+
+  const user = verifyAuthToken(token);
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized: Authentication required' });
+  }
+  req.user = user;
+  next();
+}
+
+// Auth API Endpoints
+app.post('/api/auth/login', (req, res) => {
+  const { password } = req.body;
+  if (!password) {
+    return res.status(400).json({ error: 'Password is required' });
+  }
+  if (password === ADMIN_PASS) {
+    const token = generateAuthToken('admin');
+    return res.json({ success: true, token, role: 'admin' });
+  }
+  if (password === STAFF_PASS) {
+    const token = generateAuthToken('staff');
+    return res.json({ success: true, token, role: 'staff' });
+  }
+  return res.status(401).json({ error: 'Invalid password' });
+});
+
+app.get('/api/auth/verify', (req, res) => {
+  const authHeader = req.headers['authorization'] || req.headers['x-api-key'] || req.query.auth_token;
+  let token = '';
+  if (authHeader && typeof authHeader === 'string') {
+    token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : authHeader.trim();
+  }
+  const user = verifyAuthToken(token);
+  if (user) {
+    return res.json({ valid: true, role: user.role });
+  }
+  return res.status(401).json({ valid: false, error: 'Invalid or expired token' });
+});
+
+// --- FILE UPLOAD (Vercel Compatible) ---
 // Vercel serverless functions cannot write to the local disk permanently.
 // We use memory storage and encode to Base64 to save directly in MongoDB.
 const storage = multer.memoryStorage();
@@ -98,8 +230,24 @@ if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
   dns.setServers(['8.8.8.8', '8.8.4.4']);
 }
 
-const mongoUri = 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
-let cachedDb = null; async function connectToDatabase() { if (cachedDb) return cachedDb; const uri = 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0'; const client = await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 }); cachedDb = client; return cachedDb; } app.use(async (req, res, next) => { try { await connectToDatabase(); next(); } catch(err) { res.status(500).json({ error: 'Database connection failed', details: err.message }); } });
+const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
+let cachedDb = null;
+async function connectToDatabase() {
+  if (cachedDb) return cachedDb;
+  const client = await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
+  cachedDb = client;
+  return cachedDb;
+}
+
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (err) {
+    console.error('Database connection error:', err);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 // =======================
 // MONGOOSE MODELS
@@ -382,7 +530,7 @@ app.post('/api/tickets/approve/:ticket_id', async (req, res) => {
   }
 });
 
-app.get(['/api/tickets', '/tickets'], async (req, res) => {
+app.get(['/api/tickets', '/tickets'], requireAuth, async (req, res) => {
   try {
     const tickets = await Ticket.find().sort({ date: -1 });
     res.json(tickets);
@@ -391,7 +539,7 @@ app.get(['/api/tickets', '/tickets'], async (req, res) => {
   }
 });
 
-app.put(['/api/tickets/:ticket_id', '/tickets/:ticket_id'], async (req, res) => {
+app.put(['/api/tickets/:ticket_id', '/tickets/:ticket_id'], requireAuth, async (req, res) => {
   try {
     // Check existing ticket status before updating
     const existingTicket = await Ticket.findOne({ ticket_id: req.params.ticket_id });
@@ -417,7 +565,7 @@ app.put(['/api/tickets/:ticket_id', '/tickets/:ticket_id'], async (req, res) => 
 
 // --- INVENTORY ---
 
-app.post('/api/inventory/import', async (req, res) => {
+app.post('/api/inventory/import', requireAuth, async (req, res) => {
   try {
     const items = req.body;
     let inserted = 0;
@@ -446,7 +594,7 @@ app.post('/api/inventory/import', async (req, res) => {
   }
 });
 
-app.post(['/api/inventory', '/inventory'], async (req, res) => {
+app.post(['/api/inventory', '/inventory'], requireAuth, async (req, res) => {
   try {
     if (Array.isArray(req.body)) {
       const itemsToInsert = req.body.map(item => ({
@@ -465,7 +613,7 @@ app.post(['/api/inventory', '/inventory'], async (req, res) => {
   }
 });
 
-app.get(['/api/inventory', '/inventory'], async (req, res) => {
+app.get(['/api/inventory', '/inventory'], requireAuth, async (req, res) => {
   try {
     const items = await Inventory.find().sort({ item_name: 1 });
     res.json(items);
@@ -474,7 +622,7 @@ app.get(['/api/inventory', '/inventory'], async (req, res) => {
   }
 });
 
-app.put(['/api/inventory/:id', '/inventory/:id'], async (req, res) => {
+app.put(['/api/inventory/:id', '/inventory/:id'], requireAuth, async (req, res) => {
   try {
     const id = req.params.id;
     const filter = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id: id }, { _id: id }] } : { id: id };
@@ -489,7 +637,7 @@ app.put(['/api/inventory/:id', '/inventory/:id'], async (req, res) => {
   }
 });
 
-app.delete('/api/inventory/:id', async (req, res) => {
+app.delete('/api/inventory/:id', requireAuth, async (req, res) => {
   try {
     const id = req.params.id;
     const filter = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id: id }, { _id: id }] } : { id: id };
@@ -503,7 +651,7 @@ app.delete('/api/inventory/:id', async (req, res) => {
 
 // --- STOCK LOGS ---
 
-app.post('/api/stock_log', async (req, res) => {
+app.post('/api/stock_log', requireAuth, async (req, res) => {
   try {
     const newLog = new StockLog(req.body);
     await newLog.save();
@@ -513,7 +661,7 @@ app.post('/api/stock_log', async (req, res) => {
   }
 });
 
-app.get('/api/stock_log', async (req, res) => {
+app.get('/api/stock_log', requireAuth, async (req, res) => {
   try {
     const itemId = req.query.item_id;
     let query = {};
@@ -527,7 +675,7 @@ app.get('/api/stock_log', async (req, res) => {
 
 // --- FILE UPLOAD ---
 
-app.post(['/api/upload', '/upload'], upload.single('file'), (req, res) => {
+app.post(['/api/upload', '/upload'], requireAuth, upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
@@ -560,7 +708,7 @@ app.get('/api/laptop/search', async (req, res) => {
   }
 });
 
-app.get('/api/laptop/list', async (req, res) => {
+app.get('/api/laptop/list', requireAuth, async (req, res) => {
   try {
     const laptops = await LaptopEligibility.find({}).sort({ course: 1, slNo: 1, _id: 1 });
     res.json(laptops);
@@ -570,7 +718,7 @@ app.get('/api/laptop/list', async (req, res) => {
 });
 
 // Add new laptop record manually
-app.post('/api/laptop/add', async (req, res) => {
+app.post('/api/laptop/add', requireAuth, async (req, res) => {
   try {
     const { slNo, name, course, status, serialNo, laptopModel, givenDate, returnDate } = req.body;
     if (!name || !course) {
@@ -592,7 +740,7 @@ app.post('/api/laptop/add', async (req, res) => {
   }
 });
 
-app.post('/api/laptop/update', async (req, res) => {
+app.post('/api/laptop/update', requireAuth, async (req, res) => {
   try {
     const { id, status, name, serialNo, givenDate, returnDate, laptopModel, acceptanceLink } = req.body;
     if (!id) return res.status(400).json({ error: 'ID is required' });
@@ -638,7 +786,7 @@ app.post('/api/laptop/update', async (req, res) => {
   }
 });
 
-app.delete('/api/laptop/:id', async (req, res) => {
+app.delete('/api/laptop/:id', requireAuth, async (req, res) => {
   try {
     const result = await LaptopEligibility.findByIdAndDelete(req.params.id);
     if (!result) return res.status(404).json({ error: 'Record not found' });
@@ -648,7 +796,7 @@ app.delete('/api/laptop/:id', async (req, res) => {
   }
 });
 
-app.post('/api/laptop/import', async (req, res) => {
+app.post('/api/laptop/import', requireAuth, async (req, res) => {
   try {
     const records = req.body;
     if (!Array.isArray(records)) return res.status(400).json({ error: 'Array required' });
@@ -747,7 +895,7 @@ app.post('/api/laptop/accept/:id', async (req, res) => {
 
 // --- VENDOR REPORT ---
 
-app.get('/api/vendor-report', async (req, res) => {
+app.get('/api/vendor-report', requireAuth, async (req, res) => {
   try {
     const reports = await VendorReport.find().sort({ created_at: -1 });
     res.json(reports);
@@ -757,7 +905,7 @@ app.get('/api/vendor-report', async (req, res) => {
 });
 
 // Download PDF route
-app.get('/api/vendor-report/:id/pdf', async (req, res) => {
+app.get('/api/vendor-report/:id/pdf', requireAuth, async (req, res) => {
   try {
     const report = await VendorReport.findById(req.params.id);
     if (!report) return res.status(404).json({ error: 'Report not found' });
@@ -811,7 +959,7 @@ app.get('/api/vendor-report/:id/pdf', async (req, res) => {
 });
 
 // Get unique vendors for auto-fill dropdown
-app.get('/api/vendors', async (req, res) => {
+app.get('/api/vendors', requireAuth, async (req, res) => {
   try {
     const vendors1 = await VendorReport.aggregate([
       { $sort: { created_at: -1 } },
@@ -851,7 +999,7 @@ app.get('/api/vendors', async (req, res) => {
   }
 });
 
-app.post('/api/vendor-report', async (req, res) => {
+app.post('/api/vendor-report', requireAuth, async (req, res) => {
   try {
     const { vendor_name, vendor_email, cc_email, service_date, service_details, contact_person, technician_name, remarks } = req.body;
     
@@ -976,7 +1124,7 @@ app.post('/api/vendor-report', async (req, res) => {
   }
 });
 
-app.post('/api/vendor-report/:id/resend-email', async (req, res) => {
+app.post('/api/vendor-report/:id/resend-email', requireAuth, async (req, res) => {
   try {
     const report = await VendorReport.findById(req.params.id);
     if (!report) return res.status(404).json({ error: 'Report not found' });
@@ -1084,7 +1232,7 @@ app.post('/api/vendor-report/:id/resend-email', async (req, res) => {
   }
 });
 
-app.put('/api/vendor-report/:id', async (req, res) => {
+app.put('/api/vendor-report/:id', requireAuth, async (req, res) => {
   try {
     const updated = await VendorReport.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updated) return res.status(404).json({ error: 'Report not found' });
@@ -1094,7 +1242,7 @@ app.put('/api/vendor-report/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/vendor-report/:id', async (req, res) => {
+app.delete('/api/vendor-report/:id', requireAuth, async (req, res) => {
   try {
     const deleted = await VendorReport.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Report not found' });
@@ -1108,7 +1256,7 @@ app.delete('/api/vendor-report/:id', async (req, res) => {
 // PROCUREMENT ENDPOINTS
 // =======================
 
-app.get('/api/procurement', async (req, res) => {
+app.get('/api/procurement', requireAuth, async (req, res) => {
   try {
     const records = await Procurement.find().select('-replies.attachments.content').sort({ date: -1 });
     res.json(records);
@@ -1117,7 +1265,7 @@ app.get('/api/procurement', async (req, res) => {
   }
 });
 
-app.get('/api/procurement/:id/pdf', async (req, res) => {
+app.get('/api/procurement/:id/pdf', requireAuth, async (req, res) => {
   try {
     const report = await Procurement.findById(req.params.id);
     if (!report) return res.status(404).json({ error: 'Record not found' });
@@ -1195,7 +1343,7 @@ app.get('/api/procurement/:id/pdf', async (req, res) => {
   }
 });
 
-app.post('/api/procurement', async (req, res) => {
+app.post('/api/procurement', requireAuth, async (req, res) => {
   try {
     const { edit_id, doc_type, vendor_name, vendor_email, cc_email, items, remarks, skipEmail } = req.body;
     
@@ -1379,7 +1527,7 @@ app.post('/api/procurement', async (req, res) => {
 });
 
 // DELETE Procurement Document
-app.delete('/api/procurement/:id', async (req, res) => {
+app.delete('/api/procurement/:id', requireAuth, async (req, res) => {
   try {
     const doc = await Procurement.findByIdAndDelete(req.params.id);
     if (!doc) return res.status(404).json({ error: 'Document not found' });
@@ -1390,7 +1538,7 @@ app.delete('/api/procurement/:id', async (req, res) => {
 });
 
 // IMAP Sync Route
-app.get('/api/procurement/sync', async (req, res) => {
+app.get('/api/procurement/sync', requireAuth, async (req, res) => {
   const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
   const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
 
@@ -1461,7 +1609,7 @@ app.get('/api/procurement/sync', async (req, res) => {
   }
 });
 
-app.get('/api/procurement/:id/reply/:replyId/attachment/:attachmentIndex', async (req, res) => {
+app.get('/api/procurement/:id/reply/:replyId/attachment/:attachmentIndex', requireAuth, async (req, res) => {
   try {
     const proc = await Procurement.findById(req.params.id);
     if (!proc) return res.status(404).json({ error: 'Record not found' });
@@ -1479,7 +1627,7 @@ app.get('/api/procurement/:id/reply/:replyId/attachment/:attachmentIndex', async
   }
 });
 
-app.post('/api/procurement/:id/reply', async (req, res) => {
+app.post('/api/procurement/:id/reply', requireAuth, async (req, res) => {
   try {
     const proc = await Procurement.findById(req.params.id);
     if (!proc) return res.status(404).json({ error: 'Record not found' });
@@ -1502,7 +1650,7 @@ app.post('/api/procurement/:id/reply', async (req, res) => {
 });
 
 // --- MOBILE REGISTER ---
-app.get('/api/mobiles', async (req, res) => {
+app.get('/api/mobiles', requireAuth, async (req, res) => {
   try {
     const mobiles = await MobileRegister.find().sort({ created_at: -1 });
     res.json(mobiles);
@@ -1511,7 +1659,7 @@ app.get('/api/mobiles', async (req, res) => {
   }
 });
 
-app.post('/api/mobiles', async (req, res) => {
+app.post('/api/mobiles', requireAuth, async (req, res) => {
   try {
     const newMobile = new MobileRegister(req.body);
     await newMobile.save();
@@ -1521,7 +1669,7 @@ app.post('/api/mobiles', async (req, res) => {
   }
 });
 
-app.put('/api/mobiles/:id', async (req, res) => {
+app.put('/api/mobiles/:id', requireAuth, async (req, res) => {
   try {
     const updated = await MobileRegister.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updated);
@@ -1530,7 +1678,7 @@ app.put('/api/mobiles/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/mobiles/:id', async (req, res) => {
+app.delete('/api/mobiles/:id', requireAuth, async (req, res) => {
   try {
     await MobileRegister.findByIdAndDelete(req.params.id);
     res.json({ success: true });
@@ -1538,6 +1686,7 @@ app.delete('/api/mobiles/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 if (process.env.NODE_ENV !== 'production') {
   app.listen(port, () => {

@@ -586,23 +586,84 @@
       }
     }
 
+    const originalFetch = window.fetch;
+    window.fetch = async function (url, options = {}) {
+      options = options || {};
+      options.headers = options.headers || {};
+      const token = sessionStorage.getItem('iibs_auth_token');
+      if (token) {
+        if (options.headers instanceof Headers) {
+          if (!options.headers.has('Authorization')) {
+            options.headers.set('Authorization', `Bearer ${token}`);
+          }
+        } else if (Array.isArray(options.headers)) {
+          options.headers.push(['Authorization', `Bearer ${token}`]);
+        } else {
+          if (!options.headers['Authorization']) {
+            options.headers['Authorization'] = `Bearer ${token}`;
+          }
+        }
+      }
+      return originalFetch(url, options);
+    };
+
     let isReadOnly = true;
 
-    function checkPassword() {
+    async function checkPassword() {
       const pwd = document.getElementById('reportPassword').value;
-      if (pwd === 'iibs@2025' || pwd === 'admin123') {
-        isReadOnly = (pwd === 'iibs@2025');
-        document.getElementById('authOverlay').style.display = 'none';
-        document.body.style.overflow = 'visible';
-        if (!isReadOnly) {
-          document.getElementById('addStaffBtn').style.display = 'inline-flex';
+      const errBox = document.getElementById('authError');
+      if (!pwd) return;
+      try {
+        const res = await originalFetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pwd })
+        });
+        const data = await res.json();
+        if (res.ok && data.token) {
+          sessionStorage.setItem('iibs_auth_token', data.token);
+          isReadOnly = (data.role === 'staff');
+          document.getElementById('authOverlay').style.display = 'none';
+          document.body.style.overflow = 'visible';
+          if (!isReadOnly) {
+            document.getElementById('addStaffBtn').style.display = 'inline-flex';
+          }
+          fetchLaptops();
+        } else {
+          if (errBox) {
+            errBox.textContent = data.error || 'Incorrect password. Please try again.';
+            errBox.style.display = 'block';
+          }
         }
-        fetchLaptops();
-      } else {
-        document.getElementById('authError').style.display = 'block';
+      } catch (err) {
+        if (errBox) {
+          errBox.textContent = 'Error connecting to server';
+          errBox.style.display = 'block';
+        }
       }
     }
-    // Initialize happens after password is provided
+
+    // Auto-check if existing session token is active
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = sessionStorage.getItem('iibs_auth_token');
+      if (token) {
+        try {
+          const res = await originalFetch('/api/auth/verify', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (res.ok && data.valid) {
+            isReadOnly = (data.role === 'staff');
+            document.getElementById('authOverlay').style.display = 'none';
+            document.body.style.overflow = 'visible';
+            if (!isReadOnly) {
+              document.getElementById('addStaffBtn').style.display = 'inline-flex';
+            }
+            fetchLaptops();
+          }
+        } catch (e) {}
+      }
+    });
   </script>
 </body>
 </html>

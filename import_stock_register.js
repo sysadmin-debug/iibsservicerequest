@@ -16,7 +16,7 @@ const inventorySchema = new mongoose.Schema({
 
 const Inventory = mongoose.model('Inventory', inventorySchema);
 
-const uri = 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
+const uri = process.env.MONGODB_URI || 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
 
 async function importData() {
   await mongoose.connect(uri);

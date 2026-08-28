@@ -1,18 +1,120 @@
 // IIBS Service Ticketing System — Application Logic
-document.addEventListener('DOMContentLoaded', () => {
-  // Simple password protection
-  const pwd = prompt("Enter Admin Password to access the IT Dashboard:");
-  if (pwd !== 'admin123') {
-    document.body.innerHTML = `
-      <div style="display:flex; justify-content:center; align-items:center; height:100vh; background: #0f172a; color: #fff; font-family: sans-serif;">
-        <div style="text-align: center;">
-          <h1 style="color: #ef4444; margin-bottom: 1rem;">Access Denied</h1>
-          <p>Incorrect password.</p>
-          <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">Try Again</button>
-        </div>
+
+// --- GLOBAL AUTH INTERCEPTOR ---
+const originalFetch = window.fetch;
+window.fetch = async function (url, options = {}) {
+  options = options || {};
+  options.headers = options.headers || {};
+  const token = sessionStorage.getItem('iibs_auth_token');
+  if (token) {
+    if (options.headers instanceof Headers) {
+      if (!options.headers.has('Authorization')) {
+        options.headers.set('Authorization', `Bearer ${token}`);
+      }
+    } else if (Array.isArray(options.headers)) {
+      options.headers.push(['Authorization', `Bearer ${token}`]);
+    } else {
+      if (!options.headers['Authorization']) {
+        options.headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+  }
+  const res = await originalFetch(url, options);
+  if (res.status === 401 && typeof url === 'string' && url.startsWith('/api/') && !url.startsWith('/api/auth/')) {
+    sessionStorage.removeItem('iibs_auth_token');
+    showAuthModal('Session expired. Please sign in again.');
+  }
+  return res;
+};
+
+function showAuthModal(errMsg = '') {
+  let modal = document.getElementById('iibsAuthOverlay');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'iibsAuthOverlay';
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.95);display:flex;justify-content:center;align-items:center;z-index:999999;font-family:sans-serif;';
+    modal.innerHTML = `
+      <div style="background:#1e293b;padding:2.5rem;border-radius:12px;border:1px solid #334155;max-width:400px;width:90%;box-shadow:0 20px 25px -5px rgba(0,0,0,0.5);text-align:center;color:#f8fafc;">
+        <div style="width:50px;height:50px;border-radius:50%;background:#3b82f6;color:white;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.5rem;font-weight:bold;">🔒</div>
+        <h2 style="margin:0 0 0.5rem;font-size:1.4rem;font-weight:600;">Admin Authentication</h2>
+        <p style="color:#94a3b8;margin:0 0 1.5rem;font-size:0.9rem;">Please enter your password to access the dashboard.</p>
+        <div id="iibsAuthError" style="color:#ef4444;background:#450a0a;border:1px solid #7f1d1d;padding:0.6rem;border-radius:6px;font-size:0.85rem;margin-bottom:1rem;display:none;"></div>
+        <input type="password" id="iibsAdminPasswordInput" placeholder="Enter password" style="width:100%;box-sizing:border-box;padding:0.75rem 1rem;background:#0f172a;border:1px solid #475569;border-radius:6px;color:white;font-size:1rem;margin-bottom:1rem;outline:none;" />
+        <button id="iibsAdminLoginBtn" style="width:100%;padding:0.75rem;background:#3b82f6;color:white;border:none;border-radius:6px;font-weight:600;font-size:1rem;cursor:pointer;transition:background 0.2s;">Sign In</button>
       </div>
     `;
+    document.body.appendChild(modal);
+
+    const input = document.getElementById('iibsAdminPasswordInput');
+    const btn = document.getElementById('iibsAdminLoginBtn');
+    
+    async function doLogin() {
+      const pwd = input.value;
+      const errBox = document.getElementById('iibsAuthError');
+      if (!pwd) {
+        errBox.textContent = 'Please enter a password';
+        errBox.style.display = 'block';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+      try {
+        const res = await originalFetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pwd })
+        });
+        const data = await res.json();
+        if (res.ok && data.token) {
+          sessionStorage.setItem('iibs_auth_token', data.token);
+          modal.remove();
+          window.location.reload();
+        } else {
+          errBox.textContent = data.error || 'Invalid password';
+          errBox.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Sign In';
+        }
+      } catch (err) {
+        errBox.textContent = 'Network error during login';
+        errBox.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    }
+
+    btn.addEventListener('click', doLogin);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doLogin();
+    });
+  }
+
+  const errBox = document.getElementById('iibsAuthError');
+  if (errMsg && errBox) {
+    errBox.textContent = errMsg;
+    errBox.style.display = 'block';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const token = sessionStorage.getItem('iibs_auth_token');
+  if (!token) {
+    showAuthModal();
     return;
+  }
+
+  // Verify token
+  try {
+    const res = await originalFetch('/api/auth/verify', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) {
+      sessionStorage.removeItem('iibs_auth_token');
+      showAuthModal('Session expired. Please sign in again.');
+      return;
+    }
+  } catch (err) {
+    console.warn('Unable to verify token online:', err);
   }
 
   // Initialize Lucide Icons

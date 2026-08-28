@@ -5,7 +5,7 @@ const xlsx = require('xlsx');
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
-const mongoUri = 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
+const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://iibs:iibspassword123@cluster0.tx3p15k.mongodb.net/iibs?appName=Cluster0';
 
 // Schema
 const laptopSchema = new mongoose.Schema({
