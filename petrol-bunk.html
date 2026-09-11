@@ -470,6 +470,8 @@
         if (s.status === 'On-Duty') stClass = 'status-onduty';
         else if (s.status === 'Scheduled') stClass = 'status-scheduled';
 
+        const recordId = s._id || s.id;
+
         return `
           <tr>
             <td style="color:#94a3b8; font-weight:600;">${idx + 1}</td>
@@ -482,8 +484,8 @@
             <td style="font-weight:600;">${s.hours}</td>
             <td><span class="status-chip ${stClass}">${s.status}</span></td>
             <td style="text-align:center;">
-              <button onclick="rotateStaff(${s.id})" title="Rotate shift" class="action-btn outline" style="padding: 0.2rem 0.45rem; font-size: 0.75rem;"><i data-lucide="rotate-cw"></i></button>
-              <button onclick="deleteStaff(${s.id}, '${s.name}')" title="Delete employee" class="action-btn outline" style="padding: 0.2rem 0.45rem; font-size: 0.75rem; color:#ef4444; border-color:#7f1d1d;"><i data-lucide="trash-2"></i></button>
+              <button onclick="rotateStaff('${recordId}')" title="Rotate shift" class="action-btn outline" style="padding: 0.2rem 0.45rem; font-size: 0.75rem;"><i data-lucide="rotate-cw"></i></button>
+              <button onclick="deleteStaff('${recordId}', '${s.name}')" title="Delete employee" class="action-btn outline" style="padding: 0.2rem 0.45rem; font-size: 0.75rem; color:#ef4444; border-color:#7f1d1d;"><i data-lucide="trash-2"></i></button>
             </td>
           </tr>
         `;
@@ -503,7 +505,35 @@
       renderTable();
     }
 
-    function rotateShifts() {
+    async function fetchBunkStaff() {
+      try {
+        const res = await fetch('/api/bunk-staff');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            staffList = data;
+            renderTable();
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load staff from MongoDB Atlas, using cache/defaults:', err);
+      }
+    }
+
+    async function rotateShifts() {
+      try {
+        const res = await fetch('/api/bunk-staff/rotate-all', { method: 'POST' });
+        if (res.ok) {
+          const data = await res.json();
+          staffList = data;
+          renderTable();
+          return;
+        }
+      } catch (e) {
+        console.error('Rotate all error:', e);
+      }
+
+      // Fallback local update
       staffList.forEach(s => {
         if (s.shiftCode === 'S1') {
           s.shiftCode = 'S2'; s.shift = '2nd Shift (Afternoon)'; s.time = '14:00 - 20:00';
@@ -520,32 +550,55 @@
         }
       });
       renderTable();
-      fetch('http://192.168.1.110:8765/api/rotate-shifts', { method: 'POST' }).catch(() => {});
     }
 
-    function rotateStaff(id) {
-      const s = staffList.find(x => x.id === id);
+    async function rotateStaff(id) {
+      const s = staffList.find(x => (x._id === id || x.id === id));
       if (!s) return;
-      if (s.shiftCode === 'S1') { s.shiftCode = 'S2'; s.shift = '2nd Shift (Afternoon)'; s.time = '14:00 - 20:00'; }
-      else if (s.shiftCode === 'S2') { s.shiftCode = 'S3'; s.shift = '3rd Shift (Night)'; s.time = '20:00 - 06:00'; }
-      else if (s.shiftCode === 'S3') { s.shiftCode = 'S1'; s.shift = '1st Shift (Morning)'; s.time = '06:00 - 14:00'; }
+
+      let newShiftCode = s.shiftCode;
+      let newShift = s.shift;
+      let newTime = s.time;
+
+      if (s.shiftCode === 'S1') { newShiftCode = 'S2'; newShift = '2nd Shift (Afternoon)'; newTime = '14:00 - 20:00'; }
+      else if (s.shiftCode === 'S2') { newShiftCode = 'S3'; newShift = '3rd Shift (Night)'; newTime = '20:00 - 06:00'; }
+      else if (s.shiftCode === 'S3') { newShiftCode = 'S1'; newShift = '1st Shift (Morning)'; newTime = '06:00 - 14:00'; }
       else if (s.shiftCode === 'SUPP') {
-        s.shift = s.shift.includes('Day') ? '12H Night Shift' : '12H Day Shift';
-        s.time = s.shift.includes('Day') ? '06:00 - 18:00' : '18:00 - 06:00';
+        newShift = s.shift.includes('Day') ? '12H Night Shift' : '12H Day Shift';
+        newTime = s.shift.includes('Day') ? '18:00 - 06:00' : '06:00 - 18:00';
       }
+
+      s.shiftCode = newShiftCode;
+      s.shift = newShift;
+      s.time = newTime;
       renderTable();
-      fetch(`http://192.168.1.110:8765/api/staff/${id}/shift`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ shiftCode: s.shiftCode, shift: s.shift })
-      }).catch(() => {});
+
+      if (s._id) {
+        try {
+          await fetch(`/api/bunk-staff/${s._id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ shiftCode: newShiftCode, shift: newShift, time: newTime })
+          });
+        } catch (err) {
+          console.error('Failed to update shift in MongoDB:', err);
+        }
+      }
     }
 
-    function deleteStaff(id, name) {
+    async function deleteStaff(id, name) {
       if (confirm(`Remove employee "${name}" from roster?`)) {
-        staffList = staffList.filter(x => x.id !== id);
+        const itemToDelete = staffList.find(x => (x._id === id || x.id === id));
+        staffList = staffList.filter(x => !(x._id === id || x.id === id));
         renderTable();
-        fetch(`http://192.168.1.110:8765/api/staff/${id}`, { method: 'DELETE' }).catch(() => {});
+
+        if (itemToDelete && itemToDelete._id) {
+          try {
+            await fetch(`/api/bunk-staff/${itemToDelete._id}`, { method: 'DELETE' });
+          } catch (err) {
+            console.error('Failed to delete staff in MongoDB:', err);
+          }
+        }
       }
     }
 
@@ -555,7 +608,8 @@
     function closeAddModal() {
       document.getElementById('addEmpModal').classList.remove('active');
     }
-    function saveStaff(e) {
+
+    async function saveStaff(e) {
       e.preventDefault();
       const name = document.getElementById('newName').value.trim();
       const role = document.getElementById('newRole').value;
@@ -567,23 +621,37 @@
       else if (shiftCode === "D12") { shiftName = "12H Day Shift"; time = "06:00 - 18:00"; }
       else if (shiftCode === "N12") { shiftName = "12H Night Shift"; time = "18:00 - 06:00"; }
 
-      const newId = staffList.length > 0 ? Math.max(...staffList.map(x => x.id)) + 1 : 1;
-      staffList.push({
-        id: newId,
+      const newRecord = {
         name: name,
         role: role,
         shiftCode: shiftCode === "D12" || shiftCode === "N12" ? "SUPP" : shiftCode,
         shift: shiftName,
         time: time,
-        in: "--:--", out: "--:--", hours: "--", status: "Scheduled"
-      });
+        in: "--:--",
+        out: "--:--",
+        hours: "--",
+        status: "Scheduled"
+      };
+
+      try {
+        const res = await fetch('/api/bunk-staff', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newRecord)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          staffList.push(saved);
+        } else {
+          staffList.push({ id: Date.now(), ...newRecord });
+        }
+      } catch (err) {
+        console.error('Failed to save to MongoDB, adding locally:', err);
+        staffList.push({ id: Date.now(), ...newRecord });
+      }
+
       closeAddModal();
       renderTable();
-      fetch('http://192.168.1.110:8765/api/staff', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, designation: role, assignedShift: shiftName, shiftCode })
-      }).catch(() => {});
     }
 
     function downloadExcel() {
@@ -602,24 +670,8 @@
       URL.revokeObjectURL(url);
     }
 
-    // Try fetching live data from local bunk server if accessible
-    fetch('http://192.168.1.110:8765/api/staff')
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          staffList = data.map(d => ({
-            id: d.id,
-            name: d.name,
-            role: d.designation || 'Staff',
-            shiftCode: d.shiftCode || 'S1',
-            shift: d.shift || d.assignedShift || '1st Shift (Morning)',
-            time: d.shiftCode === 'S2' ? '14:00 - 20:00' : (d.shiftCode === 'S3' ? '20:00 - 06:00' : (d.shiftCode === 'N12' ? '18:00 - 06:00' : '06:00 - 14:00')),
-            in: '--:--', out: '--:--', hours: '--', status: d.status || 'Active'
-          }));
-          renderTable();
-        }
-      })
-      .catch(() => {});
+    // Fetch live MongoDB Atlas data on load
+    fetchBunkStaff();
 
     renderTable();
     if (window.lucide) lucide.createIcons();

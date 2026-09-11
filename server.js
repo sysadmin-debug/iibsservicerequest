@@ -380,6 +380,21 @@ const mobileRegisterSchema = new mongoose.Schema({
 });
 const MobileRegister = mongoose.models.MobileRegister || mongoose.model('MobileRegister', mobileRegisterSchema);
 
+const bunkStaffSchema = new mongoose.Schema({
+  emp_id: { type: Number },
+  name: { type: String, required: true },
+  role: { type: String, required: true },
+  shiftCode: { type: String, required: true },
+  shift: { type: String, required: true },
+  time: { type: String, required: true },
+  in: { type: String, default: '--:--' },
+  out: { type: String, default: '--:--' },
+  hours: { type: String, default: '--' },
+  status: { type: String, default: 'Scheduled' },
+  created_at: { type: Date, default: Date.now }
+});
+const BunkStaff = mongoose.models.BunkStaff || mongoose.model('BunkStaff', bunkStaffSchema);
+
 // =======================
 // API ENDPOINTS
 // =======================
@@ -1681,6 +1696,120 @@ app.put('/api/mobiles/:id', requireAuth, async (req, res) => {
 app.delete('/api/mobiles/:id', requireAuth, async (req, res) => {
   try {
     await MobileRegister.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// --- BABU RAJU RAM FUEL STATION (PETROL BUNK ATTENDANCE) ---
+const INITIAL_BUNK_STAFF = [
+  { emp_id: 1, name: "Chandan", role: "Supervisor", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:55", out: "14:05", hours: "8.1 hrs", status: "Present" },
+  { emp_id: 2, name: "Nagesh Babu", role: "Supervisor", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "06:02", out: "14:10", hours: "8.1 hrs", status: "Present" },
+  { emp_id: 3, name: "Prashanth", role: "Supervisor", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:55", out: "--:--", hours: "--", status: "Scheduled" },
+  { emp_id: 4, name: "Srinivas KV", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:50", out: "14:02", hours: "8.2 hrs", status: "Present" },
+  { emp_id: 5, name: "Venkatesh C", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:58", out: "14:00", hours: "8.0 hrs", status: "Present" },
+  { emp_id: 6, name: "Sandeep M", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "06:05", out: "14:15", hours: "8.1 hrs", status: "Present" },
+  { emp_id: 7, name: "Santhosh M", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:52", out: "14:08", hours: "8.2 hrs", status: "Present" },
+  { emp_id: 8, name: "Gangaraju", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:57", out: "14:01", hours: "8.0 hrs", status: "Present" },
+  { emp_id: 9, name: "Narasimha murthy A", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "06:00", out: "14:05", hours: "8.0 hrs", status: "Present" },
+  { emp_id: 10, name: "Nikil", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:50", out: "--:--", hours: "--", status: "On-Duty" },
+  { emp_id: 11, name: "Abjith Kumar", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:55", out: "--:--", hours: "--", status: "On-Duty" },
+  { emp_id: 12, name: "Anandha", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "14:02", out: "--:--", hours: "--", status: "On-Duty" },
+  { emp_id: 13, name: "Gangadharappa", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:48", out: "--:--", hours: "--", status: "On-Duty" },
+  { emp_id: 14, name: "Sridhar", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:56", out: "--:--", hours: "--", status: "On-Duty" },
+  { emp_id: 15, name: "Muthyalappa", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "14:05", out: "--:--", hours: "--", status: "On-Duty" },
+  { emp_id: 16, name: "Sanjeet Kumar", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:50", out: "--:--", hours: "--", status: "Scheduled" },
+  { emp_id: 17, name: "Narasimha murthy", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:58", out: "--:--", hours: "--", status: "Scheduled" },
+  { emp_id: 18, name: "Venkatesh B", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:55", out: "--:--", hours: "--", status: "Scheduled" },
+  { emp_id: 19, name: "Sandeep K", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "20:02", out: "--:--", hours: "--", status: "Scheduled" },
+  { emp_id: 20, name: "Kiran", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:48", out: "--:--", hours: "--", status: "Scheduled" },
+  { emp_id: 21, name: "Gouramma", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "06:55", out: "16:02", hours: "9.1 hrs", status: "Present" },
+  { emp_id: 22, name: "Gayathri", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "07:00", out: "16:05", hours: "9.0 hrs", status: "Present" },
+  { emp_id: 23, name: "Mota Narasimhappa", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Night Shift", time: "18:00 - 06:00", in: "17:55", out: "--:--", hours: "--", status: "Scheduled" },
+  { emp_id: 24, name: "Ramesh Chand Ram", role: "Air Boy", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "05:50", out: "--:--", hours: "--", status: "On-Duty" },
+  { emp_id: 25, name: "Basgeeth", role: "Air Boy", shiftCode: "SUPP", shift: "12H Night Shift", time: "18:00 - 06:00", in: "17:52", out: "--:--", hours: "--", status: "Scheduled" },
+  { emp_id: 26, name: "Vikas", role: "Marshal", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "05:58", out: "--:--", hours: "--", status: "On-Duty" }
+];
+
+app.get('/api/bunk-staff', async (req, res) => {
+  try {
+    let count = await BunkStaff.countDocuments();
+    if (count === 0) {
+      // Auto seed initial roster to MongoDB Atlas
+      await BunkStaff.insertMany(INITIAL_BUNK_STAFF);
+    }
+    const staff = await BunkStaff.find().sort({ emp_id: 1, created_at: 1 });
+    res.json(staff);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/bunk-staff', async (req, res) => {
+  try {
+    let emp_id = req.body.emp_id;
+    if (!emp_id) {
+      const highest = await BunkStaff.findOne().sort({ emp_id: -1 });
+      emp_id = highest && highest.emp_id ? highest.emp_id + 1 : 1;
+    }
+    const newStaff = new BunkStaff({
+      ...req.body,
+      emp_id
+    });
+    await newStaff.save();
+    res.status(201).json(newStaff);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/bunk-staff/:id', async (req, res) => {
+  try {
+    const updated = await BunkStaff.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/bunk-staff/rotate-all', async (req, res) => {
+  try {
+    const staffMembers = await BunkStaff.find();
+    for (const s of staffMembers) {
+      if (s.shiftCode === 'S1') {
+        s.shiftCode = 'S2';
+        s.shift = '2nd Shift (Afternoon)';
+        s.time = '14:00 - 20:00';
+      } else if (s.shiftCode === 'S2') {
+        s.shiftCode = 'S3';
+        s.shift = '3rd Shift (Night)';
+        s.time = '20:00 - 06:00';
+      } else if (s.shiftCode === 'S3') {
+        s.shiftCode = 'S1';
+        s.shift = '1st Shift (Morning)';
+        s.time = '06:00 - 14:00';
+      } else if (s.shiftCode === 'SUPP') {
+        if (s.shift.includes('Day')) {
+          s.shift = '12H Night Shift';
+          s.time = '18:00 - 06:00';
+        } else {
+          s.shift = '12H Day Shift';
+          s.time = '06:00 - 18:00';
+        }
+      }
+      await s.save();
+    }
+    const updatedAll = await BunkStaff.find().sort({ emp_id: 1, created_at: 1 });
+    res.json(updatedAll);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/bunk-staff/:id', async (req, res) => {
+  try {
+    await BunkStaff.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
