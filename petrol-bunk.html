@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IIBS – Babu Raju Ram Fuel Station Attendance</title>
+  <meta name="description" content="IIBS Babu Raju Ram Fuel Station Biometric Shiftwise Attendance Management">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    body {
+      background: #0f172a;
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding-bottom: 3rem;
+    }
+    .bunk-container {
+      max-width: 1300px;
+      margin: 1.5rem auto;
+      padding: 0 1.25rem;
+    }
+    .bunk-header-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      border-left: 5px solid #f59e0b;
+    }
+    .bunk-title-group h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .bunk-title-group p {
+      color: var(--text-muted);
+      margin: 0.25rem 0 0 0;
+      font-size: 0.875rem;
+    }
+    .device-pills {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .device-pill {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #334155;
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .status-dot-green {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .stat-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .si-s1 { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .si-s2 { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .si-s3 { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+    .si-supp { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .stat-val { font-size: 1.5rem; font-weight: 700; line-height: 1.1; font-family: 'Outfit', sans-serif; }
+    .stat-lbl { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+    
+    .toolbar-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .filter-btn-group {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover { color: #fff; border-color: #3b82f6; }
+    .filter-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+    
+    .action-btn {
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.15s;
+    }
+    .action-btn:hover { background: #2563eb; }
+    .action-btn.success { background: #10b981; }
+    .action-btn.success:hover { background: #059669; }
+    .action-btn.outline { background: transparent; border: 1px solid var(--card-border); color: #f8fafc; }
+    .action-btn.outline:hover { background: #334155; }
+
+    .search-input-bunk {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 0.45rem 0.75rem;
+      color: #fff;
+      font-size: 0.85rem;
+      outline: none;
+      min-width: 200px;
+    }
+    .search-input-bunk:focus { border-color: #3b82f6; }
+
+    .table-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .bunk-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+    .bunk-table th {
+      background: #0f172a;
+      padding: 0.85rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .bunk-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #334155;
+      vertical-align: middle;
+    }
+    .bunk-table tr:hover { background: rgba(255,255,255,0.02); }
+    .bunk-table tr:last-child td { border-bottom: none; }
+
+    .shift-chip {
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .chip-s1 { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .chip-s2 { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .chip-s3 { background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .chip-supp { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    .status-chip {
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .status-present { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .status-onduty { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .status-scheduled { background: rgba(139, 92, 246, 0.15); color: #c084fc; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 1000;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content-box {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+      width: 100%; max-width: 440px; overflow: hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body class="admin-page">
+
+  <!-- Ambient Background Orbs -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- Navigation Header (Matches IIBS ServiceDesk) -->
+  <header id="mainHeader">
+    <div class="nav-container">
+      <div class="logo" id="mainLogo">
+        <img src="logo.jpeg" alt="IIBS Logo" class="logo-img" style="height: 40px; border-radius: 8px;">
+        <span>IIBS <span class="logo-accent">ServiceDesk</span></span>
+      </div>
+      <nav id="navLinks">
+        <a href="admin.html"><i data-lucide="home" class="nav-icon"></i> Admin Home</a>
+        <a href="admin.html#inventory"><i data-lucide="package"></i> Stock Register</a>
+        <a href="laptop-report.html"><i data-lucide="laptop"></i> Laptop Report</a>
+        <a href="staff-laptop-report.html"><i data-lucide="monitor"></i> Staff Laptop Report</a>
+        <a href="petrol-bunk.html" class="active"><i data-lucide="fuel"></i> Petrol Bunk Attendance</a>
+        <a href="admin.html#help"><i data-lucide="life-buoy" class="nav-icon"></i> Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="bunk-container">
+      
+      <!-- Top Title & Terminals Card -->
+      <div class="bunk-header-card">
+        <div class="bunk-title-group">
+          <h1><i data-lucide="fuel" style="color: #f59e0b;"></i> Babu Raju Ram Fuel Station</h1>
+          <p>Biometric Shiftwise Attendance & Employee Management System</p>
+        </div>
+        <div class="device-pills">
+          <div class="device-pill">
+            <span class="status-dot-green"></span>
+            <span>Management: <strong>192.168.1.108</strong> (Online)</span>
+          </div>
+          <div class="device-pill">
+            <span class="status-dot-green"></span>
+            <span>Staff: <strong>192.168.1.104</strong> (Online)</span>
+          </div>
+          <button class="action-btn" onclick="openAddModal()">
+            <i data-lucide="user-plus"></i> Add Employee
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Bar (Shift Counts) -->
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-icon-wrap si-s1"><i data-lucide="sun"></i></div>
+          <div>
+            <div class="stat-val" id="cntS1">8</div>
+            <div class="stat-lbl">1st Shift (06:00 - 14:00)</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon-wrap si-s2"><i data-lucide="cloud-sun"></i></div>
+          <div>
+            <div class="stat-val" id="cntS2">6</div>
+            <div class="stat-lbl">2nd Shift (14:00 - 20:00)</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon-wrap si-s3"><i data-lucide="moon"></i></div>
+          <div>
+            <div class="stat-val" id="cntS3">6</div>
+            <div class="stat-lbl">3rd Shift (20:00 - 06:00)</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon-wrap si-supp"><i data-lucide="clock"></i></div>
+          <div>
+            <div class="stat-val" id="cntSupp">6</div>
+            <div class="stat-lbl">12H Support Shifts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar-bar">
+        <div class="filter-btn-group">
+          <button class="filter-btn active" onclick="filterShift('ALL', this)">All Shifts (<span id="totalStaffCount">26</span>)</button>
+          <button class="filter-btn" onclick="filterShift('S1', this)">1st Shift</button>
+          <button class="filter-btn" onclick="filterShift('S2', this)">2nd Shift</button>
+          <button class="filter-btn" onclick="filterShift('S3', this)">3rd Shift</button>
+          <button class="filter-btn" onclick="filterShift('SUPP', this)">12H Support</button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="action-btn outline" onclick="rotateShifts()" title="Rotate shifts: 1st -> 2nd -> 3rd -> 1st">
+            <i data-lucide="rotate-cw"></i> Rotate Shifts
+          </button>
+          <input type="text" id="searchStaff" oninput="searchEmployee(this.value)" placeholder="Search employee..." class="search-input-bunk">
+          <button class="action-btn success" onclick="downloadExcel()">
+            <i data-lucide="download"></i> Export Excel
+          </button>
+          <button class="action-btn outline" onclick="window.print()">
+            <i data-lucide="printer"></i> Print
+          </button>
+        </div>
+      </div>
+
+      <!-- Attendance Table -->
+      <div class="table-box">
+        <table class="bunk-table">
+          <thead>
+            <tr>
+              <th style="width: 45px;">Sl.</th>
+              <th>Employee Name</th>
+              <th>Designation</th>
+              <th>Assigned Shift</th>
+              <th>Scheduled Hours</th>
+              <th>Punch In</th>
+              <th>Punch Out</th>
+              <th>Total Work</th>
+              <th>Status</th>
+              <th style="text-align: center; width: 100px;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceRows">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: Add Employee -->
+  <div class="modal-overlay" id="addEmpModal">
+    <div class="modal-content-box">
+      <div style="padding: 1.25rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; font-size: 1.1rem; font-family: 'Outfit', sans-serif;"><i data-lucide="user-plus"></i> Add Petrol Bunk Employee</h3>
+        <button onclick="closeAddModal()" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+      <form onsubmit="saveStaff(event)" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+          <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Employee Name: *</label>
+          <input type="text" id="newName" required placeholder="e.g. Ramesh Kumar" style="width: 100%; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; padding: 0.6rem; border-radius: 6px; color: #fff; outline: none;">
+        </div>
+        <div>
+          <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Designation: *</label>
+          <select id="newRole" style="width: 100%; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; padding: 0.6rem; border-radius: 6px; color: #fff; outline: none;">
+            <option value="Cashier">Cashier</option>
+            <option value="Supervisor">Supervisor</option>
+            <option value="Air Boy">Air Boy</option>
+            <option value="Marshal">Marshal</option>
+            <option value="Housekeeper">Housekeeper</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Assigned Shift: *</label>
+          <select id="newShift" style="width: 100%; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; padding: 0.6rem; border-radius: 6px; color: #fff; outline: none;">
+            <option value="S1">1st Shift (Morning: 06:00 - 14:00)</option>
+            <option value="S2">2nd Shift (Afternoon: 14:00 - 20:00)</option>
+            <option value="S3">3rd Shift (Night: 20:00 - 06:00)</option>
+            <option value="D12">12H Day Shift (06:00 - 18:00)</option>
+            <option value="N12">12H Night Shift (18:00 - 06:00)</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+          <button type="button" onclick="closeAddModal()" class="action-btn outline">Cancel</button>
+          <button type="submit" class="action-btn">Register Employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Active 26 Staff (Without Lavanya & Naveen Kumar)
+    let staffList = [
+      { id: 1, name: "Chandan", role: "Supervisor", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:55", out: "14:05", hours: "8.1 hrs", status: "Present" },
+      { id: 2, name: "Nagesh Babu", role: "Supervisor", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "06:02", out: "14:10", hours: "8.1 hrs", status: "Present" },
+      { id: 3, name: "Prashanth", role: "Supervisor", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:55", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 4, name: "Srinivas KV", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:50", out: "14:02", hours: "8.2 hrs", status: "Present" },
+      { id: 5, name: "Venkatesh C", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:58", out: "14:00", hours: "8.0 hrs", status: "Present" },
+      { id: 6, name: "Sandeep M", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "06:05", out: "14:15", hours: "8.1 hrs", status: "Present" },
+      { id: 7, name: "Santhosh M", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:52", out: "14:08", hours: "8.2 hrs", status: "Present" },
+      { id: 8, name: "Gangaraju", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:57", out: "14:01", hours: "8.0 hrs", status: "Present" },
+      { id: 9, name: "Narasimha murthy A", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "06:00", out: "14:05", hours: "8.0 hrs", status: "Present" },
+      { id: 10, name: "Nikil", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:50", out: "--:--", hours: "--", status: "On-Duty" },
+      { id: 11, name: "Abjith Kumar", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:55", out: "--:--", hours: "--", status: "On-Duty" },
+      { id: 12, name: "Anandha", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "14:02", out: "--:--", hours: "--", status: "On-Duty" },
+      { id: 13, name: "Gangadharappa", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:48", out: "--:--", hours: "--", status: "On-Duty" },
+      { id: 14, name: "Sridhar", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:56", out: "--:--", hours: "--", status: "On-Duty" },
+      { id: 15, name: "Muthyalappa", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "14:05", out: "--:--", hours: "--", status: "On-Duty" },
+      { id: 16, name: "Sanjeet Kumar", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:50", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 17, name: "Narasimha murthy", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:58", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 18, name: "Venkatesh B", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:55", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 19, name: "Sandeep K", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "20:02", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 20, name: "Kiran", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:48", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 21, name: "Gouramma", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "06:55", out: "16:02", hours: "9.1 hrs", status: "Present" },
+      { id: 22, name: "Gayathri", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "07:00", out: "16:05", hours: "9.0 hrs", status: "Present" },
+      { id: 23, name: "Mota Narasimhappa", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Night Shift", time: "18:00 - 06:00", in: "17:55", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 24, name: "Ramesh Chand Ram", role: "Air Boy", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "05:50", out: "--:--", hours: "--", status: "On-Duty" },
+      { id: 25, name: "Basgeeth", role: "Air Boy", shiftCode: "SUPP", shift: "12H Night Shift", time: "18:00 - 06:00", in: "17:52", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 26, name: "Vikas", role: "Marshal", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "05:58", out: "--:--", hours: "--", status: "On-Duty" }
+    ];
+
+    let currentShift = 'ALL';
+    let searchQ = '';
+
+    function renderTable() {
+      const tbody = document.getElementById('attendanceRows');
+      let filtered = staffList.filter(s => {
+        const matchShift = currentShift === 'ALL' || s.shiftCode === currentShift;
+        const q = searchQ.toLowerCase();
+        const matchQ = !q || s.name.toLowerCase().includes(q) || s.role.toLowerCase().includes(q) || s.shift.toLowerCase().includes(q);
+        return matchShift && matchQ;
+      });
+
+      document.getElementById('totalStaffCount').textContent = staffList.length;
+      document.getElementById('cntS1').textContent = staffList.filter(s => s.shiftCode === 'S1').length;
+      document.getElementById('cntS2').textContent = staffList.filter(s => s.shiftCode === 'S2').length;
+      document.getElementById('cntS3').textContent = staffList.filter(s => s.shiftCode === 'S3').length;
+      document.getElementById('cntSupp').textContent = staffList.filter(s => s.shiftCode === 'SUPP').length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding: 2rem; color: #94a3b8;">No records found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((s, idx) => {
+        let chipClass = 'chip-s1';
+        if (s.shiftCode === 'S2') chipClass = 'chip-s2';
+        else if (s.shiftCode === 'S3') chipClass = 'chip-s3';
+        else if (s.shiftCode === 'SUPP') chipClass = 'chip-supp';
+
+        let stClass = 'status-present';
+        if (s.status === 'On-Duty') stClass = 'status-onduty';
+        else if (s.status === 'Scheduled') stClass = 'status-scheduled';
+
+        return `
+          <tr>
+            <td style="color:#94a3b8; font-weight:600;">${idx + 1}</td>
+            <td style="font-weight:700; color:#fff;">${s.name}</td>
+            <td style="color:#94a3b8;">${s.role}</td>
+            <td><span class="shift-chip ${chipClass}">${s.shift}</span></td>
+            <td style="font-family:monospace; font-size:0.8rem; color:#94a3b8;">${s.time}</td>
+            <td style="font-family:monospace; font-weight:600; color:#34d399;">${s.in}</td>
+            <td style="font-family:monospace; font-weight:600; color:#fbbf24;">${s.out}</td>
+            <td style="font-weight:600;">${s.hours}</td>
+            <td><span class="status-chip ${stClass}">${s.status}</span></td>
+            <td style="text-align:center;">
+              <button onclick="rotateStaff(${s.id})" title="Rotate shift" class="action-btn outline" style="padding: 0.2rem 0.45rem; font-size: 0.75rem;"><i data-lucide="rotate-cw"></i></button>
+              <button onclick="deleteStaff(${s.id}, '${s.name}')" title="Delete employee" class="action-btn outline" style="padding: 0.2rem 0.45rem; font-size: 0.75rem; color:#ef4444; border-color:#7f1d1d;"><i data-lucide="trash-2"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function filterShift(code, btn) {
+      currentShift = code;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTable();
+    }
+
+    function searchEmployee(val) {
+      searchQ = val;
+      renderTable();
+    }
+
+    function rotateShifts() {
+      staffList.forEach(s => {
+        if (s.shiftCode === 'S1') {
+          s.shiftCode = 'S2'; s.shift = '2nd Shift (Afternoon)'; s.time = '14:00 - 20:00';
+        } else if (s.shiftCode === 'S2') {
+          s.shiftCode = 'S3'; s.shift = '3rd Shift (Night)'; s.time = '20:00 - 06:00';
+        } else if (s.shiftCode === 'S3') {
+          s.shiftCode = 'S1'; s.shift = '1st Shift (Morning)'; s.time = '06:00 - 14:00';
+        } else if (s.shiftCode === 'SUPP') {
+          if (s.shift.includes('Day')) {
+            s.shift = '12H Night Shift'; s.time = '18:00 - 06:00';
+          } else {
+            s.shift = '12H Day Shift'; s.time = '06:00 - 18:00';
+          }
+        }
+      });
+      renderTable();
+      fetch('http://192.168.1.110:8765/api/rotate-shifts', { method: 'POST' }).catch(() => {});
+    }
+
+    function rotateStaff(id) {
+      const s = staffList.find(x => x.id === id);
+      if (!s) return;
+      if (s.shiftCode === 'S1') { s.shiftCode = 'S2'; s.shift = '2nd Shift (Afternoon)'; s.time = '14:00 - 20:00'; }
+      else if (s.shiftCode === 'S2') { s.shiftCode = 'S3'; s.shift = '3rd Shift (Night)'; s.time = '20:00 - 06:00'; }
+      else if (s.shiftCode === 'S3') { s.shiftCode = 'S1'; s.shift = '1st Shift (Morning)'; s.time = '06:00 - 14:00'; }
+      else if (s.shiftCode === 'SUPP') {
+        s.shift = s.shift.includes('Day') ? '12H Night Shift' : '12H Day Shift';
+        s.time = s.shift.includes('Day') ? '06:00 - 18:00' : '18:00 - 06:00';
+      }
+      renderTable();
+      fetch(`http://192.168.1.110:8765/api/staff/${id}/shift`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shiftCode: s.shiftCode, shift: s.shift })
+      }).catch(() => {});
+    }
+
+    function deleteStaff(id, name) {
+      if (confirm(`Remove employee "${name}" from roster?`)) {
+        staffList = staffList.filter(x => x.id !== id);
+        renderTable();
+        fetch(`http://192.168.1.110:8765/api/staff/${id}`, { method: 'DELETE' }).catch(() => {});
+      }
+    }
+
+    function openAddModal() {
+      document.getElementById('addEmpModal').classList.add('active');
+    }
+    function closeAddModal() {
+      document.getElementById('addEmpModal').classList.remove('active');
+    }
+    function saveStaff(e) {
+      e.preventDefault();
+      const name = document.getElementById('newName').value.trim();
+      const role = document.getElementById('newRole').value;
+      const shiftCode = document.getElementById('newShift').value;
+      let shiftName = "1st Shift (Morning)";
+      let time = "06:00 - 14:00";
+      if (shiftCode === "S2") { shiftName = "2nd Shift (Afternoon)"; time = "14:00 - 20:00"; }
+      else if (shiftCode === "S3") { shiftName = "3rd Shift (Night)"; time = "20:00 - 06:00"; }
+      else if (shiftCode === "D12") { shiftName = "12H Day Shift"; time = "06:00 - 18:00"; }
+      else if (shiftCode === "N12") { shiftName = "12H Night Shift"; time = "18:00 - 06:00"; }
+
+      const newId = staffList.length > 0 ? Math.max(...staffList.map(x => x.id)) + 1 : 1;
+      staffList.push({
+        id: newId,
+        name: name,
+        role: role,
+        shiftCode: shiftCode === "D12" || shiftCode === "N12" ? "SUPP" : shiftCode,
+        shift: shiftName,
+        time: time,
+        in: "--:--", out: "--:--", hours: "--", status: "Scheduled"
+      });
+      closeAddModal();
+      renderTable();
+      fetch('http://192.168.1.110:8765/api/staff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, designation: role, assignedShift: shiftName, shiftCode })
+      }).catch(() => {});
+    }
+
+    function downloadExcel() {
+      let csv = "Sl,Employee Name,Designation,Assigned Shift,Scheduled Timings,Punch In,Punch Out,Status\n";
+      staffList.forEach((s, i) => {
+        csv += `${i + 1},"${s.name}","${s.role}","${s.shift}","${s.time}","${s.in}","${s.out}","${s.status}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Babu_Raju_Ram_Petrol_Bunk_Attendance_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // Try fetching live data from local bunk server if accessible
+    fetch('http://192.168.1.110:8765/api/staff')
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          staffList = data.map(d => ({
+            id: d.id,
+            name: d.name,
+            role: d.designation || 'Staff',
+            shiftCode: d.shiftCode || 'S1',
+            shift: d.shift || d.assignedShift || '1st Shift (Morning)',
+            time: d.shiftCode === 'S2' ? '14:00 - 20:00' : (d.shiftCode === 'S3' ? '20:00 - 06:00' : (d.shiftCode === 'N12' ? '18:00 - 06:00' : '06:00 - 14:00')),
+            in: '--:--', out: '--:--', hours: '--', status: d.status || 'Active'
+          }));
+          renderTable();
+        }
+      })
+      .catch(() => {});
+
+    renderTable();
+    if (window.lucide) lucide.createIcons();
+  </script>
+</body>
+</html>
