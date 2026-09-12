@@ -252,11 +252,7 @@
       </div>
       <nav id="navLinks">
         <a href="admin.html"><i data-lucide="home" class="nav-icon"></i> Admin Home</a>
-        <a href="admin.html#inventory"><i data-lucide="package"></i> Stock Register</a>
-        <a href="laptop-report.html"><i data-lucide="laptop"></i> Laptop Report</a>
-        <a href="staff-laptop-report.html"><i data-lucide="monitor"></i> Staff Laptop Report</a>
         <a href="petrol-bunk.html" class="active"><i data-lucide="fuel"></i> Petrol Bunk Attendance</a>
-        <a href="admin.html#help"><i data-lucide="life-buoy" class="nav-icon"></i> Help</a>
       </nav>
     </div>
   </header>
@@ -350,17 +346,12 @@
         <table class="bunk-table">
           <thead>
             <tr>
-              <th style="width: 45px;">Sl.</th>
-              <th style="min-width: 105px;"><i data-lucide="calendar" style="width: 13px; height: 13px; vertical-align: middle; margin-right: 4px;"></i>Date</th>
+              <th style="width: 50px;">Sl.</th>
+              <th style="min-width: 120px;"><i data-lucide="calendar" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 5px; color: #f59e0b;"></i>Date</th>
               <th>Employee Name</th>
-              <th>Designation</th>
-              <th>Assigned Shift</th>
-              <th>Scheduled Hours</th>
-              <th>Punch In</th>
-              <th>Punch Out</th>
-              <th>Total Work</th>
-              <th>Status</th>
-              <th style="text-align: center; width: 100px;">Action</th>
+              <th style="min-width: 130px;"><i data-lucide="log-in" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 5px; color: #34d399;"></i>Punch In</th>
+              <th style="min-width: 130px;"><i data-lucide="log-out" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 5px; color: #fbbf24;"></i>Punch Out</th>
+              <th style="text-align: center; width: 80px;">Action</th>
             </tr>
           </thead>
           <tbody id="attendanceRows">
@@ -478,22 +469,13 @@
       document.getElementById('cntSupp').textContent = staffList.filter(s => s.shiftCode === 'SUPP').length;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding: 2rem; color: #94a3b8;">No records found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem; color: #94a3b8;">No records found.</td></tr>';
         return;
       }
 
       const displayDate = formatDateDisplay(selectedDate);
 
       tbody.innerHTML = filtered.map((s, idx) => {
-        let chipClass = 'chip-s1';
-        if (s.shiftCode === 'S2') chipClass = 'chip-s2';
-        else if (s.shiftCode === 'S3') chipClass = 'chip-s3';
-        else if (s.shiftCode === 'SUPP') chipClass = 'chip-supp';
-
-        let stClass = 'status-present';
-        if (s.status === 'On-Duty') stClass = 'status-onduty';
-        else if (s.status === 'Scheduled') stClass = 'status-scheduled';
-
         const recordId = s._id || s.id;
         const rowDate = s.date ? formatDateDisplay(s.date) : displayDate;
 
@@ -501,19 +483,27 @@
           <tr>
             <td style="color:#94a3b8; font-weight:600;">${idx + 1}</td>
             <td style="font-family:monospace; font-size:0.85rem; color:#f8fafc; font-weight:600;">
-              <span style="background: rgba(148, 163, 184, 0.1); padding: 0.2rem 0.45rem; border-radius: 4px; border: 1px solid rgba(148, 163, 184, 0.2);">${rowDate}</span>
+              <span style="background: rgba(148, 163, 184, 0.1); padding: 0.25rem 0.55rem; border-radius: 4px; border: 1px solid rgba(148, 163, 184, 0.2);">${rowDate}</span>
             </td>
-            <td style="font-weight:700; color:#fff;">${s.name}</td>
-            <td style="color:#94a3b8;">${s.role}</td>
-            <td><span class="shift-chip ${chipClass}">${s.shift}</span></td>
-            <td style="font-family:monospace; font-size:0.8rem; color:#94a3b8;">${s.time}</td>
-            <td style="font-family:monospace; font-weight:600; color:#34d399;">${s.in}</td>
-            <td style="font-family:monospace; font-weight:600; color:#fbbf24;">${s.out}</td>
-            <td style="font-weight:600;">${s.hours}</td>
-            <td><span class="status-chip ${stClass}">${s.status}</span></td>
+            <td style="font-weight:700; color:#fff; font-size:0.95rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="user" style="width: 15px; height: 15px; color: #94a3b8;"></i>
+                <span>${s.name}</span>
+                ${s.role ? `<span style="font-size:0.75rem; color:#94a3b8; font-weight:400;">(${s.role})</span>` : ''}
+              </div>
+            </td>
+            <td style="font-family:monospace; font-weight:700; font-size:0.95rem; color:#34d399;">
+              <span style="background: rgba(16, 185, 129, 0.12); padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.25); display: inline-flex; align-items: center; gap: 0.35rem;">
+                <i data-lucide="clock" style="width: 13px; height: 13px;"></i>${s.in || '--:--'}
+              </span>
+            </td>
+            <td style="font-family:monospace; font-weight:700; font-size:0.95rem; color:#fbbf24;">
+              <span style="background: rgba(245, 158, 11, 0.12); padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.25); display: inline-flex; align-items: center; gap: 0.35rem;">
+                <i data-lucide="clock" style="width: 13px; height: 13px;"></i>${s.out || '--:--'}
+              </span>
+            </td>
             <td style="text-align:center;">
-              <button onclick="rotateStaff('${recordId}')" title="Rotate shift" class="action-btn outline" style="padding: 0.2rem 0.45rem; font-size: 0.75rem;"><i data-lucide="rotate-cw"></i></button>
-              <button onclick="deleteStaff('${recordId}', '${s.name}')" title="Delete employee" class="action-btn outline" style="padding: 0.2rem 0.45rem; font-size: 0.75rem; color:#ef4444; border-color:#7f1d1d;"><i data-lucide="trash-2"></i></button>
+              <button onclick="deleteStaff('${recordId}', '${s.name}')" title="Delete employee" class="action-btn outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color:#ef4444; border-color:#7f1d1d;"><i data-lucide="trash-2"></i></button>
             </td>
           </tr>
         `;
@@ -683,17 +673,17 @@
     }
 
     function downloadExcel() {
-      let csv = "Sl,Date,Employee Name,Designation,Assigned Shift,Scheduled Timings,Punch In,Punch Out,Total Work,Status\n";
+      let csv = "Sl,Date,Employee Name,Designation,Punch In,Punch Out\n";
       const displayDate = formatDateDisplay(selectedDate);
       staffList.forEach((s, i) => {
         const rowDate = s.date ? formatDateDisplay(s.date) : displayDate;
-        csv += `${i + 1},"${rowDate}","${s.name}","${s.role}","${s.shift}","${s.time}","${s.in}","${s.out}","${s.hours}","${s.status}"\n`;
+        csv += `${i + 1},"${rowDate}","${s.name}","${s.role || ''}","${s.in || '--:--'}","${s.out || '--:--'}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Babu_Raju_Ram_Petrol_Bunk_Attendance_${selectedDate}.csv`;
+      a.download = `Babu_Raju_Ram_Petrol_Bunk_Punching_Data_${selectedDate}.csv`;
       document.body.appendChild(a);
       a.click();
       a.remove();
