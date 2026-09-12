@@ -406,32 +406,32 @@
   <script>
     // Active 26 Staff (Without Lavanya & Naveen Kumar)
     let staffList = [
-      { id: 1, name: "Chandan", role: "Supervisor", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:55", out: "14:05", hours: "8.1 hrs", status: "Present" },
-      { id: 2, name: "Nagesh Babu", role: "Supervisor", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "06:02", out: "14:10", hours: "8.1 hrs", status: "Present" },
-      { id: 3, name: "Prashanth", role: "Supervisor", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:55", out: "--:--", hours: "--", status: "Scheduled" },
-      { id: 4, name: "Srinivas KV", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:50", out: "14:02", hours: "8.2 hrs", status: "Present" },
-      { id: 5, name: "Venkatesh C", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:58", out: "14:00", hours: "8.0 hrs", status: "Present" },
-      { id: 6, name: "Sandeep M", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "06:05", out: "14:15", hours: "8.1 hrs", status: "Present" },
-      { id: 7, name: "Santhosh M", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:52", out: "14:08", hours: "8.2 hrs", status: "Present" },
-      { id: 8, name: "Gangaraju", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "05:57", out: "14:01", hours: "8.0 hrs", status: "Present" },
-      { id: 9, name: "Narasimha murthy A", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "06:00", out: "14:05", hours: "8.0 hrs", status: "Present" },
-      { id: 10, name: "Nikil", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:50", out: "--:--", hours: "--", status: "On-Duty" },
-      { id: 11, name: "Abjith Kumar", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:55", out: "--:--", hours: "--", status: "On-Duty" },
-      { id: 12, name: "Anandha", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "14:02", out: "--:--", hours: "--", status: "On-Duty" },
-      { id: 13, name: "Gangadharappa", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:48", out: "--:--", hours: "--", status: "On-Duty" },
-      { id: 14, name: "Sridhar", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "13:56", out: "--:--", hours: "--", status: "On-Duty" },
-      { id: 15, name: "Muthyalappa", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "14:05", out: "--:--", hours: "--", status: "On-Duty" },
-      { id: 16, name: "Sanjeet Kumar", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:50", out: "--:--", hours: "--", status: "Scheduled" },
-      { id: 17, name: "Narasimha murthy", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:58", out: "--:--", hours: "--", status: "Scheduled" },
-      { id: 18, name: "Venkatesh B", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:55", out: "--:--", hours: "--", status: "Scheduled" },
-      { id: 19, name: "Sandeep K", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "20:02", out: "--:--", hours: "--", status: "Scheduled" },
-      { id: 20, name: "Kiran", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "19:48", out: "--:--", hours: "--", status: "Scheduled" },
-      { id: 21, name: "Gouramma", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "06:55", out: "16:02", hours: "9.1 hrs", status: "Present" },
-      { id: 22, name: "Gayathri", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "07:00", out: "16:05", hours: "9.0 hrs", status: "Present" },
-      { id: 23, name: "Mota Narasimhappa", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Night Shift", time: "18:00 - 06:00", in: "17:55", out: "--:--", hours: "--", status: "Scheduled" },
-      { id: 24, name: "Ramesh Chand Ram", role: "Air Boy", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "05:50", out: "--:--", hours: "--", status: "On-Duty" },
-      { id: 25, name: "Basgeeth", role: "Air Boy", shiftCode: "SUPP", shift: "12H Night Shift", time: "18:00 - 06:00", in: "17:52", out: "--:--", hours: "--", status: "Scheduled" },
-      { id: 26, name: "Vikas", role: "Marshal", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "05:58", out: "--:--", hours: "--", status: "On-Duty" }
+      { id: 1, name: "Chandan", role: "Supervisor", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 2, name: "Nagesh Babu", role: "Supervisor", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 3, name: "Prashanth", role: "Supervisor", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 4, name: "Srinivas KV", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 5, name: "Venkatesh C", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 6, name: "Sandeep M", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 7, name: "Santhosh M", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 8, name: "Gangaraju", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 9, name: "Narasimha murthy A", role: "Cashier", shiftCode: "S1", shift: "1st Shift (Morning)", time: "06:00 - 14:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 10, name: "Nikil", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 11, name: "Abjith Kumar", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 12, name: "Anandha", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 13, name: "Gangadharappa", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 14, name: "Sridhar", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 15, name: "Muthyalappa", role: "Cashier", shiftCode: "S2", shift: "2nd Shift (Afternoon)", time: "14:00 - 20:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 16, name: "Sanjeet Kumar", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 17, name: "Narasimha murthy", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 18, name: "Venkatesh B", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 19, name: "Sandeep K", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 20, name: "Kiran", role: "Cashier", shiftCode: "S3", shift: "3rd Shift (Night)", time: "20:00 - 06:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 21, name: "Gouramma", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 22, name: "Gayathri", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 23, name: "Mota Narasimhappa", role: "Housekeeper", shiftCode: "SUPP", shift: "12H Night Shift", time: "18:00 - 06:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 24, name: "Ramesh Chand Ram", role: "Air Boy", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 25, name: "Basgeeth", role: "Air Boy", shiftCode: "SUPP", shift: "12H Night Shift", time: "18:00 - 06:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" },
+      { id: 26, name: "Vikas", role: "Marshal", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" }
     ];
 
     let currentShift = 'ALL';
@@ -493,12 +493,12 @@
               </div>
             </td>
             <td style="font-family:monospace; font-weight:700; font-size:0.95rem; color:#34d399;">
-              <span style="background: rgba(16, 185, 129, 0.12); padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.25); display: inline-flex; align-items: center; gap: 0.35rem;">
+              <span onclick="editPunch('${recordId}', 'in', '${s.in || ''}')" title="Click to edit Punch In" style="background: rgba(16, 185, 129, 0.12); padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.25); display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;">
                 <i data-lucide="clock" style="width: 13px; height: 13px;"></i>${s.in || '--:--'}
               </span>
             </td>
             <td style="font-family:monospace; font-weight:700; font-size:0.95rem; color:#fbbf24;">
-              <span style="background: rgba(245, 158, 11, 0.12); padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.25); display: inline-flex; align-items: center; gap: 0.35rem;">
+              <span onclick="editPunch('${recordId}', 'out', '${s.out || ''}')" title="Click to edit Punch Out" style="background: rgba(245, 158, 11, 0.12); padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.25); display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;">
                 <i data-lucide="clock" style="width: 13px; height: 13px;"></i>${s.out || '--:--'}
               </span>
             </td>
@@ -509,6 +509,34 @@
         `;
       }).join('');
       if (window.lucide) lucide.createIcons();
+    }
+
+    async function editPunch(id, type, currentVal) {
+      const fieldName = type === 'in' ? 'Punch In Time (e.g. 06:05)' : 'Punch Out Time (e.g. 14:10)';
+      const cleanVal = (currentVal === '--:--' || !currentVal) ? '' : currentVal;
+      const promptVal = prompt(`Enter ${fieldName}:`, cleanVal);
+      if (promptVal === null) return;
+      
+      const newVal = promptVal.trim() || '--:--';
+      const s = staffList.find(x => (x._id === id || x.id === id));
+      if (!s) return;
+
+      if (type === 'in') s.in = newVal;
+      else s.out = newVal;
+
+      renderTable();
+
+      if (s._id) {
+        try {
+          await fetch(`/api/bunk-staff/${s._id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [type]: newVal })
+          });
+        } catch (err) {
+          console.error('Error updating punch time:', err);
+        }
+      }
     }
 
     function filterShift(code, btn) {
