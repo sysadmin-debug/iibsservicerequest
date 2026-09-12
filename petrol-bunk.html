@@ -327,6 +327,11 @@
           <button class="filter-btn" onclick="filterShift('SUPP', this)">12H Support</button>
         </div>
         <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 0.35rem; background: #0f172a; border: 1px solid var(--card-border); padding: 0.25rem 0.6rem; border-radius: 6px;">
+            <i data-lucide="calendar" style="width: 16px; height: 16px; color: #f59e0b;"></i>
+            <label for="reportDate" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">Date:</label>
+            <input type="date" id="reportDate" onchange="onDateChange(this.value)" style="background: transparent; border: none; color: #fff; font-size: 0.82rem; outline: none; font-family: inherit; cursor: pointer;">
+          </div>
           <button class="action-btn outline" onclick="rotateShifts()" title="Rotate shifts: 1st -> 2nd -> 3rd -> 1st">
             <i data-lucide="rotate-cw"></i> Rotate Shifts
           </button>
@@ -346,6 +351,7 @@
           <thead>
             <tr>
               <th style="width: 45px;">Sl.</th>
+              <th style="min-width: 105px;"><i data-lucide="calendar" style="width: 13px; height: 13px; vertical-align: middle; margin-right: 4px;"></i>Date</th>
               <th>Employee Name</th>
               <th>Designation</th>
               <th>Assigned Shift</th>
@@ -439,6 +445,22 @@
 
     let currentShift = 'ALL';
     let searchQ = '';
+    let selectedDate = new Date().toISOString().split('T')[0];
+
+    // Format YYYY-MM-DD to DD-MM-YYYY
+    function formatDateDisplay(dStr) {
+      if (!dStr) return '--';
+      const parts = dStr.split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+      return dStr;
+    }
+
+    function onDateChange(newDate) {
+      selectedDate = newDate;
+      renderTable();
+    }
 
     function renderTable() {
       const tbody = document.getElementById('attendanceRows');
@@ -456,9 +478,11 @@
       document.getElementById('cntSupp').textContent = staffList.filter(s => s.shiftCode === 'SUPP').length;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding: 2rem; color: #94a3b8;">No records found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding: 2rem; color: #94a3b8;">No records found.</td></tr>';
         return;
       }
+
+      const displayDate = formatDateDisplay(selectedDate);
 
       tbody.innerHTML = filtered.map((s, idx) => {
         let chipClass = 'chip-s1';
@@ -471,10 +495,14 @@
         else if (s.status === 'Scheduled') stClass = 'status-scheduled';
 
         const recordId = s._id || s.id;
+        const rowDate = s.date ? formatDateDisplay(s.date) : displayDate;
 
         return `
           <tr>
             <td style="color:#94a3b8; font-weight:600;">${idx + 1}</td>
+            <td style="font-family:monospace; font-size:0.85rem; color:#f8fafc; font-weight:600;">
+              <span style="background: rgba(148, 163, 184, 0.1); padding: 0.2rem 0.45rem; border-radius: 4px; border: 1px solid rgba(148, 163, 184, 0.2);">${rowDate}</span>
+            </td>
             <td style="font-weight:700; color:#fff;">${s.name}</td>
             <td style="color:#94a3b8;">${s.role}</td>
             <td><span class="shift-chip ${chipClass}">${s.shift}</span></td>
@@ -655,19 +683,27 @@
     }
 
     function downloadExcel() {
-      let csv = "Sl,Employee Name,Designation,Assigned Shift,Scheduled Timings,Punch In,Punch Out,Status\n";
+      let csv = "Sl,Date,Employee Name,Designation,Assigned Shift,Scheduled Timings,Punch In,Punch Out,Total Work,Status\n";
+      const displayDate = formatDateDisplay(selectedDate);
       staffList.forEach((s, i) => {
-        csv += `${i + 1},"${s.name}","${s.role}","${s.shift}","${s.time}","${s.in}","${s.out}","${s.status}"\n`;
+        const rowDate = s.date ? formatDateDisplay(s.date) : displayDate;
+        csv += `${i + 1},"${rowDate}","${s.name}","${s.role}","${s.shift}","${s.time}","${s.in}","${s.out}","${s.hours}","${s.status}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Babu_Raju_Ram_Petrol_Bunk_Attendance_${new Date().toISOString().split('T')[0]}.csv`;
+      a.download = `Babu_Raju_Ram_Petrol_Bunk_Attendance_${selectedDate}.csv`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+    }
+
+    // Set today's date in picker on load
+    const dateInput = document.getElementById('reportDate');
+    if (dateInput) {
+      dateInput.value = selectedDate;
     }
 
     // Fetch live MongoDB Atlas data on load

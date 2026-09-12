@@ -387,6 +387,7 @@ const bunkStaffSchema = new mongoose.Schema({
   shiftCode: { type: String, required: true },
   shift: { type: String, required: true },
   time: { type: String, required: true },
+  date: { type: String },
   in: { type: String, default: '--:--' },
   out: { type: String, default: '--:--' },
   hours: { type: String, default: '--' },
