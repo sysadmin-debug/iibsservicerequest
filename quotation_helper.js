@@ -329,7 +329,7 @@ function getCompanyStyle(vName = '') {
       borderStyle: 'solid',
       tableHeaderBg: '#1e3a8a',
       tableHeaderColor: '#ffffff',
-      hasDescCol: false,
+      hasDescCol: true,
       hasHsnCol: false
     };
   } else if (v.includes('gds')) {
@@ -341,7 +341,7 @@ function getCompanyStyle(vName = '') {
       borderStyle: 'minimal',
       tableHeaderBg: '#047857',
       tableHeaderColor: '#ffffff',
-      hasDescCol: false,
+      hasDescCol: true,
       hasHsnCol: false
     };
   } else if (v.includes('aditya')) {
@@ -365,7 +365,7 @@ function getCompanyStyle(vName = '') {
       borderStyle: 'boxed',
       tableHeaderBg: '#3730a3',
       tableHeaderColor: '#ffffff',
-      hasDescCol: false,
+      hasDescCol: true,
       hasHsnCol: false
     };
   }
@@ -378,7 +378,7 @@ function getCompanyStyle(vName = '') {
     borderStyle: 'clean',
     tableHeaderBg: '#1e293b',
     tableHeaderColor: '#ffffff',
-    hasDescCol: false,
+    hasDescCol: true,
     hasHsnCol: false
   };
 }
@@ -475,17 +475,20 @@ function generateQuotationPDF(quotation, res) {
 
   // ================= ITEMS TABLE (GENEROUS FULL A4 PROPORTIONS) =================
   const tableTop = doc.y;
+  const items = quotation.items || [];
   const isAditya = style.type === 'aditya';
+  const hasAnyDesc = items.some(it => it.description && String(it.description).trim());
+  const showDescCol = isAditya || style.hasDescCol || hasAnyDesc;
 
-  const cols = isAditya ? [
-    { name: 'Sl. No', x: leftMargin, w: 40, align: 'center' },
-    { name: 'Product / Model', x: leftMargin + 40, w: 125, align: 'left' },
-    { name: 'Description', x: leftMargin + 165, w: 115, align: 'left' },
-    { name: 'Qty', x: leftMargin + 280, w: 35, align: 'center' },
-    { name: 'Rate (Rs)', x: leftMargin + 315, w: 55, align: 'right' },
-    { name: 'Total (Rs)', x: leftMargin + 370, w: 55, align: 'right' },
-    { name: 'GST', x: leftMargin + 425, w: 45, align: 'right' },
-    { name: 'Amount (Rs)', x: leftMargin + 470, w: contentWidth - 470, align: 'right' }
+  const cols = showDescCol ? [
+    { name: 'Sl. No', x: leftMargin, w: 30, align: 'center' },
+    { name: 'Product / Model', x: leftMargin + 30, w: 118, align: 'left' },
+    { name: 'Description', x: leftMargin + 148, w: 124, align: 'left' },
+    { name: 'Qty', x: leftMargin + 272, w: 30, align: 'center' },
+    { name: 'Rate (Rs)', x: leftMargin + 302, w: 50, align: 'right' },
+    { name: 'Total (Rs)', x: leftMargin + 352, w: 54, align: 'right' },
+    { name: 'GST', x: leftMargin + 406, w: 42, align: 'right' },
+    { name: 'Amount (Rs)', x: leftMargin + 448, w: contentWidth - 448, align: 'right' }
   ] : [
     { name: 'Sl. No', x: leftMargin, w: 45, align: 'center' },
     { name: 'Product / Model', x: leftMargin + 45, w: 195, align: 'left' },
@@ -496,9 +499,8 @@ function generateQuotationPDF(quotation, res) {
     { name: 'Amount (Rs)', x: leftMargin + 465, w: contentWidth - 465, align: 'right' }
   ];
 
-  const items = quotation.items || [];
   // Calculate dynamic comfortable row height so small tables expand to fill the A4 page
-  const targetRowHeight = items.length <= 3 ? 42 : (items.length <= 6 ? 34 : 26);
+  const targetRowHeight = items.length <= 3 ? 40 : (items.length <= 6 ? 34 : 28);
 
   // Table Header Background
   doc.rect(leftMargin, tableTop, contentWidth, 26).fill(style.tableHeaderBg);
@@ -508,37 +510,59 @@ function generateQuotationPDF(quotation, res) {
   });
 
   let curY = tableTop + 26;
-  doc.font('Helvetica').fontSize(9.5).fillColor('#1e293b');
 
   items.forEach((it, idx) => {
-    if (curY > doc.page.height - 150) {
+    const prodText = it.product || (!showDescCol ? (it.description || '') : '');
+    const descText = it.description || '';
+
+    // Calculate height needed for multiline texts
+    doc.fontSize(9.5).font('Helvetica');
+    const prodHeight = prodText ? doc.heightOfString(prodText, { width: cols[1].w - 4 }) : 12;
+    const descHeight = (showDescCol && descText) ? doc.heightOfString(descText, { width: cols[2].w - 4 }) : 12;
+    const textBlockHeight = Math.max(prodHeight, descHeight, 14);
+    const rowHeight = Math.max(targetRowHeight, textBlockHeight + 10);
+
+    if (curY + rowHeight > doc.page.height - 100) {
       doc.addPage();
       curY = 40;
     }
 
     const rowBg = idx % 2 === 1 ? style.accentColor : '#ffffff';
-    const rowHeight = isAditya && it.description ? Math.max(targetRowHeight, 38) : targetRowHeight;
     doc.rect(leftMargin, curY, contentWidth, rowHeight).fill(rowBg);
     doc.fillColor('#1e293b');
 
-    const padTop = Math.max(5, (rowHeight - 14) / 2);
+    const numPadTop = Math.max(4, (rowHeight - 12) / 2);
+    const textPadTop = Math.max(4, (rowHeight - textBlockHeight) / 2);
 
-    doc.text(String(it.slNo || idx + 1), cols[0].x + 2, curY + padTop, { width: cols[0].w - 4, align: cols[0].align });
-    doc.text(it.product || it.description || '', cols[1].x + 2, curY + padTop, { width: cols[1].w - 4, align: cols[1].align });
+    // Sl. No
+    doc.text(String(it.slNo || idx + 1), cols[0].x + 2, curY + numPadTop, { width: cols[0].w - 4, align: cols[0].align });
+    // Product / Model
+    doc.text(prodText, cols[1].x + 2, curY + textPadTop, { width: cols[1].w - 4, align: cols[1].align });
 
-    if (isAditya) {
-      doc.text(it.description || it.product || '', cols[2].x + 2, curY + padTop, { width: cols[2].w - 4, align: cols[2].align });
-      doc.text(String(it.quantity || 1), cols[3].x + 2, curY + padTop, { width: cols[3].w - 4, align: cols[3].align });
-      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[4].x + 2, curY + padTop, { width: cols[4].w - 4, align: cols[4].align });
-      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[5].x + 2, curY + padTop, { width: cols[5].w - 4, align: cols[5].align });
-      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[6].x + 2, curY + padTop, { width: cols[6].w - 4, align: cols[6].align });
-      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[7].x + 2, curY + padTop, { width: cols[7].w - 4, align: cols[7].align });
+    if (showDescCol) {
+      // Description
+      doc.text(descText, cols[2].x + 2, curY + textPadTop, { width: cols[2].w - 4, align: cols[2].align });
+      // Qty
+      doc.text(String(it.quantity || 1), cols[3].x + 2, curY + numPadTop, { width: cols[3].w - 4, align: cols[3].align });
+      // Rate
+      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[4].x + 2, curY + numPadTop, { width: cols[4].w - 4, align: cols[4].align });
+      // Total
+      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[5].x + 2, curY + numPadTop, { width: cols[5].w - 4, align: cols[5].align });
+      // GST
+      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[6].x + 2, curY + numPadTop, { width: cols[6].w - 4, align: cols[6].align });
+      // Amount
+      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[7].x + 2, curY + numPadTop, { width: cols[7].w - 4, align: cols[7].align });
     } else {
-      doc.text(String(it.quantity || 1), cols[2].x + 2, curY + padTop, { width: cols[2].w - 4, align: cols[2].align });
-      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[3].x + 2, curY + padTop, { width: cols[3].w - 4, align: cols[3].align });
-      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[4].x + 2, curY + padTop, { width: cols[4].w - 4, align: cols[4].align });
-      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[5].x + 2, curY + padTop, { width: cols[5].w - 4, align: cols[5].align });
-      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[6].x + 2, curY + padTop, { width: cols[6].w - 4, align: cols[6].align });
+      // Qty
+      doc.text(String(it.quantity || 1), cols[2].x + 2, curY + numPadTop, { width: cols[2].w - 4, align: cols[2].align });
+      // Rate
+      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[3].x + 2, curY + numPadTop, { width: cols[3].w - 4, align: cols[3].align });
+      // Total
+      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[4].x + 2, curY + numPadTop, { width: cols[4].w - 4, align: cols[4].align });
+      // GST
+      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[5].x + 2, curY + numPadTop, { width: cols[5].w - 4, align: cols[5].align });
+      // Amount
+      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[6].x + 2, curY + numPadTop, { width: cols[6].w - 4, align: cols[6].align });
     }
 
     doc.moveTo(leftMargin, curY + rowHeight).lineTo(rightMargin, curY + rowHeight).strokeColor('#e2e8f0').lineWidth(0.5).stroke();
@@ -546,13 +570,12 @@ function generateQuotationPDF(quotation, res) {
   });
 
   // Grand Total Summary Row
-  doc.rect(leftMargin, curY, contentWidth, 30).fill('#e2e8f0');
-  doc.fillColor(style.primaryColor).font('Helvetica-Bold').fontSize(11);
-  const totalValCol = isAditya ? cols[7] : cols[6];
-  doc.text('Grand Total:', leftMargin + 10, curY + 8, { width: totalValCol.x - leftMargin - 15, align: 'right' });
-  doc.text('Rs. ' + Number(quotation.totalAmount || 0).toLocaleString('en-IN'), totalValCol.x + 2, curY + 8, { width: totalValCol.w - 4, align: totalValCol.align });
+  doc.rect(leftMargin, curY, contentWidth, 28).fill('#e2e8f0');
+  doc.fillColor(style.primaryColor).font('Helvetica-Bold').fontSize(10.5);
+  doc.text('Grand Total:', leftMargin + 10, curY + 8, { width: contentWidth - 130, align: 'right' });
+  doc.text('Rs. ' + Number(quotation.totalAmount || 0).toLocaleString('en-IN'), rightMargin - 115, curY + 8, { width: 110, align: 'right' });
 
-  curY += 42;
+  curY += 38;
 
   // Amount in Words
   if (quotation.amountInWords) {
