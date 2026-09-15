@@ -2728,32 +2728,38 @@ document.addEventListener('DOMContentLoaded', async () => {
   function createQuoteItemRow(data = {}) {
     const row = document.createElement('div');
     row.className = 'quote-item-row';
-    row.style = 'display: grid; grid-template-columns: 2fr 1fr 1.2fr 1fr 1.2fr 40px; gap: 8px; align-items: center; background: #fff; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;';
+    row.style = 'display: grid; grid-template-columns: 1.8fr 1.5fr 0.8fr 0.6fr 0.9fr 0.8fr 1fr 36px; gap: 6px; align-items: center; background: #fff; padding: 6px 8px; border: 1px solid var(--border-color); border-radius: 6px;';
     row.innerHTML = `
       <div>
-        <input type="text" class="quote-item-prod" placeholder="Product / Model *" value="${data.product || ''}" required style="width: 100%; padding: 6px 8px; font-size: 0.85rem;">
+        <input type="text" class="quote-item-prod" placeholder="Product / Model *" value="${data.product || ''}" required style="width: 100%; padding: 6px 8px; font-size: 0.83rem;">
       </div>
       <div>
-        <input type="number" class="quote-item-qty" placeholder="Qty" min="1" value="${data.quantity || 1}" required style="width: 100%; padding: 6px 8px; font-size: 0.85rem;">
+        <input type="text" class="quote-item-desc" placeholder="e.g. 1 TB Cloud" value="${data.description || ''}" style="width: 100%; padding: 6px 8px; font-size: 0.83rem;">
       </div>
       <div>
-        <input type="number" class="quote-item-rate" placeholder="Rate (₹) *" min="0" step="any" value="${data.rate !== undefined ? data.rate : ''}" required style="width: 100%; padding: 6px 8px; font-size: 0.85rem;">
+        <input type="text" class="quote-item-hsn" placeholder="HSN" value="${data.hsn || ''}" style="width: 100%; padding: 6px 6px; font-size: 0.83rem;">
       </div>
       <div>
-        <select class="quote-item-gst" style="width: 100%; padding: 6px 8px; font-size: 0.85rem;">
-          <option value="18" ${(data.gst_percent === 18 || data.gst_percent === undefined) ? 'selected' : ''}>18% GST</option>
-          <option value="12" ${data.gst_percent === 12 ? 'selected' : ''}>12% GST</option>
-          <option value="5" ${data.gst_percent === 5 ? 'selected' : ''}>5% GST</option>
-          <option value="28" ${data.gst_percent === 28 ? 'selected' : ''}>28% GST</option>
-          <option value="0" ${data.gst_percent === 0 ? 'selected' : ''}>0% (Exempt)</option>
+        <input type="number" class="quote-item-qty" placeholder="Qty" min="1" value="${data.quantity || 1}" required style="width: 100%; padding: 6px 6px; font-size: 0.83rem;">
+      </div>
+      <div>
+        <input type="number" class="quote-item-rate" placeholder="Rate *" min="0" step="any" value="${data.rate !== undefined ? data.rate : ''}" required style="width: 100%; padding: 6px 6px; font-size: 0.83rem;">
+      </div>
+      <div>
+        <select class="quote-item-gst" style="width: 100%; padding: 6px 4px; font-size: 0.83rem;">
+          <option value="18" ${(data.gst_percent === 18 || data.gst_percent === undefined) ? 'selected' : ''}>18%</option>
+          <option value="12" ${data.gst_percent === 12 ? 'selected' : ''}>12%</option>
+          <option value="5" ${data.gst_percent === 5 ? 'selected' : ''}>5%</option>
+          <option value="28" ${data.gst_percent === 28 ? 'selected' : ''}>28%</option>
+          <option value="0" ${data.gst_percent === 0 ? 'selected' : ''}>0%</option>
         </select>
       </div>
       <div>
-        <input type="text" class="quote-item-total" placeholder="Amount (₹)" readonly value="${data.amount ? ('₹ ' + Number(data.amount).toLocaleString('en-IN')) : '₹ 0.00'}" style="width: 100%; padding: 6px 8px; font-size: 0.85rem; background: #f1f5f9; font-weight: 600;">
+        <input type="text" class="quote-item-total" placeholder="Total" readonly value="${data.amount ? ('₹ ' + Number(data.amount).toLocaleString('en-IN')) : '₹ 0.00'}" style="width: 100%; padding: 6px 6px; font-size: 0.83rem; background: #f1f5f9; font-weight: 600;">
       </div>
       <div>
-        <button type="button" class="btn-icon remove-quote-item-btn" style="color: #ef4444; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: 1px solid #fee2e2;">
-          <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+        <button type="button" class="btn-icon remove-quote-item-btn" style="color: #ef4444; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: 1px solid #fee2e2; cursor: pointer;">
+          <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
         </button>
       </div>
     `;
@@ -2914,13 +2920,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const items = [];
         rows.forEach(r => {
           const product = r.querySelector('.quote-item-prod').value.trim();
+          const description = (r.querySelector('.quote-item-desc')?.value || '').trim();
+          const hsn = (r.querySelector('.quote-item-hsn')?.value || '').trim();
           const quantity = parseFloat(r.querySelector('.quote-item-qty').value) || 1;
           const rate = parseFloat(r.querySelector('.quote-item-rate').value) || 0;
           const gst_percent = parseFloat(r.querySelector('.quote-item-gst').value) || 18;
           const total = quantity * rate;
           const gst = Math.round((total * gst_percent) / 100);
           const amount = total + gst;
-          items.push({ product, quantity, rate, total, gst, gst_percent, amount });
+          items.push({ product, description, hsn, quantity, rate, total, gst, gst_percent, amount });
         });
 
         const termsStr = document.getElementById('quoteTerms').value.trim();

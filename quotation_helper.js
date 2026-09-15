@@ -1,9 +1,8 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 const path = require('path');
 const xlsx = require('xlsx');
 const PDFDocument = require('pdfkit');
 
-// Candidate Excel paths: project root first (packaged in repo for Vercel/production), then local hard disk
 const PROJECT_EXCEL_PATH = path.join(__dirname, 'Quotation.xlsx');
 const LOCAL_EXCEL_PATH = 'D:\\Local Disk F_4282023147\\New folder\\Quotation\\Quotation.xlsx';
 
@@ -13,7 +12,6 @@ function resolveExcelPath() {
   return null;
 }
 
-// Pre-seeded quotations extracted directly from Mangala It, GDS Techno Service, ADITYA COMPUTER, SCS SAI COMPUTER
 const DEFAULT_PRESET_QUOTATIONS = [
   {
     sheetName: 'Mangala It',
@@ -23,33 +21,13 @@ const DEFAULT_PRESET_QUOTATIONS = [
     clientName: 'International Institute of Business Studies',
     clientAddress: 'Bangalore',
     items: [
-      {
-        slNo: 1,
-        product: 'Epson 13310 Printer Ink Tank Printer',
-        description: 'Ink Tank Multifunction Printer',
-        hsn: '8443',
-        quantity: 2,
-        rate: 11750,
-        total: 23500,
-        gst: 4230,
-        amount: 27730
-      },
-      {
-        slNo: 2,
-        product: 'Canon LBP 3010B Multi Function Printer (Print, Scan & Copy)',
-        description: 'Multi Function Printer',
-        hsn: '8443',
-        quantity: 1,
-        rate: 17800,
-        total: 17800,
-        gst: 3204,
-        amount: 21004
-      }
+      { slNo: 1, product: 'Epson 13310 Printer Ink Tank Printer', description: 'Ink Tank Printer', hsn: '8443', quantity: 2, rate: 11750, total: 23500, gst: 4230, amount: 27730 },
+      { slNo: 2, product: 'Canon LBP 3010B Multi Function Printer (Print, Scan & Copy)', description: 'Multi Function Printer', hsn: '8443', quantity: 1, rate: 17800, total: 17800, gst: 3204, amount: 21004 }
     ],
     totalAmount: 48734,
     amountInWords: 'Rupees Thirty Two Thousand Eight Hundred Four Only',
     deliveryTerms: 'Delivery: within 7 working days',
-    terms: ['Taxes: All Inclusive', 'Payment: 100% as Advance', 'An electronic copy does not carry any signature.']
+    terms: ['An electronic copy does not carry any signature.']
   },
   {
     sheetName: 'GDS Techno Service',
@@ -59,17 +37,7 @@ const DEFAULT_PRESET_QUOTATIONS = [
     clientName: 'International Institute of Business Studies',
     clientAddress: 'Bangalore',
     items: [
-      {
-        slNo: 1,
-        product: 'Gobbler Cash Counting Machine',
-        description: 'High Speed Currency Counting Machine',
-        hsn: '8472',
-        quantity: 1,
-        rate: 10800,
-        total: 10800,
-        gst: 1944,
-        amount: 12744
-      }
+      { slNo: 1, product: 'Gobbler Cash Counting Machine', description: 'Cash Counting Machine', hsn: '8472', quantity: 1, rate: 10800, total: 10800, gst: 1944, amount: 12744 }
     ],
     totalAmount: 12744,
     amountInWords: 'Rupees Twelve Thousand Seven Hundred Forty Four Only',
@@ -87,44 +55,34 @@ const DEFAULT_PRESET_QUOTATIONS = [
     vendorName: 'ADITYA COMPUTER',
     vendorAddress: '1080, 1ST Floor, 12th Cross, Kadandramapuram, Malleshwaram, Bengaluru-560003\nMob: 9342533253',
     quoteDate: '31.01.2026',
-    clientName: 'International Institute of Business Studies',
+    clientName: 'IIBS',
     clientAddress: 'Bangalore',
     items: [
-      {
-        slNo: 1,
-        product: 'Office 365',
-        description: 'Office 365 with 1 TB Cloud Storage (1 year subscription)',
-        hsn: '997331',
-        quantity: 20,
-        rate: 7700,
-        total: 154000,
-        gst: 27720,
-        amount: 181720
-      }
+      { slNo: 1, product: 'Office 365', description: 'office 365 with 1 TB Cloud Storage (1 year)', hsn: '997331', quantity: 20, rate: 7700, total: 154000, gst: 27720, amount: 181720 }
     ],
     totalAmount: 181720,
     amountInWords: 'Rupees One Lakh Eighty One Thousand Seven Hundred Twenty Only',
     deliveryTerms: 'Delivery: within 7 working days',
-    terms: ['Taxes: All Inclusive', 'An electronic copy does not carry any signature.']
+    terms: ['An electronic copy does not carry any signature.']
   },
   {
     sheetName: 'Sheet2',
     vendorName: 'SCS SAI COMPUTER SERVICES',
-    vendorAddress: '20/4, 4th Cross, Ganesha Block, R.T. Nagar, Bangalore -560032\nPhone : 080 23434428   E-Mail : scs@net4india.com',
+    vendorAddress: 'Sales, Service, Networking & Maintenance of Computer Peripherals\n20/4, 4th Cross, Ganesha Block, R.T. Nagar, Bangalore -560032\nPhone : 080 23434428   E-Mail : scs@net4india.com',
     quoteDate: '19.02.2026',
     clientName: 'International Institute of Business Studies',
     clientAddress: 'Bangalore',
     items: [
       { slNo: 1, product: 'AMD 3400G CPU', description: 'Processor', hsn: '8471', quantity: 5, rate: 8650, total: 43250, gst: 7785, amount: 51035 },
       { slNo: 2, product: 'Asus Mother Board', description: 'Motherboard', hsn: '8471', quantity: 5, rate: 5650, total: 28250, gst: 5085, amount: 33335 },
-      { slNo: 3, product: '16 GB Ram EVM', description: 'RAM EVM DDR4', hsn: '8471', quantity: 5, rate: 9600, total: 48000, gst: 8640, amount: 56640 },
-      { slNo: 4, product: '512GB SSD EVM', description: 'Solid State Drive', hsn: '8471', quantity: 5, rate: 6200, total: 31000, gst: 5580, amount: 36580 },
+      { slNo: 3, product: '16 GB Ram EVM', description: 'RAM EVM', hsn: '8471', quantity: 5, rate: 9600, total: 48000, gst: 8640, amount: 56640 },
+      { slNo: 4, product: '512GB SSD EVM', description: 'SSD Drive', hsn: '8471', quantity: 5, rate: 6200, total: 31000, gst: 5580, amount: 36580 },
       { slNo: 5, product: '4 GB Zebronic card', description: 'Graphic Card', hsn: '8471', quantity: 5, rate: 5200, total: 26000, gst: 4680, amount: 30680 },
-      { slNo: 6, product: 'cabinet Zebronic', description: 'Cabinet with fan', hsn: '8471', quantity: 5, rate: 2200, total: 11000, gst: 1980, amount: 12980 },
-      { slNo: 7, product: '400watts SMPS', description: 'Power Supply', hsn: '8471', quantity: 5, rate: 1200, total: 6000, gst: 1080, amount: 7080 },
-      { slNo: 8, product: '24 inch Display Dell', description: 'Dell 24 Full HD Monitor', hsn: '8528', quantity: 5, rate: 9500, total: 47500, gst: 8550, amount: 56050 },
+      { slNo: 6, product: 'cabinet Zebronic', description: 'Zebronic Cabinet', hsn: '8471', quantity: 5, rate: 2200, total: 11000, gst: 1980, amount: 12980 },
+      { slNo: 7, product: '400watts SMPS', description: 'SMPS Power Supply', hsn: '8471', quantity: 5, rate: 1200, total: 6000, gst: 1080, amount: 7080 },
+      { slNo: 8, product: '24 inch Display Dell', description: 'Dell Monitor', hsn: '8528', quantity: 5, rate: 9500, total: 47500, gst: 8550, amount: 56050 },
       { slNo: 9, product: 'Dell keyboard', description: 'USB Keyboard', hsn: '8471', quantity: 5, rate: 850, total: 4250, gst: 765, amount: 5015 },
-      { slNo: 10, product: 'Dell Mouse', description: 'Optical USB Mouse', hsn: '8471', quantity: 5, rate: 490, total: 2450, gst: 441, amount: 2891 }
+      { slNo: 10, product: 'Dell Mouse', description: 'USB Optical Mouse', hsn: '8471', quantity: 5, rate: 490, total: 2450, gst: 441, amount: 2891 }
     ],
     totalAmount: 292286,
     amountInWords: 'Rupees Two Lakh Ninety Two Thousand Two Hundred Eighty Six Only',
@@ -188,7 +146,6 @@ function numberToWordsINR(num) {
 function parseQuotationExcel(excelPath = null) {
   const filePath = excelPath || resolveExcelPath();
   if (!filePath || !fs.existsSync(filePath)) {
-    // Return embedded presets directly if file is not on the server
     return DEFAULT_PRESET_QUOTATIONS;
   }
 
@@ -356,13 +313,78 @@ function parseQuotationExcel(excelPath = null) {
 
     return results.length > 0 ? results : DEFAULT_PRESET_QUOTATIONS;
   } catch (err) {
-    console.warn('Fallback to presets on excel read error:', err.message);
     return DEFAULT_PRESET_QUOTATIONS;
   }
 }
 
+// Custom letterhead / styling per company
+function getCompanyStyle(vName = '') {
+  const v = (vName || '').toLowerCase();
+  if (v.includes('mangala')) {
+    return {
+      type: 'mangala',
+      primaryColor: '#1e3a8a', // Royal Blue
+      accentColor: '#dbeafe',
+      headerAlign: 'center',
+      borderStyle: 'solid',
+      tableHeaderBg: '#1e3a8a',
+      tableHeaderColor: '#ffffff',
+      hasDescCol: false,
+      hasHsnCol: false
+    };
+  } else if (v.includes('gds')) {
+    return {
+      type: 'gds',
+      primaryColor: '#047857', // Emerald Green
+      accentColor: '#d1fae5',
+      headerAlign: 'left',
+      borderStyle: 'minimal',
+      tableHeaderBg: '#047857',
+      tableHeaderColor: '#ffffff',
+      hasDescCol: false,
+      hasHsnCol: false
+    };
+  } else if (v.includes('aditya')) {
+    return {
+      type: 'aditya',
+      primaryColor: '#b45309', // Warm Amber / Bronze
+      accentColor: '#fef3c7',
+      headerAlign: 'left',
+      borderStyle: 'grid',
+      tableHeaderBg: '#78350f',
+      tableHeaderColor: '#ffffff',
+      hasDescCol: true,
+      hasHsnCol: true
+    };
+  } else if (v.includes('scs') || v.includes('sai')) {
+    return {
+      type: 'scs',
+      primaryColor: '#4338ca', // Indigo
+      accentColor: '#e0e7ff',
+      headerAlign: 'center',
+      borderStyle: 'boxed',
+      tableHeaderBg: '#3730a3',
+      tableHeaderColor: '#ffffff',
+      hasDescCol: false,
+      hasHsnCol: false
+    };
+  }
+  // Default clean style for custom companies
+  return {
+    type: 'standard',
+    primaryColor: '#1e293b',
+    accentColor: '#f1f5f9',
+    headerAlign: 'left',
+    borderStyle: 'clean',
+    tableHeaderBg: '#1e293b',
+    tableHeaderColor: '#ffffff',
+    hasDescCol: false,
+    hasHsnCol: false
+  };
+}
+
 function generateQuotationPDF(quotation, res) {
-  const doc = new PDFDocument({ margins: { top: 40, bottom: 40, left: 40, right: 40 }, size: 'A4' });
+  const doc = new PDFDocument({ margins: { top: 35, bottom: 35, left: 35, right: 35 }, size: 'A4' });
 
   res.setHeader('Content-Type', 'application/pdf');
   const safeName = (quotation.vendorName || 'Vendor').replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -370,110 +392,193 @@ function generateQuotationPDF(quotation, res) {
 
   doc.pipe(res);
 
+  const style = getCompanyStyle(quotation.vendorName);
   const pageWidth = doc.page.width;
-  const leftMargin = 40;
-  const rightMargin = pageWidth - 40;
+  const leftMargin = 35;
+  const rightMargin = pageWidth - 35;
   const contentWidth = rightMargin - leftMargin;
 
-  doc.rect(leftMargin, 35, contentWidth, 65).fill('#1e293b');
-  doc.fillColor('#ffffff').fontSize(16).font('Helvetica-Bold')
-     .text((quotation.vendorName || 'QUOTATION').toUpperCase(), leftMargin + 15, 45, { width: contentWidth - 30, align: 'left' });
-  
-  doc.fontSize(9).font('Helvetica').fillColor('#cbd5e1')
-     .text(quotation.vendorAddress || '', leftMargin + 15, 68, { width: contentWidth - 30, lineGap: 2 });
+  // ================= COMPANY HEADER (DISTINCT PER COMPANY) =================
+  if (style.type === 'mangala') {
+    // Mangala: Centered clean formal header with double divider line
+    doc.fillColor(style.primaryColor).fontSize(20).font('Helvetica-Bold')
+       .text(quotation.vendorName.toUpperCase(), leftMargin, 40, { align: 'center', width: contentWidth });
+    doc.fillColor('#475569').fontSize(8.5).font('Helvetica')
+       .text(quotation.vendorAddress || '', leftMargin + 20, 66, { align: 'center', width: contentWidth - 40, lineGap: 2 });
 
-  doc.y = 115;
+    const sepY = doc.y + 8;
+    doc.moveTo(leftMargin, sepY).lineTo(rightMargin, sepY).strokeColor(style.primaryColor).lineWidth(1.5).stroke();
+    doc.moveTo(leftMargin, sepY + 3).lineTo(rightMargin, sepY + 3).strokeColor('#93c5fd').lineWidth(0.5).stroke();
+    doc.y = sepY + 12;
 
-  const yMeta = doc.y;
-  doc.fontSize(10).font('Helvetica-Bold').fillColor('#1e293b').text('To:', leftMargin, yMeta);
-  doc.font('Helvetica-Bold').fontSize(11).fillColor('#0f172a').text(quotation.clientName || 'International Institute of Business Studies', leftMargin, yMeta + 14);
-  if (quotation.clientAddress) {
-    doc.font('Helvetica').fontSize(10).fillColor('#475569').text(quotation.clientAddress, leftMargin, yMeta + 28);
+  } else if (style.type === 'gds') {
+    // GDS: Left modern badge header with green accent bar
+    doc.rect(leftMargin, 35, 6, 50).fill(style.primaryColor);
+    doc.fillColor(style.primaryColor).fontSize(18).font('Helvetica-Bold')
+       .text(quotation.vendorName, leftMargin + 14, 38);
+    doc.fillColor('#475569').fontSize(8.5).font('Helvetica')
+       .text(quotation.vendorAddress || '', leftMargin + 14, 62, { width: contentWidth - 100, lineGap: 2 });
+
+    doc.rect(rightMargin - 100, 38, 100, 22).fill(style.accentColor);
+    doc.fillColor(style.primaryColor).fontSize(9).font('Helvetica-Bold')
+       .text('QUOTATION', rightMargin - 100, 44, { width: 100, align: 'center' });
+
+    doc.y = 95;
+    doc.moveTo(leftMargin, 95).lineTo(rightMargin, 95).strokeColor('#e2e8f0').lineWidth(1).stroke();
+    doc.y = 105;
+
+  } else if (style.type === 'aditya') {
+    // Aditya: Classic corporate two-column block with HSN/Description emphasis
+    doc.rect(leftMargin, 35, contentWidth, 54).fill('#fef3c7');
+    doc.rect(leftMargin, 35, 5, 54).fill('#b45309');
+    doc.fillColor('#78350f').fontSize(18).font('Helvetica-Bold')
+       .text(quotation.vendorName, leftMargin + 15, 42);
+    doc.fillColor('#92400e').fontSize(8.5).font('Helvetica')
+       .text(quotation.vendorAddress || '', leftMargin + 15, 64, { lineGap: 2 });
+
+    doc.y = 100;
+
+  } else if (style.type === 'scs') {
+    // SCS SAI: Full banner header with subtitle
+    doc.rect(leftMargin, 35, contentWidth, 60).fill('#312e81');
+    doc.fillColor('#ffffff').fontSize(16).font('Helvetica-Bold')
+       .text(quotation.vendorName, leftMargin, 42, { align: 'center', width: contentWidth });
+    doc.fillColor('#c7d2fe').fontSize(8.5).font('Helvetica')
+       .text(quotation.vendorAddress || '', leftMargin + 10, 64, { align: 'center', width: contentWidth - 20, lineGap: 2 });
+
+    doc.y = 105;
+
+  } else {
+    // Standard / Custom Vendor Header
+    doc.rect(leftMargin, 35, contentWidth, 55).fill(style.primaryColor);
+    doc.fillColor('#ffffff').fontSize(16).font('Helvetica-Bold')
+       .text((quotation.vendorName || 'QUOTATION').toUpperCase(), leftMargin + 15, 45, { width: contentWidth - 30 });
+    doc.fontSize(8.5).font('Helvetica').fillColor('#cbd5e1')
+       .text(quotation.vendorAddress || '', leftMargin + 15, 66, { width: contentWidth - 30 });
+    doc.y = 102;
   }
 
-  doc.font('Helvetica-Bold').fontSize(10).fillColor('#1e293b').text('Quotation Date:', rightMargin - 180, yMeta, { width: 180, align: 'right' });
-  doc.font('Helvetica').fontSize(10).fillColor('#334155').text(quotation.quoteDate || new Date().toLocaleDateString('en-GB'), rightMargin - 180, yMeta + 14, { width: 180, align: 'right' });
+  // ================= METADATA (TO / DATE) =================
+  const metaY = doc.y;
+  doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#1e293b').text('To,', leftMargin, metaY);
+  doc.fontSize(10.5).font('Helvetica-Bold').fillColor(style.primaryColor)
+     .text(quotation.clientName || 'International Institute of Business Studies', leftMargin, metaY + 12);
+  if (quotation.clientAddress) {
+    doc.font('Helvetica').fontSize(9).fillColor('#64748b').text(quotation.clientAddress, leftMargin, metaY + 25);
+  }
 
-  doc.y = yMeta + 50;
-  doc.font('Helvetica').fontSize(10).fillColor('#334155')
+  // Right-aligned Date
+  doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#1e293b')
+     .text('Date: ' + (quotation.quoteDate || new Date().toLocaleDateString('en-GB')), rightMargin - 160, metaY, { width: 160, align: 'right' });
+
+  doc.y = metaY + 45;
+  doc.font('Helvetica').fontSize(9.5).fillColor('#334155')
      .text('Dear Sir,\n  Please find the enclosed offer for your kind perusal and consideration.', leftMargin, doc.y);
 
-  doc.moveDown(1.2);
+  doc.moveDown(0.9);
 
+  // ================= ITEMS TABLE (FORMATTED SPECIALLY PER COMPANY) =================
   const tableTop = doc.y;
-  const cols = [
-    { name: 'Sl', x: leftMargin, w: 30, align: 'center' },
-    { name: 'Product / Model', x: leftMargin + 30, w: 180, align: 'left' },
-    { name: 'Qty', x: leftMargin + 210, w: 45, align: 'center' },
-    { name: 'Rate (INR)', x: leftMargin + 255, w: 70, align: 'right' },
-    { name: 'Total (INR)', x: leftMargin + 325, w: 75, align: 'right' },
-    { name: 'GST (INR)', x: leftMargin + 400, w: 55, align: 'right' },
-    { name: 'Amount (INR)', x: leftMargin + 455, w: 60, align: 'right' }
+  const isAditya = style.type === 'aditya';
+
+  // Different column proportions for Aditya (includes Description & HSN) vs others
+  const cols = isAditya ? [
+    { name: 'Sl. No', x: leftMargin, w: 35, align: 'center' },
+    { name: 'Product / Model', x: leftMargin + 35, w: 120, align: 'left' },
+    { name: 'Description', x: leftMargin + 155, w: 130, align: 'left' },
+    { name: 'Qty', x: leftMargin + 285, w: 35, align: 'center' },
+    { name: 'Rate (₹)', x: leftMargin + 320, w: 60, align: 'right' },
+    { name: 'Total (₹)', x: leftMargin + 380, w: 65, align: 'right' },
+    { name: 'GST', x: leftMargin + 445, w: 45, align: 'right' },
+    { name: 'Amount (₹)', x: leftMargin + 490, w: contentWidth - 490, align: 'right' }
+  ] : [
+    { name: 'Sl. No', x: leftMargin, w: 35, align: 'center' },
+    { name: 'Product / Model', x: leftMargin + 35, w: 220, align: 'left' },
+    { name: 'Qty', x: leftMargin + 255, w: 45, align: 'center' },
+    { name: 'Rate (₹)', x: leftMargin + 300, w: 65, align: 'right' },
+    { name: 'Total (₹)', x: leftMargin + 365, w: 75, align: 'right' },
+    { name: 'GST (₹)', x: leftMargin + 440, w: 55, align: 'right' },
+    { name: 'Amount (₹)', x: leftMargin + 495, w: contentWidth - 495, align: 'right' }
   ];
 
-  doc.rect(leftMargin, tableTop, contentWidth, 22).fill('#f1f5f9');
-  doc.fillColor('#0f172a').font('Helvetica-Bold').fontSize(9);
+  // Table Header Background
+  doc.rect(leftMargin, tableTop, contentWidth, 22).fill(style.tableHeaderBg);
+  doc.fillColor(style.tableHeaderColor).font('Helvetica-Bold').fontSize(8.5);
   cols.forEach(c => {
     doc.text(c.name, c.x + 3, tableTop + 6, { width: c.w - 6, align: c.align });
   });
 
-  doc.moveTo(leftMargin, tableTop + 22).lineTo(rightMargin, tableTop + 22).strokeColor('#cbd5e1').lineWidth(1).stroke();
-
-  let curY = tableTop + 23;
-  doc.font('Helvetica').fontSize(9).fillColor('#1e293b');
+  let curY = tableTop + 22;
+  doc.font('Helvetica').fontSize(8.5).fillColor('#1e293b');
 
   const items = quotation.items || [];
   items.forEach((it, idx) => {
     if (curY > doc.page.height - 130) {
       doc.addPage();
-      curY = 50;
+      curY = 40;
     }
 
-    const rowBg = idx % 2 === 1 ? '#f8fafc' : '#ffffff';
-    doc.rect(leftMargin, curY, contentWidth, 24).fill(rowBg);
+    const rowBg = idx % 2 === 1 ? style.accentColor : '#ffffff';
+    const rowHeight = isAditya && it.description ? 28 : 22;
+    doc.rect(leftMargin, curY, contentWidth, rowHeight).fill(rowBg);
     doc.fillColor('#1e293b');
 
-    doc.text(String(it.slNo || idx + 1), cols[0].x + 3, curY + 6, { width: cols[0].w - 6, align: cols[0].align });
-    doc.text(it.product || it.description || '', cols[1].x + 3, curY + 6, { width: cols[1].w - 6, align: cols[1].align });
-    doc.text(String(it.quantity || 1), cols[2].x + 3, curY + 6, { width: cols[2].w - 6, align: cols[2].align });
-    doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[3].x + 3, curY + 6, { width: cols[3].w - 6, align: cols[3].align });
-    doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[4].x + 3, curY + 6, { width: cols[4].w - 6, align: cols[4].align });
-    doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[5].x + 3, curY + 6, { width: cols[5].w - 6, align: cols[5].align });
-    doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[6].x + 3, curY + 6, { width: cols[6].w - 6, align: cols[6].align });
+    doc.text(String(it.slNo || idx + 1), cols[0].x + 3, curY + 5, { width: cols[0].w - 6, align: cols[0].align });
+    doc.text(it.product || it.description || '', cols[1].x + 3, curY + 5, { width: cols[1].w - 6, align: cols[1].align });
 
-    doc.moveTo(leftMargin, curY + 24).lineTo(rightMargin, curY + 24).strokeColor('#e2e8f0').lineWidth(0.5).stroke();
-    curY += 24;
+    if (isAditya) {
+      doc.text(it.description || it.product || '', cols[2].x + 3, curY + 5, { width: cols[2].w - 6, align: cols[2].align });
+      doc.text(String(it.quantity || 1), cols[3].x + 3, curY + 5, { width: cols[3].w - 6, align: cols[3].align });
+      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[4].x + 3, curY + 5, { width: cols[4].w - 6, align: cols[4].align });
+      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[5].x + 3, curY + 5, { width: cols[5].w - 6, align: cols[5].align });
+      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[6].x + 3, curY + 5, { width: cols[6].w - 6, align: cols[6].align });
+      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[7].x + 3, curY + 5, { width: cols[7].w - 6, align: cols[7].align });
+    } else {
+      doc.text(String(it.quantity || 1), cols[2].x + 3, curY + 5, { width: cols[2].w - 6, align: cols[2].align });
+      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[3].x + 3, curY + 5, { width: cols[3].w - 6, align: cols[3].align });
+      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[4].x + 3, curY + 5, { width: cols[4].w - 6, align: cols[4].align });
+      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[5].x + 3, curY + 5, { width: cols[5].w - 6, align: cols[5].align });
+      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[6].x + 3, curY + 5, { width: cols[6].w - 6, align: cols[6].align });
+    }
+
+    doc.moveTo(leftMargin, curY + rowHeight).lineTo(rightMargin, curY + rowHeight).strokeColor('#e2e8f0').lineWidth(0.5).stroke();
+    curY += rowHeight;
   });
 
+  // Grand Total Summary Row
   doc.rect(leftMargin, curY, contentWidth, 24).fill('#e2e8f0');
-  doc.fillColor('#0f172a').font('Helvetica-Bold').fontSize(10);
-  doc.text('Grand Total:', cols[0].x + 10, curY + 6, { width: 440, align: 'right' });
-  doc.text('Rs. ' + Number(quotation.totalAmount || 0).toLocaleString('en-IN'), cols[6].x + 3, curY + 6, { width: cols[6].w - 6, align: cols[6].align });
+  doc.fillColor(style.primaryColor).font('Helvetica-Bold').fontSize(10);
+  const totalValCol = isAditya ? cols[7] : cols[6];
+  doc.text('Grand Total:', cols[0].x, curY + 6, { width: totalValCol.x - cols[0].x - 5, align: 'right' });
+  doc.text('Rs. ' + Number(quotation.totalAmount || 0).toLocaleString('en-IN'), totalValCol.x + 3, curY + 6, { width: totalValCol.w - 6, align: totalValCol.align });
 
-  curY += 34;
+  curY += 32;
 
+  // Amount in Words
   if (quotation.amountInWords) {
-    doc.rect(leftMargin, curY, contentWidth, 24).fill('#f1f5f9');
-    doc.fillColor('#334155').font('Helvetica-Bold').fontSize(9)
-       .text(quotation.amountInWords, leftMargin + 10, curY + 6, { width: contentWidth - 20 });
-    curY += 32;
+    doc.rect(leftMargin, curY, contentWidth, 22).fill('#f8fafc');
+    doc.fillColor('#334155').font('Helvetica-Bold').fontSize(8.5)
+       .text(quotation.amountInWords, leftMargin + 8, curY + 6, { width: contentWidth - 16 });
+    curY += 28;
   }
 
-  doc.font('Helvetica-Bold').fontSize(10).fillColor('#0f172a').text('Terms & Conditions:', leftMargin, curY);
-  curY += 14;
-  doc.font('Helvetica').fontSize(9).fillColor('#475569');
+  // Terms & Conditions / Delivery Footer
+  doc.font('Helvetica-Bold').fontSize(9).fillColor('#0f172a').text('Terms & Conditions:', leftMargin, curY);
+  curY += 12;
+  doc.font('Helvetica').fontSize(8.5).fillColor('#475569');
   if (quotation.deliveryTerms) {
-    doc.text('- ' + quotation.deliveryTerms, leftMargin + 10, curY);
-    curY += 14;
+    doc.text('• ' + quotation.deliveryTerms, leftMargin + 8, curY);
+    curY += 12;
   }
   if (quotation.terms && Array.isArray(quotation.terms)) {
     quotation.terms.forEach(t => {
-      doc.text('- ' + t, leftMargin + 10, curY);
-      curY += 13;
+      doc.text('• ' + t, leftMargin + 8, curY);
+      curY += 12;
     });
   }
 
-  curY += 15;
+  // Disclaimer
+  curY += 14;
   doc.font('Helvetica-Oblique').fontSize(8).fillColor('#64748b')
      .text('An electronic copy does not carry any signature.', leftMargin, curY, { align: 'center', width: contentWidth });
 
@@ -534,7 +639,6 @@ function appendQuotationToExcel(quotation, excelPath = null) {
 
     return uniqueSheetName;
   } catch (err) {
-    console.warn('Could not append sheet to Excel:', err.message);
     return null;
   }
 }
@@ -544,5 +648,6 @@ module.exports = {
   generateQuotationPDF,
   appendQuotationToExcel,
   numberToWordsINR,
-  DEFAULT_PRESET_QUOTATIONS
+  DEFAULT_PRESET_QUOTATIONS,
+  getCompanyStyle
 };
