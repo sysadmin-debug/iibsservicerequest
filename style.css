@@ -1682,4 +1682,44 @@ footer {
   border: 1px solid rgba(100, 116, 139, 0.2);
 }
 
+/* --- Print Styles (A4 Dimensions) --- */
+@page {
+  size: A4 portrait;
+  margin: 10mm 12mm 10mm 12mm;
+}
+
+@media print {
+  header,
+  .bg-orb,
+  .stats-bar,
+  .search-input-wrapper,
+  .track-header button,
+  .quote-preset-btn,
+  #syncQuotationExcelBtn,
+  #addQuotationBtn,
+  #quoteSheetFilter,
+  .btn-icon {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt;
+  }
+
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .ticket-card {
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    margin-bottom: 20px !important;
+  }
+}
+
 
