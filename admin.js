@@ -2929,7 +2929,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           delivery_terms: document.getElementById('quoteDeliveryTerms').value.trim(),
           terms: termsArr,
           items: items,
-          save_to_excel: document.getElementById('quoteSaveToExcel').checked
+          save_to_excel: false
         };
 
         const res = await fetch('/api/quotations', {
@@ -2943,7 +2943,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         closeQuotationModal();
         await fetchQuotations();
-        alert('Quotation saved successfully!' + (data.appendedSheet ? ` Appended to Excel sheet: "${data.appendedSheet}"` : ''));
+        alert('Quotation saved successfully!');
       } catch (err) {
         alert('Error saving quotation: ' + err.message);
       } finally {

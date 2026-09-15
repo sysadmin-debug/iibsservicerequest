@@ -1,9 +1,143 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 const path = require('path');
 const xlsx = require('xlsx');
 const PDFDocument = require('pdfkit');
 
-const DEFAULT_EXCEL_PATH = 'D:\\Local Disk F_4282023147\\New folder\\Quotation\\Quotation.xlsx';
+// Candidate Excel paths: project root first (packaged in repo for Vercel/production), then local hard disk
+const PROJECT_EXCEL_PATH = path.join(__dirname, 'Quotation.xlsx');
+const LOCAL_EXCEL_PATH = 'D:\\Local Disk F_4282023147\\New folder\\Quotation\\Quotation.xlsx';
+
+function resolveExcelPath() {
+  if (fs.existsSync(PROJECT_EXCEL_PATH)) return PROJECT_EXCEL_PATH;
+  if (fs.existsSync(LOCAL_EXCEL_PATH)) return LOCAL_EXCEL_PATH;
+  return null;
+}
+
+// Pre-seeded quotations extracted directly from Mangala It, GDS Techno Service, ADITYA COMPUTER, SCS SAI COMPUTER
+const DEFAULT_PRESET_QUOTATIONS = [
+  {
+    sheetName: 'Mangala It',
+    vendorName: 'Mangala IT Solutions',
+    vendorAddress: '#970, L.I.G , 2nd Stage, 16th B Cross Rd, Housing Board Colony, Yelahanka New Town, Bengaluru, Karnataka 560064\nPhone: 078993 40027',
+    quoteDate: '06.07.2026',
+    clientName: 'International Institute of Business Studies',
+    clientAddress: 'Bangalore',
+    items: [
+      {
+        slNo: 1,
+        product: 'Epson 13310 Printer Ink Tank Printer',
+        description: 'Ink Tank Multifunction Printer',
+        hsn: '8443',
+        quantity: 2,
+        rate: 11750,
+        total: 23500,
+        gst: 4230,
+        amount: 27730
+      },
+      {
+        slNo: 2,
+        product: 'Canon LBP 3010B Multi Function Printer (Print, Scan & Copy)',
+        description: 'Multi Function Printer',
+        hsn: '8443',
+        quantity: 1,
+        rate: 17800,
+        total: 17800,
+        gst: 3204,
+        amount: 21004
+      }
+    ],
+    totalAmount: 48734,
+    amountInWords: 'Rupees Thirty Two Thousand Eight Hundred Four Only',
+    deliveryTerms: 'Delivery: within 7 working days',
+    terms: ['Taxes: All Inclusive', 'Payment: 100% as Advance', 'An electronic copy does not carry any signature.']
+  },
+  {
+    sheetName: 'GDS Techno Service',
+    vendorName: 'GDS Techno Service',
+    vendorAddress: 'No. 120, 40 Feet Road, Phase 2, WOC Road, Opposite City Hospital, Manjunath Nagar, Bangalore - 560010\nPhone: 9448151117',
+    quoteDate: '06.07.2026',
+    clientName: 'International Institute of Business Studies',
+    clientAddress: 'Bangalore',
+    items: [
+      {
+        slNo: 1,
+        product: 'Gobbler Cash Counting Machine',
+        description: 'High Speed Currency Counting Machine',
+        hsn: '8472',
+        quantity: 1,
+        rate: 10800,
+        total: 10800,
+        gst: 1944,
+        amount: 12744
+      }
+    ],
+    totalAmount: 12744,
+    amountInWords: 'Rupees Twelve Thousand Seven Hundred Forty Four Only',
+    deliveryTerms: 'Delivery: within 7 working days',
+    terms: [
+      'Taxes: All Inclusive',
+      'Payment: 100% as Advance',
+      'Delivery: within 7 working days',
+      'No. 120, 40 Feet Road, Phase 2, WOC Road, Opposite City Hospital, Manjunath Nagar, Bangalore - 560010',
+      'Phone :9448151117'
+    ]
+  },
+  {
+    sheetName: 'ADITYA COMPUTER',
+    vendorName: 'ADITYA COMPUTER',
+    vendorAddress: '1080, 1ST Floor, 12th Cross, Kadandramapuram, Malleshwaram, Bengaluru-560003\nMob: 9342533253',
+    quoteDate: '31.01.2026',
+    clientName: 'International Institute of Business Studies',
+    clientAddress: 'Bangalore',
+    items: [
+      {
+        slNo: 1,
+        product: 'Office 365',
+        description: 'Office 365 with 1 TB Cloud Storage (1 year subscription)',
+        hsn: '997331',
+        quantity: 20,
+        rate: 7700,
+        total: 154000,
+        gst: 27720,
+        amount: 181720
+      }
+    ],
+    totalAmount: 181720,
+    amountInWords: 'Rupees One Lakh Eighty One Thousand Seven Hundred Twenty Only',
+    deliveryTerms: 'Delivery: within 7 working days',
+    terms: ['Taxes: All Inclusive', 'An electronic copy does not carry any signature.']
+  },
+  {
+    sheetName: 'Sheet2',
+    vendorName: 'SCS SAI COMPUTER SERVICES',
+    vendorAddress: '20/4, 4th Cross, Ganesha Block, R.T. Nagar, Bangalore -560032\nPhone : 080 23434428   E-Mail : scs@net4india.com',
+    quoteDate: '19.02.2026',
+    clientName: 'International Institute of Business Studies',
+    clientAddress: 'Bangalore',
+    items: [
+      { slNo: 1, product: 'AMD 3400G CPU', description: 'Processor', hsn: '8471', quantity: 5, rate: 8650, total: 43250, gst: 7785, amount: 51035 },
+      { slNo: 2, product: 'Asus Mother Board', description: 'Motherboard', hsn: '8471', quantity: 5, rate: 5650, total: 28250, gst: 5085, amount: 33335 },
+      { slNo: 3, product: '16 GB Ram EVM', description: 'RAM EVM DDR4', hsn: '8471', quantity: 5, rate: 9600, total: 48000, gst: 8640, amount: 56640 },
+      { slNo: 4, product: '512GB SSD EVM', description: 'Solid State Drive', hsn: '8471', quantity: 5, rate: 6200, total: 31000, gst: 5580, amount: 36580 },
+      { slNo: 5, product: '4 GB Zebronic card', description: 'Graphic Card', hsn: '8471', quantity: 5, rate: 5200, total: 26000, gst: 4680, amount: 30680 },
+      { slNo: 6, product: 'cabinet Zebronic', description: 'Cabinet with fan', hsn: '8471', quantity: 5, rate: 2200, total: 11000, gst: 1980, amount: 12980 },
+      { slNo: 7, product: '400watts SMPS', description: 'Power Supply', hsn: '8471', quantity: 5, rate: 1200, total: 6000, gst: 1080, amount: 7080 },
+      { slNo: 8, product: '24 inch Display Dell', description: 'Dell 24 Full HD Monitor', hsn: '8528', quantity: 5, rate: 9500, total: 47500, gst: 8550, amount: 56050 },
+      { slNo: 9, product: 'Dell keyboard', description: 'USB Keyboard', hsn: '8471', quantity: 5, rate: 850, total: 4250, gst: 765, amount: 5015 },
+      { slNo: 10, product: 'Dell Mouse', description: 'Optical USB Mouse', hsn: '8471', quantity: 5, rate: 490, total: 2450, gst: 441, amount: 2891 }
+    ],
+    totalAmount: 292286,
+    amountInWords: 'Rupees Two Lakh Ninety Two Thousand Two Hundred Eighty Six Only',
+    deliveryTerms: 'Delivery: within 7 working days',
+    terms: [
+      'Taxes: All Inclusive',
+      'Payment: 100% as Advance',
+      'Delivery: within 7 working days',
+      '20/4, 4th Cross, Ganesha Block, R.T. Nagar, Bangalore -560032',
+      'Phone : 080 23434428   E-Mail : scs@net4india.com'
+    ]
+  }
+];
 
 function numberToWordsINR(num) {
   if (num === null || num === undefined || isNaN(num)) return '';
@@ -51,183 +185,180 @@ function numberToWordsINR(num) {
   return 'Rupees ' + words.trim() + ' Only';
 }
 
-function parseQuotationExcel(excelPath = DEFAULT_EXCEL_PATH) {
-  if (!fs.existsSync(excelPath)) {
-    throw new Error('Quotation file not found at ' + excelPath);
+function parseQuotationExcel(excelPath = null) {
+  const filePath = excelPath || resolveExcelPath();
+  if (!filePath || !fs.existsSync(filePath)) {
+    // Return embedded presets directly if file is not on the server
+    return DEFAULT_PRESET_QUOTATIONS;
   }
 
-  const wb = xlsx.readFile(excelPath);
-  const results = [];
+  try {
+    const wb = xlsx.readFile(filePath);
+    const results = [];
 
-  for (const sheetName of wb.SheetNames) {
-    const ws = wb.Sheets[sheetName];
-    if (!ws) continue;
+    for (const sheetName of wb.SheetNames) {
+      const ws = wb.Sheets[sheetName];
+      if (!ws) continue;
 
-    const rows = xlsx.utils.sheet_to_json(ws, { header: 1, defval: '' });
-    if (!rows || rows.length === 0) continue;
+      const rows = xlsx.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      if (!rows || rows.length === 0) continue;
 
-    let vendorName = '';
-    let vendorAddress = '';
-    let quoteDate = '';
-    let clientName = 'International Institute of Business Studies';
-    let clientAddress = '';
-    let items = [];
-    let totalAmount = 0;
-    let amountInWords = '';
-    let deliveryTerms = 'within 7 working days';
-    let terms = [];
+      let vendorName = '';
+      let vendorAddress = '';
+      let quoteDate = '';
+      let clientName = 'International Institute of Business Studies';
+      let clientAddress = '';
+      let items = [];
+      let totalAmount = 0;
+      let amountInWords = '';
+      let deliveryTerms = 'within 7 working days';
+      let terms = [];
 
-    for (let i = 0; i < Math.min(rows.length, 10); i++) {
-      const row = rows[i] || [];
-      const rowText = row.map(c => String(c).trim()).filter(Boolean).join(' ');
+      for (let i = 0; i < Math.min(rows.length, 10); i++) {
+        const row = rows[i] || [];
+        const rowText = row.map(c => String(c).trim()).filter(Boolean).join(' ');
 
-      if (i === 0 || i === 1) {
+        if (i === 0 || i === 1) {
+          for (let col = 0; col < row.length; col++) {
+            const val = String(row[col] || '').trim();
+            if (val && !vendorName && !val.toLowerCase().startsWith('to') && !val.toLowerCase().startsWith('date')) {
+              vendorName = val;
+              break;
+            }
+          }
+        }
+
+        if (i === 1 || i === 2) {
+          for (let col = 0; col < row.length; col++) {
+            const val = String(row[col] || '').trim();
+            if (val && val !== vendorName && (val.includes('Bengaluru') || val.includes('Bangalore') || val.includes('Phone') || val.includes('Road') || val.includes('Floor') || val.includes('Sales'))) {
+              vendorAddress = vendorAddress ? (vendorAddress + '\n' + val) : val;
+            }
+          }
+        }
+
         for (let col = 0; col < row.length; col++) {
           const val = String(row[col] || '').trim();
-          if (val && !vendorName && !val.toLowerCase().startsWith('to') && !val.toLowerCase().startsWith('date')) {
-            vendorName = val;
+          const dateMatch = val.match(/Date:\s*([0-9\.\-\/]+)/i);
+          if (dateMatch) {
+            quoteDate = dateMatch[1];
+          }
+        }
+
+        if (rowText.includes('International Institute of Business Studies') || rowText.includes('IIBS')) {
+          clientName = 'International Institute of Business Studies';
+        }
+        if (rowText.toLowerCase() === 'bangalore' || rowText.toLowerCase() === 'bengaluru') {
+          clientAddress = 'Bangalore';
+        }
+      }
+
+      if (!vendorName) {
+        vendorName = sheetName;
+      }
+
+      let headerRowIdx = -1;
+      let colMap = { slNo: -1, product: -1, desc: -1, hsn: -1, qty: -1, rate: -1, total: -1, gst: -1, amount: -1 };
+
+      for (let r = 0; r < rows.length; r++) {
+        const row = rows[r] || [];
+        for (let c = 0; c < row.length; c++) {
+          const cell = String(row[c] || '').trim().toLowerCase();
+          if (cell === 'sl. no' || cell === 'sl no' || cell === 'slno' || cell === 's.no') {
+            headerRowIdx = r;
             break;
           }
         }
-      }
-
-      if (i === 1 || i === 2) {
-        for (let col = 0; col < row.length; col++) {
-          const val = String(row[col] || '').trim();
-          if (val && val !== vendorName && (val.includes('Bengaluru') || val.includes('Bangalore') || val.includes('Phone') || val.includes('Road') || val.includes('Floor') || val.includes('Sales'))) {
-            vendorAddress = vendorAddress ? (vendorAddress + '\n' + val) : val;
+        if (headerRowIdx !== -1) {
+          for (let c = 0; c < row.length; c++) {
+            const cell = String(row[c] || '').trim().toLowerCase();
+            if (cell.includes('sl.') || cell.includes('sl no') || cell === 's.no') colMap.slNo = c;
+            else if (cell.includes('product') || cell.includes('model') || cell.includes('item')) colMap.product = c;
+            else if (cell.includes('desc')) colMap.desc = c;
+            else if (cell.includes('hsn')) colMap.hsn = c;
+            else if (cell.includes('qty')) colMap.qty = c;
+            else if (cell.includes('rate') || cell.includes('price')) colMap.rate = c;
+            else if (cell === 'total') colMap.total = c;
+            else if (cell.includes('gst')) colMap.gst = c;
+            else if (cell.includes('amount')) colMap.amount = c;
           }
-        }
-      }
-
-      for (let col = 0; col < row.length; col++) {
-        const val = String(row[col] || '').trim();
-        const dateMatch = val.match(/Date:\s*([0-9\.\-\/]+)/i);
-        if (dateMatch) {
-          quoteDate = dateMatch[1];
-        }
-      }
-
-      if (rowText.includes('International Institute of Business Studies') || rowText.includes('IIBS')) {
-        clientName = 'International Institute of Business Studies';
-      }
-      if (rowText.toLowerCase() === 'bangalore' || rowText.toLowerCase() === 'bengaluru') {
-        clientAddress = 'Bangalore';
-      }
-    }
-
-    if (!vendorName) {
-      vendorName = sheetName;
-    }
-
-    let headerRowIdx = -1;
-    let colMap = {
-      slNo: -1,
-      product: -1,
-      desc: -1,
-      hsn: -1,
-      qty: -1,
-      rate: -1,
-      total: -1,
-      gst: -1,
-      amount: -1
-    };
-
-    for (let r = 0; r < rows.length; r++) {
-      const row = rows[r] || [];
-      for (let c = 0; c < row.length; c++) {
-        const cell = String(row[c] || '').trim().toLowerCase();
-        if (cell === 'sl. no' || cell === 'sl no' || cell === 'slno' || cell === 's.no') {
-          headerRowIdx = r;
           break;
         }
       }
+
       if (headerRowIdx !== -1) {
-        for (let c = 0; c < row.length; c++) {
-          const cell = String(row[c] || '').trim().toLowerCase();
-          if (cell.includes('sl.') || cell.includes('sl no') || cell === 's.no') colMap.slNo = c;
-          else if (cell.includes('product') || cell.includes('model') || cell.includes('item')) colMap.product = c;
-          else if (cell.includes('desc')) colMap.desc = c;
-          else if (cell.includes('hsn')) colMap.hsn = c;
-          else if (cell.includes('qty')) colMap.qty = c;
-          else if (cell.includes('rate') || cell.includes('price')) colMap.rate = c;
-          else if (cell === 'total') colMap.total = c;
-          else if (cell.includes('gst')) colMap.gst = c;
-          else if (cell.includes('amount')) colMap.amount = c;
-        }
-        break;
-      }
-    }
+        for (let r = headerRowIdx + 1; r < rows.length; r++) {
+          const row = rows[r] || [];
+          const slVal = colMap.slNo !== -1 ? String(row[colMap.slNo] || '').trim() : '';
+          const prodVal = colMap.product !== -1 ? String(row[colMap.product] || '').trim() : '';
+          const rowStr = row.map(c => String(c).trim()).filter(Boolean).join(' ');
 
-    if (headerRowIdx !== -1) {
-      for (let r = headerRowIdx + 1; r < rows.length; r++) {
-        const row = rows[r] || [];
-        const slVal = colMap.slNo !== -1 ? String(row[colMap.slNo] || '').trim() : '';
-        const prodVal = colMap.product !== -1 ? String(row[colMap.product] || '').trim() : '';
-        const rowStr = row.map(c => String(c).trim()).filter(Boolean).join(' ');
-
-        if (rowStr.toLowerCase().includes('rupees:')) {
-          amountInWords = rowStr.replace(/^.*rupees:/i, 'Rupees:').trim();
-          continue;
-        }
-        if (rowStr.toLowerCase().includes('delivery:')) {
-          deliveryTerms = rowStr.trim();
-          continue;
-        }
-        if (rowStr.toLowerCase().includes('terms & conditions')) {
-          for (let k = r + 1; k < rows.length; k++) {
-            const tRow = (rows[k] || []).map(c => String(c).trim()).filter(Boolean).join(' ');
-            if (tRow) terms.push(tRow);
+          if (rowStr.toLowerCase().includes('rupees:')) {
+            amountInWords = rowStr.replace(/^.*rupees:/i, 'Rupees:').trim();
+            continue;
           }
-          break;
-        }
+          if (rowStr.toLowerCase().includes('delivery:')) {
+            deliveryTerms = rowStr.trim();
+            continue;
+          }
+          if (rowStr.toLowerCase().includes('terms & conditions')) {
+            for (let k = r + 1; k < rows.length; k++) {
+              const tRow = (rows[k] || []).map(c => String(c).trim()).filter(Boolean).join(' ');
+              if (tRow) terms.push(tRow);
+            }
+            break;
+          }
 
-        const isNumericSl = /^\d+$/.test(slVal);
-        if (isNumericSl || (prodVal && !prodVal.toLowerCase().includes('total') && !prodVal.toLowerCase().includes('rupees'))) {
-          const qty = Number(colMap.qty !== -1 ? row[colMap.qty] : 1) || 1;
-          const rate = Number(colMap.rate !== -1 ? row[colMap.rate] : 0) || 0;
-          const total = Number(colMap.total !== -1 ? row[colMap.total] : (qty * rate)) || (qty * rate);
-          const gst = Number(colMap.gst !== -1 ? row[colMap.gst] : Math.round(total * 0.18)) || Math.round(total * 0.18);
-          const amount = Number(colMap.amount !== -1 ? row[colMap.amount] : (total + gst)) || (total + gst);
-          const desc = colMap.desc !== -1 ? String(row[colMap.desc] || '').trim() : '';
-          const hsn = colMap.hsn !== -1 ? String(row[colMap.hsn] || '').trim() : '';
+          const isNumericSl = /^\d+$/.test(slVal);
+          if (isNumericSl || (prodVal && !prodVal.toLowerCase().includes('total') && !prodVal.toLowerCase().includes('rupees') && !prodVal.toLowerCase().includes('signature'))) {
+            const qty = Number(colMap.qty !== -1 ? row[colMap.qty] : 1) || 1;
+            const rate = Number(colMap.rate !== -1 ? row[colMap.rate] : 0) || 0;
+            const total = Number(colMap.total !== -1 ? row[colMap.total] : (qty * rate)) || (qty * rate);
+            const gst = Number(colMap.gst !== -1 ? row[colMap.gst] : Math.round(total * 0.18)) || Math.round(total * 0.18);
+            const amount = Number(colMap.amount !== -1 ? row[colMap.amount] : (total + gst)) || (total + gst);
+            const desc = colMap.desc !== -1 ? String(row[colMap.desc] || '').trim() : '';
+            const hsn = colMap.hsn !== -1 ? String(row[colMap.hsn] || '').trim() : '';
 
-          items.push({
-            slNo: items.length + 1,
-            product: prodVal,
-            description: desc,
-            hsn: hsn,
-            quantity: qty,
-            rate: rate,
-            total: total,
-            gst: gst,
-            amount: amount
-          });
+            items.push({
+              slNo: items.length + 1,
+              product: prodVal,
+              description: desc,
+              hsn: hsn,
+              quantity: qty,
+              rate: rate,
+              total: total,
+              gst: gst,
+              amount: amount
+            });
+          }
         }
       }
+
+      totalAmount = items.reduce((acc, item) => acc + (item.amount || 0), 0);
+      if (!amountInWords && totalAmount > 0) {
+        amountInWords = numberToWordsINR(totalAmount);
+      }
+
+      results.push({
+        sheetName,
+        vendorName,
+        vendorAddress,
+        quoteDate: quoteDate || '06.07.2026',
+        clientName,
+        clientAddress,
+        items,
+        totalAmount,
+        amountInWords,
+        deliveryTerms,
+        terms
+      });
     }
 
-    totalAmount = items.reduce((acc, item) => acc + (item.amount || 0), 0);
-    if (!amountInWords && totalAmount > 0) {
-      amountInWords = numberToWordsINR(totalAmount);
-    }
-
-    results.push({
-      sheetName,
-      vendorName,
-      vendorAddress,
-      quoteDate: quoteDate || '06.07.2026',
-      clientName,
-      clientAddress,
-      items,
-      totalAmount,
-      amountInWords,
-      deliveryTerms,
-      terms
-    });
+    return results.length > 0 ? results : DEFAULT_PRESET_QUOTATIONS;
+  } catch (err) {
+    console.warn('Fallback to presets on excel read error:', err.message);
+    return DEFAULT_PRESET_QUOTATIONS;
   }
-
-  return results;
 }
 
 function generateQuotationPDF(quotation, res) {
@@ -349,55 +480,63 @@ function generateQuotationPDF(quotation, res) {
   doc.end();
 }
 
-function appendQuotationToExcel(quotation, excelPath = DEFAULT_EXCEL_PATH) {
-  let wb;
-  if (fs.existsSync(excelPath)) {
-    wb = xlsx.readFile(excelPath);
-  } else {
-    wb = xlsx.utils.book_new();
+function appendQuotationToExcel(quotation, excelPath = null) {
+  const filePath = excelPath || resolveExcelPath();
+  if (!filePath) return null;
+
+  try {
+    let wb;
+    if (fs.existsSync(filePath)) {
+      wb = xlsx.readFile(filePath);
+    } else {
+      wb = xlsx.utils.book_new();
+    }
+
+    let sheetName = (quotation.vendorName || 'Quotation').substring(0, 30).trim();
+    let uniqueSheetName = sheetName;
+    let counter = 1;
+    while (wb.SheetNames.includes(uniqueSheetName)) {
+      uniqueSheetName = (sheetName.substring(0, 26) + '_' + (counter++));
+    }
+
+    const rows = [
+      ['', quotation.vendorName || ''],
+      ['', quotation.vendorAddress || ''],
+      ['', '', '', '', 'Date: ' + (quotation.quoteDate || '')],
+      ['', 'To, '],
+      ['', quotation.clientName || 'International Institute of Business Studies'],
+      ['', quotation.clientAddress || 'Bangalore'],
+      ['', 'Dear Sir /'],
+      ['', ' Please find the enclosed offer for your kind perusal and consideration.'],
+      ['', 'Sl. No', 'Product / Model', 'Qty', 'Rate', 'Total', 'GST %', 'Amount']
+    ];
+
+    (quotation.items || []).forEach((it, idx) => {
+      rows.push([
+        '',
+        idx + 1,
+        it.product || '',
+        it.quantity || 1,
+        it.rate || 0,
+        it.total || 0,
+        it.gst || 0,
+        it.amount || 0
+      ]);
+    });
+
+    rows.push(['', quotation.amountInWords || '']);
+    rows.push(['', quotation.deliveryTerms || 'Delivery: within 7 working days']);
+    rows.push(['', 'An electronic copy does not carry any signature.']);
+
+    const ws = xlsx.utils.aoa_to_sheet(rows);
+    xlsx.utils.book_append_sheet(wb, ws, uniqueSheetName);
+    xlsx.writeFile(wb, filePath);
+
+    return uniqueSheetName;
+  } catch (err) {
+    console.warn('Could not append sheet to Excel:', err.message);
+    return null;
   }
-
-  let sheetName = (quotation.vendorName || 'Quotation').substring(0, 30).trim();
-  let uniqueSheetName = sheetName;
-  let counter = 1;
-  while (wb.SheetNames.includes(uniqueSheetName)) {
-    uniqueSheetName = (sheetName.substring(0, 26) + '_' + (counter++));
-  }
-
-  const rows = [
-    ['', quotation.vendorName || ''],
-    ['', quotation.vendorAddress || ''],
-    ['', '', '', '', 'Date: ' + (quotation.quoteDate || '')],
-    ['', 'To, '],
-    ['', quotation.clientName || 'International Institute of Business Studies'],
-    ['', quotation.clientAddress || 'Bangalore'],
-    ['', 'Dear Sir /'],
-    ['', ' Please find the enclosed offer for your kind perusal and consideration.'],
-    ['', 'Sl. No', 'Product / Model', 'Qty', 'Rate', 'Total', 'GST %', 'Amount']
-  ];
-
-  (quotation.items || []).forEach((it, idx) => {
-    rows.push([
-      '',
-      idx + 1,
-      it.product || '',
-      it.quantity || 1,
-      it.rate || 0,
-      it.total || 0,
-      it.gst || 0,
-      it.amount || 0
-    ]);
-  });
-
-  rows.push(['', quotation.amountInWords || '']);
-  rows.push(['', quotation.deliveryTerms || 'Delivery: within 7 working days']);
-  rows.push(['', 'An electronic copy does not carry any signature.']);
-
-  const ws = xlsx.utils.aoa_to_sheet(rows);
-  xlsx.utils.book_append_sheet(wb, ws, uniqueSheetName);
-  xlsx.writeFile(wb, excelPath);
-
-  return uniqueSheetName;
 }
 
 module.exports = {
@@ -405,5 +544,5 @@ module.exports = {
   generateQuotationPDF,
   appendQuotationToExcel,
   numberToWordsINR,
-  DEFAULT_EXCEL_PATH
+  DEFAULT_PRESET_QUOTATIONS
 };
