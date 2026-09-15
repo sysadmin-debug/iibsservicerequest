@@ -1,4 +1,4 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 const xlsx = require('xlsx');
 const PDFDocument = require('pdfkit');
@@ -482,30 +482,31 @@ function generateQuotationPDF(quotation, res) {
   const isAditya = style.type === 'aditya';
 
   // Different column proportions for Aditya (includes Description & HSN) vs others
+  // Total contentWidth is ~525pt (595.28 - 70)
   const cols = isAditya ? [
     { name: 'Sl. No', x: leftMargin, w: 35, align: 'center' },
     { name: 'Product / Model', x: leftMargin + 35, w: 120, align: 'left' },
-    { name: 'Description', x: leftMargin + 155, w: 130, align: 'left' },
-    { name: 'Qty', x: leftMargin + 285, w: 35, align: 'center' },
-    { name: 'Rate (₹)', x: leftMargin + 320, w: 60, align: 'right' },
-    { name: 'Total (₹)', x: leftMargin + 380, w: 65, align: 'right' },
-    { name: 'GST', x: leftMargin + 445, w: 45, align: 'right' },
-    { name: 'Amount (₹)', x: leftMargin + 490, w: contentWidth - 490, align: 'right' }
+    { name: 'Description', x: leftMargin + 155, w: 120, align: 'left' },
+    { name: 'Qty', x: leftMargin + 275, w: 35, align: 'center' },
+    { name: 'Rate (Rs)', x: leftMargin + 310, w: 55, align: 'right' },
+    { name: 'Total (Rs)', x: leftMargin + 365, w: 55, align: 'right' },
+    { name: 'GST', x: leftMargin + 420, w: 45, align: 'right' },
+    { name: 'Amount (Rs)', x: leftMargin + 465, w: contentWidth - 465, align: 'right' }
   ] : [
     { name: 'Sl. No', x: leftMargin, w: 35, align: 'center' },
-    { name: 'Product / Model', x: leftMargin + 35, w: 220, align: 'left' },
-    { name: 'Qty', x: leftMargin + 255, w: 45, align: 'center' },
-    { name: 'Rate (₹)', x: leftMargin + 300, w: 65, align: 'right' },
-    { name: 'Total (₹)', x: leftMargin + 365, w: 75, align: 'right' },
-    { name: 'GST (₹)', x: leftMargin + 440, w: 55, align: 'right' },
-    { name: 'Amount (₹)', x: leftMargin + 495, w: contentWidth - 495, align: 'right' }
+    { name: 'Product / Model', x: leftMargin + 35, w: 200, align: 'left' },
+    { name: 'Qty', x: leftMargin + 235, w: 40, align: 'center' },
+    { name: 'Rate (Rs)', x: leftMargin + 275, w: 65, align: 'right' },
+    { name: 'Total (Rs)', x: leftMargin + 340, w: 65, align: 'right' },
+    { name: 'GST (Rs)', x: leftMargin + 405, w: 50, align: 'right' },
+    { name: 'Amount (Rs)', x: leftMargin + 455, w: contentWidth - 455, align: 'right' }
   ];
 
   // Table Header Background
   doc.rect(leftMargin, tableTop, contentWidth, 22).fill(style.tableHeaderBg);
   doc.fillColor(style.tableHeaderColor).font('Helvetica-Bold').fontSize(8.5);
   cols.forEach(c => {
-    doc.text(c.name, c.x + 3, tableTop + 6, { width: c.w - 6, align: c.align });
+    doc.text(c.name, c.x + 2, tableTop + 6, { width: c.w - 4, align: c.align });
   });
 
   let curY = tableTop + 22;
@@ -513,9 +514,9 @@ function generateQuotationPDF(quotation, res) {
 
   const items = quotation.items || [];
   items.forEach((it, idx) => {
-    if (curY > doc.page.height - 130) {
+    if (curY > doc.page.height - 120) {
       doc.addPage();
-      curY = 40;
+      curY = 35;
     }
 
     const rowBg = idx % 2 === 1 ? style.accentColor : '#ffffff';
@@ -523,22 +524,22 @@ function generateQuotationPDF(quotation, res) {
     doc.rect(leftMargin, curY, contentWidth, rowHeight).fill(rowBg);
     doc.fillColor('#1e293b');
 
-    doc.text(String(it.slNo || idx + 1), cols[0].x + 3, curY + 5, { width: cols[0].w - 6, align: cols[0].align });
-    doc.text(it.product || it.description || '', cols[1].x + 3, curY + 5, { width: cols[1].w - 6, align: cols[1].align });
+    doc.text(String(it.slNo || idx + 1), cols[0].x + 2, curY + 5, { width: cols[0].w - 4, align: cols[0].align });
+    doc.text(it.product || it.description || '', cols[1].x + 2, curY + 5, { width: cols[1].w - 4, align: cols[1].align });
 
     if (isAditya) {
-      doc.text(it.description || it.product || '', cols[2].x + 3, curY + 5, { width: cols[2].w - 6, align: cols[2].align });
-      doc.text(String(it.quantity || 1), cols[3].x + 3, curY + 5, { width: cols[3].w - 6, align: cols[3].align });
-      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[4].x + 3, curY + 5, { width: cols[4].w - 6, align: cols[4].align });
-      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[5].x + 3, curY + 5, { width: cols[5].w - 6, align: cols[5].align });
-      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[6].x + 3, curY + 5, { width: cols[6].w - 6, align: cols[6].align });
-      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[7].x + 3, curY + 5, { width: cols[7].w - 6, align: cols[7].align });
+      doc.text(it.description || it.product || '', cols[2].x + 2, curY + 5, { width: cols[2].w - 4, align: cols[2].align });
+      doc.text(String(it.quantity || 1), cols[3].x + 2, curY + 5, { width: cols[3].w - 4, align: cols[3].align });
+      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[4].x + 2, curY + 5, { width: cols[4].w - 4, align: cols[4].align });
+      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[5].x + 2, curY + 5, { width: cols[5].w - 4, align: cols[5].align });
+      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[6].x + 2, curY + 5, { width: cols[6].w - 4, align: cols[6].align });
+      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[7].x + 2, curY + 5, { width: cols[7].w - 4, align: cols[7].align });
     } else {
-      doc.text(String(it.quantity || 1), cols[2].x + 3, curY + 5, { width: cols[2].w - 6, align: cols[2].align });
-      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[3].x + 3, curY + 5, { width: cols[3].w - 6, align: cols[3].align });
-      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[4].x + 3, curY + 5, { width: cols[4].w - 6, align: cols[4].align });
-      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[5].x + 3, curY + 5, { width: cols[5].w - 6, align: cols[5].align });
-      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[6].x + 3, curY + 5, { width: cols[6].w - 6, align: cols[6].align });
+      doc.text(String(it.quantity || 1), cols[2].x + 2, curY + 5, { width: cols[2].w - 4, align: cols[2].align });
+      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[3].x + 2, curY + 5, { width: cols[3].w - 4, align: cols[3].align });
+      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[4].x + 2, curY + 5, { width: cols[4].w - 4, align: cols[4].align });
+      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[5].x + 2, curY + 5, { width: cols[5].w - 4, align: cols[5].align });
+      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[6].x + 2, curY + 5, { width: cols[6].w - 4, align: cols[6].align });
     }
 
     doc.moveTo(leftMargin, curY + rowHeight).lineTo(rightMargin, curY + rowHeight).strokeColor('#e2e8f0').lineWidth(0.5).stroke();
@@ -549,8 +550,8 @@ function generateQuotationPDF(quotation, res) {
   doc.rect(leftMargin, curY, contentWidth, 24).fill('#e2e8f0');
   doc.fillColor(style.primaryColor).font('Helvetica-Bold').fontSize(10);
   const totalValCol = isAditya ? cols[7] : cols[6];
-  doc.text('Grand Total:', cols[0].x, curY + 6, { width: totalValCol.x - cols[0].x - 5, align: 'right' });
-  doc.text('Rs. ' + Number(quotation.totalAmount || 0).toLocaleString('en-IN'), totalValCol.x + 3, curY + 6, { width: totalValCol.w - 6, align: totalValCol.align });
+  doc.text('Grand Total:', leftMargin + 10, curY + 6, { width: totalValCol.x - leftMargin - 15, align: 'right' });
+  doc.text('Rs. ' + Number(quotation.totalAmount || 0).toLocaleString('en-IN'), totalValCol.x + 2, curY + 6, { width: totalValCol.w - 4, align: totalValCol.align });
 
   curY += 32;
 
@@ -562,6 +563,11 @@ function generateQuotationPDF(quotation, res) {
     curY += 28;
   }
 
+  // Filter out electronic copy disclaimer if present in terms to avoid duplicate
+  const cleanTerms = (quotation.terms && Array.isArray(quotation.terms))
+    ? quotation.terms.filter(t => !t.toLowerCase().includes('electronic copy'))
+    : [];
+
   // Terms & Conditions / Delivery Footer
   doc.font('Helvetica-Bold').fontSize(9).fillColor('#0f172a').text('Terms & Conditions:', leftMargin, curY);
   curY += 12;
@@ -570,15 +576,13 @@ function generateQuotationPDF(quotation, res) {
     doc.text('• ' + quotation.deliveryTerms, leftMargin + 8, curY);
     curY += 12;
   }
-  if (quotation.terms && Array.isArray(quotation.terms)) {
-    quotation.terms.forEach(t => {
-      doc.text('• ' + t, leftMargin + 8, curY);
-      curY += 12;
-    });
-  }
+  cleanTerms.forEach(t => {
+    doc.text('• ' + t, leftMargin + 8, curY);
+    curY += 12;
+  });
 
-  // Disclaimer
-  curY += 14;
+  // Single Disclaimer at the bottom
+  curY += 12;
   doc.font('Helvetica-Oblique').fontSize(8).fillColor('#64748b')
      .text('An electronic copy does not carry any signature.', leftMargin, curY, { align: 'center', width: contentWidth });
 
