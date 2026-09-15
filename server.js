@@ -325,6 +325,34 @@ const procurementSchema = new mongoose.Schema({
 });
 const Procurement = mongoose.model('Procurement', procurementSchema);
 
+const quotationSchema = new mongoose.Schema({
+  sheet_name: { type: String, default: '' },
+  vendor_name: { type: String, required: true },
+  vendor_address: { type: String, default: '' },
+  quote_date: { type: String, default: '' },
+  client_name: { type: String, default: 'International Institute of Business Studies' },
+  client_address: { type: String, default: 'Bangalore' },
+  items: [{
+    slNo: Number,
+    product: String,
+    description: String,
+    hsn: String,
+    quantity: Number,
+    rate: Number,
+    total: Number,
+    gst: Number,
+    amount: Number
+  }],
+  total_amount: { type: Number, default: 0 },
+  amount_in_words: { type: String, default: '' },
+  delivery_terms: { type: String, default: 'Delivery: within 7 working days' },
+  terms: [String],
+  source: { type: String, default: 'excel' }, // 'excel' or 'created'
+  created_at: { type: Date, default: Date.now }
+});
+const Quotation = mongoose.models.Quotation || mongoose.model('Quotation', quotationSchema);
+
+
 const stockLogSchema = new mongoose.Schema({
   id: { type: String, default: () => crypto.randomUUID(), unique: true },
   item_id: String,
@@ -1811,6 +1839,222 @@ app.post('/api/bunk-staff/rotate-all', async (req, res) => {
 app.delete('/api/bunk-staff/:id', async (req, res) => {
   try {
     await BunkStaff.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==================== QUOTATION APIS ====================
+const quotationHelper = require('./quotation_helper');
+
+// Read directly from Excel file (Mangala It, GDS Techno Service, etc.)
+app.get('/api/quotations/read-excel', async (req, res) => {
+  try {
+    const data = quotationHelper.parseQuotationExcel();
+    res.json({ success: true, count: data.length, sheets: data });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Sync from Excel to Quotation collection
+app.post('/api/quotations/sync-excel', async (req, res) => {
+  try {
+    const excelSheets = quotationHelper.parseQuotationExcel();
+    const synced = [];
+    for (const sheet of excelSheets) {
+      let doc = await Quotation.findOne({ sheet_name: sheet.sheetName });
+      if (!doc) {
+        doc = new Quotation({
+          sheet_name: sheet.sheetName,
+          vendor_name: sheet.vendorName,
+          vendor_address: sheet.vendorAddress,
+          quote_date: sheet.quoteDate,
+          client_name: sheet.clientName,
+          client_address: sheet.clientAddress,
+          items: sheet.items,
+          total_amount: sheet.totalAmount,
+          amount_in_words: sheet.amountInWords,
+          delivery_terms: sheet.deliveryTerms,
+          terms: sheet.terms,
+          source: 'excel'
+        });
+        await doc.save();
+      } else {
+        doc.vendor_name = sheet.vendorName;
+        doc.vendor_address = sheet.vendorAddress;
+        doc.quote_date = sheet.quoteDate;
+        doc.items = sheet.items;
+        doc.total_amount = sheet.totalAmount;
+        doc.amount_in_words = sheet.amountInWords;
+        doc.delivery_terms = sheet.deliveryTerms;
+        doc.terms = sheet.terms;
+        await doc.save();
+      }
+      synced.push(doc);
+    }
+    res.json({ success: true, count: synced.length, quotations: synced });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// List all quotations (from DB or fallback to Excel)
+app.get('/api/quotations', async (req, res) => {
+  try {
+    let list = await Quotation.find().sort({ created_at: -1 });
+    if (list.length === 0) {
+      // Auto initial sync from excel
+      try {
+        const excelSheets = quotationHelper.parseQuotationExcel();
+        for (const sheet of excelSheets) {
+          const doc = new Quotation({
+            sheet_name: sheet.sheetName,
+            vendor_name: sheet.vendorName,
+            vendor_address: sheet.vendorAddress,
+            quote_date: sheet.quoteDate,
+            client_name: sheet.clientName,
+            client_address: sheet.clientAddress,
+            items: sheet.items,
+            total_amount: sheet.totalAmount,
+            amount_in_words: sheet.amountInWords,
+            delivery_terms: sheet.deliveryTerms,
+            terms: sheet.terms,
+            source: 'excel'
+          });
+          await doc.save();
+        }
+        list = await Quotation.find().sort({ created_at: -1 });
+      } catch (err) {
+        console.warn('Initial excel quotation sync fallback:', err.message);
+      }
+    }
+    res.json(list);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Create new quotation (in same format) and optionally append to Excel
+app.post('/api/quotations', async (req, res) => {
+  try {
+    const {
+      vendor_name,
+      vendor_address,
+      quote_date,
+      client_name,
+      client_address,
+      items,
+      delivery_terms,
+      terms,
+      save_to_excel
+    } = req.body;
+
+    if (!vendor_name) {
+      return res.status(400).json({ error: 'Vendor name is required' });
+    }
+
+    let calculatedItems = [];
+    let grandTotal = 0;
+
+    if (Array.isArray(items)) {
+      calculatedItems = items.map((it, idx) => {
+        const qty = Number(it.quantity || 1);
+        const rate = Number(it.rate || 0);
+        const total = Number(it.total !== undefined ? it.total : (qty * rate));
+        const gstRate = Number(it.gst_percent !== undefined ? it.gst_percent : 18);
+        const gst = Number(it.gst !== undefined ? it.gst : Math.round((total * gstRate) / 100));
+        const amount = Number(it.amount !== undefined ? it.amount : (total + gst));
+        grandTotal += amount;
+        return {
+          slNo: idx + 1,
+          product: it.product || '',
+          description: it.description || '',
+          hsn: it.hsn || '',
+          quantity: qty,
+          rate: rate,
+          total: total,
+          gst: gst,
+          amount: amount
+        };
+      });
+    }
+
+    const amountInWords = quotationHelper.numberToWordsINR(grandTotal);
+
+    const newQuotation = new Quotation({
+      sheet_name: req.body.sheet_name || vendor_name,
+      vendor_name,
+      vendor_address: vendor_address || '',
+      quote_date: quote_date || new Date().toLocaleDateString('en-GB'),
+      client_name: client_name || 'International Institute of Business Studies',
+      client_address: client_address || 'Bangalore',
+      items: calculatedItems,
+      total_amount: grandTotal,
+      amount_in_words: amountInWords,
+      delivery_terms: delivery_terms || 'Delivery: within 7 working days',
+      terms: terms || ['Taxes: All Inclusive', 'Payment: 100% as Advance'],
+      source: 'created'
+    });
+
+    await newQuotation.save();
+
+    let appendedSheetName = null;
+    if (save_to_excel !== false) {
+      try {
+        appendedSheetName = quotationHelper.appendQuotationToExcel({
+          vendorName: newQuotation.vendor_name,
+          vendorAddress: newQuotation.vendor_address,
+          quoteDate: newQuotation.quote_date,
+          clientName: newQuotation.client_name,
+          clientAddress: newQuotation.client_address,
+          items: newQuotation.items,
+          totalAmount: newQuotation.total_amount,
+          amountInWords: newQuotation.amount_in_words,
+          deliveryTerms: newQuotation.delivery_terms,
+          terms: newQuotation.terms
+        });
+        newQuotation.sheet_name = appendedSheetName;
+        await newQuotation.save();
+      } catch (ex) {
+        console.warn('Could not append quotation to excel file:', ex.message);
+      }
+    }
+
+    res.status(201).json({ success: true, quotation: newQuotation, appendedSheet: appendedSheetName });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Generate quotation PDF
+app.get('/api/quotations/:id/pdf', async (req, res) => {
+  try {
+    const q = await Quotation.findById(req.params.id);
+    if (!q) return res.status(404).json({ error: 'Quotation not found' });
+
+    quotationHelper.generateQuotationPDF({
+      vendorName: q.vendor_name,
+      vendorAddress: q.vendor_address,
+      quoteDate: q.quote_date,
+      clientName: q.client_name,
+      clientAddress: q.client_address,
+      items: q.items,
+      totalAmount: q.total_amount,
+      amountInWords: q.amount_in_words,
+      deliveryTerms: q.delivery_terms,
+      terms: q.terms
+    }, res);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete quotation
+app.delete('/api/quotations/:id', async (req, res) => {
+  try {
+    await Quotation.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });

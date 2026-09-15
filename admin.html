@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -34,6 +34,7 @@
         <a href="#" data-tab="inventory"><i data-lucide="package"></i> Stock Register</a>
         <a href="#" data-tab="vendor"><i data-lucide="file-check"></i> Vendor Management</a>
         <a href="#" data-tab="procurement"><i data-lucide="shopping-cart"></i> Procurement</a>
+        <a href="#" data-tab="quotations"><i data-lucide="file-spreadsheet"></i> Quotations</a>
         <a href="laptop-report.html"><i data-lucide="laptop"></i> Laptop Report</a>
         <a href="staff-laptop-report.html"><i data-lucide="monitor"></i> Staff Laptop Report</a>
         <a href="laptop-lists.html"><i data-lucide="file-text"></i> Laptop PDF Lists</a>
@@ -446,6 +447,49 @@
         <div class="empty-state">
           <i data-lucide="loader" class="spin"></i>
           <p>Loading procurement records...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: QUOTATIONS -->
+    <div id="quotations" class="tab-content">
+      <div class="track-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h2><i data-lucide="file-spreadsheet" class="section-icon"></i> Vendor Quotations</h2>
+          <p>Read from Quotation Excel (Mangala IT, GDS Techno Service, etc.) and create quotations in identical format.</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button id="syncQuotationExcelBtn" class="btn-secondary" style="margin-bottom: 0;">
+            <i data-lucide="refresh-cw"></i> Read / Sync Excel
+          </button>
+          <button id="addQuotationBtn" class="btn-primary" style="margin-bottom: 0;">
+            <i data-lucide="plus"></i> Create Quotation
+          </button>
+        </div>
+      </div>
+
+      <!-- Quotations Summary / Filter Bar -->
+      <div style="display: flex; gap: 15px; margin-top: 1.5rem; align-items: center; flex-wrap: wrap;">
+        <div class="search-input-wrapper" style="flex: 1; min-width: 260px;">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="quoteSearchInput" placeholder="Search vendor, sheet, product or model..." style="width: 100%; padding-left: 2.5rem;">
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);">Sheet / Vendor:</label>
+          <select id="quoteSheetFilter" style="padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary);">
+            <option value="ALL">All Sheets / Vendors</option>
+            <option value="Mangala It">Mangala IT Solutions</option>
+            <option value="GDS Techno Service">GDS Techno Service</option>
+            <option value="ADITYA COMPUTER">ADITYA COMPUTER</option>
+            <option value="Sheet2">SCS SAI COMPUTER SERVICES</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ticket-list" id="quotationsListContainer" style="margin-top: 1.5rem;">
+        <div class="empty-state">
+          <i data-lucide="loader" class="spin"></i>
+          <p>Loading quotations...</p>
         </div>
       </div>
     </div>
@@ -1172,6 +1216,119 @@
         <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
           <button type="button" class="btn-secondary" id="manualReplyCloseBtn">Cancel</button>
           <button type="submit" class="btn-primary" id="manualReplySubmitBtn">Add Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create / View Quotation Modal -->
+  <div class="modal-overlay" id="quotationModal">
+    <div class="modal-content" style="max-width: 850px; text-align: left; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem;">
+        <div>
+          <h2 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="file-spreadsheet" style="color: #3b82f6;"></i>
+            <span id="quoteModalTitle">Create Vendor Quotation</span>
+          </h2>
+          <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-secondary);">
+            Generate quotation matching Quotation.xlsx format (Mangala IT, GDS Techno Service, etc.)
+          </p>
+        </div>
+        <button type="button" class="btn-icon" id="quoteModalCloseIcon" style="border: none; background: transparent; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+      </div>
+
+      <form id="quotationForm">
+        <input type="hidden" id="quoteEditId" value="">
+
+        <!-- Quick Template Selector -->
+        <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <span style="font-weight: 600; font-size: 0.85rem; color: #1d4ed8;"><i data-lucide="sparkles" style="width: 16px; height: 16px; vertical-align: middle;"></i> Load Vendor Preset:</span>
+          <button type="button" class="btn-secondary quote-preset-btn" data-preset="mangala" style="padding: 4px 10px; font-size: 0.8rem;">Mangala IT Solutions</button>
+          <button type="button" class="btn-secondary quote-preset-btn" data-preset="gds" style="padding: 4px 10px; font-size: 0.8rem;">GDS Techno Service</button>
+          <button type="button" class="btn-secondary quote-preset-btn" data-preset="aditya" style="padding: 4px 10px; font-size: 0.8rem;">ADITYA COMPUTER</button>
+          <button type="button" class="btn-secondary quote-preset-btn" data-preset="scs" style="padding: 4px 10px; font-size: 0.8rem;">SCS SAI COMPUTER</button>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-column">
+            <div class="form-group">
+              <label>Vendor / Company Name *</label>
+              <input type="text" id="quoteVendorName" required placeholder="e.g. Mangala IT Solutions">
+            </div>
+            <div class="form-group">
+              <label>Vendor Address & Contact *</label>
+              <textarea id="quoteVendorAddress" rows="3" placeholder="#970, L.I.G, Yelahanka New Town, Bengaluru... Phone: 078993 40027" required></textarea>
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="form-group">
+              <label>Quotation Date *</label>
+              <input type="text" id="quoteDate" required placeholder="DD.MM.YYYY (e.g. 06.07.2026)">
+            </div>
+            <div class="form-group">
+              <label>Client Name</label>
+              <input type="text" id="quoteClientName" value="International Institute of Business Studies" required>
+            </div>
+            <div class="form-group">
+              <label>Client Location</label>
+              <input type="text" id="quoteClientAddress" value="Bangalore" placeholder="e.g. Bangalore">
+            </div>
+          </div>
+        </div>
+
+        <!-- Line Items Section -->
+        <div style="margin-top: 1.5rem; margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0; font-size: 1.05rem;"><i data-lucide="list-ordered" style="width: 18px; height: 18px; vertical-align: middle;"></i> Quotation Items</h3>
+          <button type="button" class="btn-primary" id="addQuoteItemBtn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #10b981; border: none; display: flex; align-items: center; gap: 4px;">
+            <i data-lucide="plus-circle" style="width: 16px; height: 16px;"></i> Add Item
+          </button>
+        </div>
+
+        <div id="quoteItemsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Item rows will be rendered here dynamically -->
+        </div>
+
+        <!-- Totals and Words Summary -->
+        <div style="margin-top: 1.2rem; background: var(--bg-hover, #f8fafc); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <span style="font-size: 0.85rem; color: var(--text-secondary);">Amount in Words:</span>
+              <div id="quoteAmountWordsDisplay" style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem; margin-top: 2px;">Rupees Zero Only</div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 0.85rem; color: var(--text-secondary);">Grand Total (All Inclusive):</span>
+              <div id="quoteGrandTotalDisplay" style="font-size: 1.3rem; font-weight: 800; color: #2563eb;">₹ 0.00</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top: 1rem;">
+          <div class="form-column">
+            <div class="form-group">
+              <label>Delivery Terms</label>
+              <input type="text" id="quoteDeliveryTerms" value="Delivery: within 7 working days" placeholder="Delivery: within 7 working days">
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="form-group">
+              <label>Terms & Conditions (Comma or Newline separated)</label>
+              <textarea id="quoteTerms" rows="2" placeholder="Taxes: All Inclusive&#10;Payment: 100% as Advance"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 0.8rem;">
+          <input type="checkbox" id="quoteSaveToExcel" checked style="width: 16px; height: 16px;">
+          <label for="quoteSaveToExcel" style="font-size: 0.9rem; font-weight: 500; cursor: pointer;">
+            Append as new sheet to <strong>Quotation.xlsx</strong> in <code>D:\Local Disk F_4282023147\New folder\Quotation\</code>
+          </label>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <button type="button" class="btn-secondary" id="quoteModalCloseBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="quoteSubmitBtn" style="display: flex; align-items: center; gap: 6px;">
+            <i data-lucide="check"></i> Save Quotation
+          </button>
         </div>
       </form>
     </div>

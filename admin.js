@@ -638,6 +638,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       fetchSavedVendors();
     } else if (tabId === 'procurement') {
       fetchProcurement();
+    } else if (tabId === 'quotations') {
+      fetchQuotations();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2671,5 +2673,430 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
   });
+
+  // ==================== QUOTATION SYSTEM ====================
+  let quotationRecords = [];
+  const quoteModal = document.getElementById('quotationModal');
+  const quoteForm = document.getElementById('quotationForm');
+  const quoteItemsContainer = document.getElementById('quoteItemsContainer');
+  const addQuoteBtn = document.getElementById('addQuotationBtn');
+  const syncQuoteBtn = document.getElementById('syncQuotationExcelBtn');
+  const quoteModalCloseBtn = document.getElementById('quoteModalCloseBtn');
+  const quoteModalCloseIcon = document.getElementById('quoteModalCloseIcon');
+  const addQuoteItemBtn = document.getElementById('addQuoteItemBtn');
+  const quoteSearchInput = document.getElementById('quoteSearchInput');
+  const quoteSheetFilter = document.getElementById('quoteSheetFilter');
+
+  const vendorPresets = {
+    mangala: {
+      name: 'Mangala IT Solutions',
+      address: '#970, L.I.G , 2nd Stage, 16th B Cross Rd, Housing Board Colony, Yelahanka New Town, Bengaluru, Karnataka 560064\nPhone: 078993 40027',
+      delivery: 'Delivery: within 7 working days',
+      terms: 'An electronic copy does not carry any signature.'
+    },
+    gds: {
+      name: 'GDS Techno Service',
+      address: 'No. 120, 40 Feet Road, Phase 2, WOC Road, Opposite City Hospital, Manjunath Nagar, Bangalore - 560010\nPhone: 9448151117',
+      delivery: 'Delivery: within 7 working days',
+      terms: 'Taxes: All Inclusive\nPayment: 100% as Advance'
+    },
+    aditya: {
+      name: 'ADITYA COMPUTER',
+      address: '1080, 1ST Floor, 12th Cross, Kadandramapuram, Malleshwaram, Bengaluru-560003\nMob: 9342533253',
+      delivery: 'Delivery: within 7 working days',
+      terms: 'An electronic copy does not carry any signature.'
+    },
+    scs: {
+      name: 'SCS SAI COMPUTER SERVICES',
+      address: '20/4, 4th Cross, Ganesha Block, R.T. Nagar, Bangalore -560032\nPhone : 080 23434428   E-Mail : scs@net4india.com',
+      delivery: 'Delivery: within 7 working days',
+      terms: 'Taxes: All Inclusive\nPayment: 100% as Advance'
+    }
+  };
+
+  document.querySelectorAll('.quote-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = vendorPresets[btn.dataset.preset];
+      if (!p) return;
+      document.getElementById('quoteVendorName').value = p.name;
+      document.getElementById('quoteVendorAddress').value = p.address;
+      document.getElementById('quoteDeliveryTerms').value = p.delivery;
+      document.getElementById('quoteTerms').value = p.terms;
+    });
+  });
+
+  function createQuoteItemRow(data = {}) {
+    const row = document.createElement('div');
+    row.className = 'quote-item-row';
+    row.style = 'display: grid; grid-template-columns: 2fr 1fr 1.2fr 1fr 1.2fr 40px; gap: 8px; align-items: center; background: #fff; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;';
+    row.innerHTML = `
+      <div>
+        <input type="text" class="quote-item-prod" placeholder="Product / Model *" value="${data.product || ''}" required style="width: 100%; padding: 6px 8px; font-size: 0.85rem;">
+      </div>
+      <div>
+        <input type="number" class="quote-item-qty" placeholder="Qty" min="1" value="${data.quantity || 1}" required style="width: 100%; padding: 6px 8px; font-size: 0.85rem;">
+      </div>
+      <div>
+        <input type="number" class="quote-item-rate" placeholder="Rate (₹) *" min="0" step="any" value="${data.rate !== undefined ? data.rate : ''}" required style="width: 100%; padding: 6px 8px; font-size: 0.85rem;">
+      </div>
+      <div>
+        <select class="quote-item-gst" style="width: 100%; padding: 6px 8px; font-size: 0.85rem;">
+          <option value="18" ${(data.gst_percent === 18 || data.gst_percent === undefined) ? 'selected' : ''}>18% GST</option>
+          <option value="12" ${data.gst_percent === 12 ? 'selected' : ''}>12% GST</option>
+          <option value="5" ${data.gst_percent === 5 ? 'selected' : ''}>5% GST</option>
+          <option value="28" ${data.gst_percent === 28 ? 'selected' : ''}>28% GST</option>
+          <option value="0" ${data.gst_percent === 0 ? 'selected' : ''}>0% (Exempt)</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" class="quote-item-total" placeholder="Amount (₹)" readonly value="${data.amount ? ('₹ ' + Number(data.amount).toLocaleString('en-IN')) : '₹ 0.00'}" style="width: 100%; padding: 6px 8px; font-size: 0.85rem; background: #f1f5f9; font-weight: 600;">
+      </div>
+      <div>
+        <button type="button" class="btn-icon remove-quote-item-btn" style="color: #ef4444; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: 1px solid #fee2e2;">
+          <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+    `;
+
+    const qtyInput = row.querySelector('.quote-item-qty');
+    const rateInput = row.querySelector('.quote-item-rate');
+    const gstInput = row.querySelector('.quote-item-gst');
+    const removeBtn = row.querySelector('.remove-quote-item-btn');
+
+    function updateRowTotal() {
+      const q = parseFloat(qtyInput.value) || 0;
+      const r = parseFloat(rateInput.value) || 0;
+      const g = parseFloat(gstInput.value) || 0;
+      const total = q * r;
+      const gstAmt = Math.round((total * g) / 100);
+      const amount = total + gstAmt;
+      row.querySelector('.quote-item-total').value = '₹ ' + amount.toLocaleString('en-IN');
+      recalcQuotationTotals();
+    }
+
+    qtyInput.addEventListener('input', updateRowTotal);
+    rateInput.addEventListener('input', updateRowTotal);
+    gstInput.addEventListener('change', updateRowTotal);
+
+    removeBtn.addEventListener('click', () => {
+      if (quoteItemsContainer.children.length > 1) {
+        row.remove();
+        recalcQuotationTotals();
+      } else {
+        alert('Quotation must have at least one line item');
+      }
+    });
+
+    if (window.lucide) lucide.createIcons({ root: row });
+    return row;
+  }
+
+  function numberToWordsINRClient(num) {
+    if (!num || isNaN(num)) return 'Rupees Zero Only';
+    num = Math.round(num);
+    const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 
+               'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    function twoDigits(n) {
+      if (n < 20) return a[n];
+      return b[Math.floor(n / 10)] + (n % 10 ? ' ' + a[n % 10] : '');
+    }
+
+    function threeDigits(n) {
+      let str = '';
+      const h = Math.floor(n / 100);
+      const rem = n % 100;
+      if (h > 0) str += a[h] + ' Hundred';
+      if (rem > 0) str += (h > 0 ? ' and ' : '') + twoDigits(rem);
+      return str;
+    }
+
+    let words = '';
+    const crore = Math.floor(num / 10000000);
+    num %= 10000000;
+    const lakh = Math.floor(num / 100000);
+    num %= 100000;
+    const thousand = Math.floor(num / 1000);
+    num %= 1000;
+
+    if (crore > 0) words += twoDigits(crore) + ' Crore ';
+    if (lakh > 0) words += twoDigits(lakh) + ' Lakh ';
+    if (thousand > 0) words += twoDigits(thousand) + ' Thousand ';
+    if (num > 0) words += threeDigits(num);
+
+    return 'Rupees ' + words.trim() + ' Only';
+  }
+
+  function recalcQuotationTotals() {
+    let grandTotal = 0;
+    const rows = quoteItemsContainer.querySelectorAll('.quote-item-row');
+    rows.forEach(r => {
+      const q = parseFloat(r.querySelector('.quote-item-qty').value) || 0;
+      const rate = parseFloat(r.querySelector('.quote-item-rate').value) || 0;
+      const g = parseFloat(r.querySelector('.quote-item-gst').value) || 0;
+      const tot = q * rate;
+      const gstVal = Math.round((tot * g) / 100);
+      grandTotal += (tot + gstVal);
+    });
+
+    document.getElementById('quoteGrandTotalDisplay').innerText = '₹ ' + grandTotal.toLocaleString('en-IN');
+    document.getElementById('quoteAmountWordsDisplay').innerText = numberToWordsINRClient(grandTotal);
+  }
+
+  function openQuotationModal(editDoc = null) {
+    quoteForm.reset();
+    quoteItemsContainer.innerHTML = '';
+
+    if (editDoc) {
+      document.getElementById('quoteModalTitle').innerText = 'Edit Quotation';
+      document.getElementById('quoteEditId').value = editDoc._id || '';
+      document.getElementById('quoteVendorName').value = editDoc.vendor_name || '';
+      document.getElementById('quoteVendorAddress').value = editDoc.vendor_address || '';
+      document.getElementById('quoteDate').value = editDoc.quote_date || '';
+      document.getElementById('quoteClientName').value = editDoc.client_name || 'International Institute of Business Studies';
+      document.getElementById('quoteClientAddress').value = editDoc.client_address || 'Bangalore';
+      document.getElementById('quoteDeliveryTerms').value = editDoc.delivery_terms || 'Delivery: within 7 working days';
+      document.getElementById('quoteTerms').value = Array.isArray(editDoc.terms) ? editDoc.terms.join('\n') : (editDoc.terms || '');
+
+      if (editDoc.items && editDoc.items.length > 0) {
+        editDoc.items.forEach(it => {
+          quoteItemsContainer.appendChild(createQuoteItemRow(it));
+        });
+      } else {
+        quoteItemsContainer.appendChild(createQuoteItemRow());
+      }
+    } else {
+      document.getElementById('quoteModalTitle').innerText = 'Create Vendor Quotation';
+      document.getElementById('quoteEditId').value = '';
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      document.getElementById('quoteDate').value = `${dd}.${mm}.${yyyy}`;
+      quoteItemsContainer.appendChild(createQuoteItemRow());
+    }
+
+    recalcQuotationTotals();
+    quoteModal.classList.add('active');
+    if (window.lucide) lucide.createIcons({ root: quoteModal });
+  }
+
+  function closeQuotationModal() {
+    quoteModal.classList.remove('active');
+  }
+
+  if (addQuoteBtn) addQuoteBtn.addEventListener('click', () => openQuotationModal());
+  if (quoteModalCloseBtn) quoteModalCloseBtn.addEventListener('click', closeQuotationModal);
+  if (quoteModalCloseIcon) quoteModalCloseIcon.addEventListener('click', closeQuotationModal);
+  if (addQuoteItemBtn) {
+    addQuoteItemBtn.addEventListener('click', () => {
+      quoteItemsContainer.appendChild(createQuoteItemRow());
+      if (window.lucide) lucide.createIcons({ root: quoteItemsContainer });
+    });
+  }
+
+  if (quoteForm) {
+    quoteForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('quoteSubmitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i data-lucide="loader" class="spin"></i> Saving...';
+
+      try {
+        const rows = quoteItemsContainer.querySelectorAll('.quote-item-row');
+        const items = [];
+        rows.forEach(r => {
+          const product = r.querySelector('.quote-item-prod').value.trim();
+          const quantity = parseFloat(r.querySelector('.quote-item-qty').value) || 1;
+          const rate = parseFloat(r.querySelector('.quote-item-rate').value) || 0;
+          const gst_percent = parseFloat(r.querySelector('.quote-item-gst').value) || 18;
+          const total = quantity * rate;
+          const gst = Math.round((total * gst_percent) / 100);
+          const amount = total + gst;
+          items.push({ product, quantity, rate, total, gst, gst_percent, amount });
+        });
+
+        const termsStr = document.getElementById('quoteTerms').value.trim();
+        const termsArr = termsStr ? termsStr.split('\n').map(t => t.trim()).filter(Boolean) : [];
+
+        const payload = {
+          vendor_name: document.getElementById('quoteVendorName').value.trim(),
+          vendor_address: document.getElementById('quoteVendorAddress').value.trim(),
+          quote_date: document.getElementById('quoteDate').value.trim(),
+          client_name: document.getElementById('quoteClientName').value.trim(),
+          client_address: document.getElementById('quoteClientAddress').value.trim(),
+          delivery_terms: document.getElementById('quoteDeliveryTerms').value.trim(),
+          terms: termsArr,
+          items: items,
+          save_to_excel: document.getElementById('quoteSaveToExcel').checked
+        };
+
+        const res = await fetch('/api/quotations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to save quotation');
+
+        closeQuotationModal();
+        await fetchQuotations();
+        alert('Quotation saved successfully!' + (data.appendedSheet ? ` Appended to Excel sheet: "${data.appendedSheet}"` : ''));
+      } catch (err) {
+        alert('Error saving quotation: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i data-lucide="check"></i> Save Quotation';
+        if (window.lucide) lucide.createIcons();
+      }
+    });
+  }
+
+  async function fetchQuotations() {
+    const container = document.getElementById('quotationsListContainer');
+    if (!container) return;
+    container.innerHTML = '<div class="empty-state"><i data-lucide="loader" class="spin"></i><p>Loading quotations...</p></div>';
+    if (window.lucide) lucide.createIcons({ root: container });
+
+    try {
+      const res = await fetch('/api/quotations');
+      quotationRecords = await res.json();
+      renderQuotationCards();
+    } catch (err) {
+      container.innerHTML = `<div class="empty-state"><p style="color: #ef4444;">Failed to load quotations: ${err.message}</p></div>`;
+    }
+  }
+
+  if (syncQuoteBtn) {
+    syncQuoteBtn.addEventListener('click', async () => {
+      syncQuoteBtn.disabled = true;
+      syncQuoteBtn.innerHTML = '<i data-lucide="loader" class="spin"></i> Syncing Excel...';
+      if (window.lucide) lucide.createIcons({ root: syncQuoteBtn });
+
+      try {
+        const res = await fetch('/api/quotations/sync-excel', { method: 'POST' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to sync');
+        alert(`Successfully synced ${data.count} sheets from Quotation.xlsx!`);
+        await fetchQuotations();
+      } catch (err) {
+        alert('Error syncing with Quotation.xlsx: ' + err.message);
+      } finally {
+        syncQuoteBtn.disabled = false;
+        syncQuoteBtn.innerHTML = '<i data-lucide="refresh-cw"></i> Read / Sync Excel';
+        if (window.lucide) lucide.createIcons({ root: syncQuoteBtn });
+      }
+    });
+  }
+
+  function renderQuotationCards() {
+    const container = document.getElementById('quotationsListContainer');
+    if (!container) return;
+
+    const searchTerm = (quoteSearchInput ? quoteSearchInput.value : '').toLowerCase().trim();
+    const filterSheet = quoteSheetFilter ? quoteSheetFilter.value : 'ALL';
+
+    const filtered = quotationRecords.filter(q => {
+      if (filterSheet !== 'ALL') {
+        const sName = (q.sheet_name || '').toLowerCase();
+        const vName = (q.vendor_name || '').toLowerCase();
+        const target = filterSheet.toLowerCase();
+        if (!sName.includes(target) && !vName.includes(target)) return false;
+      }
+
+      if (!searchTerm) return true;
+      const v = (q.vendor_name || '').toLowerCase();
+      const s = (q.sheet_name || '').toLowerCase();
+      const itemsMatch = (q.items || []).some(it => (it.product || '').toLowerCase().includes(searchTerm) || (it.description || '').toLowerCase().includes(searchTerm));
+      return v.includes(searchTerm) || s.includes(searchTerm) || itemsMatch;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i data-lucide="file-x"></i>
+          <p>No quotations found matching criteria</p>
+        </div>`;
+      if (window.lucide) lucide.createIcons({ root: container });
+      return;
+    }
+
+    container.innerHTML = filtered.map(q => {
+      const itemsListHtml = (q.items || []).slice(0, 4).map(it => `
+        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; padding: 3px 0; border-bottom: 1px dashed #f1f5f9;">
+          <span style="color: #1e293b; font-weight: 500;">${it.product || it.description || 'Item'} (x${it.quantity || 1})</span>
+          <span style="color: #475569; font-weight: 600;">₹ ${(it.amount || 0).toLocaleString('en-IN')}</span>
+        </div>
+      `).join('');
+
+      const remainingCount = (q.items || []).length - 4;
+
+      return `
+        <div class="ticket-card" style="display: flex; flex-direction: column; gap: 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge" style="background-color: #3b82f6; color: #fff; font-weight: 700; font-size: 0.75rem; padding: 3px 8px; border-radius: 4px;">
+                  ${q.sheet_name || 'QUOTATION'}
+                </span>
+                <span style="font-size: 0.8rem; color: var(--text-secondary);">Date: <strong>${q.quote_date || 'N/A'}</strong></span>
+                <span class="badge" style="background-color: ${q.source === 'excel' ? '#10b981' : '#8b5cf6'}; color: #fff; font-size: 0.7rem; padding: 2px 6px;">
+                  ${q.source === 'excel' ? 'Excel Read' : 'App Created'}
+                </span>
+              </div>
+              <h3 style="margin: 8px 0 2px 0; font-size: 1.15rem; color: var(--text-primary); font-weight: 700;">
+                ${q.vendor_name || 'Unnamed Vendor'}
+              </h3>
+              <p style="margin: 0; font-size: 0.8rem; color: var(--text-secondary); max-width: 500px; white-space: pre-line;">
+                ${(q.vendor_address || '').split('\n')[0]}
+              </p>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Quotation Total</span>
+              <div style="font-size: 1.4rem; font-weight: 800; color: #2563eb;">
+                ₹ ${(q.total_amount || 0).toLocaleString('en-IN')}
+              </div>
+              <span style="font-size: 0.75rem; color: #64748b;">${(q.items || []).length} item(s)</span>
+            </div>
+          </div>
+
+          <!-- Items Preview Table -->
+          <div style="background: rgba(241, 245, 249, 0.5); border-radius: 8px; padding: 10px; border: 1px solid #e2e8f0;">
+            ${itemsListHtml}
+            ${remainingCount > 0 ? `<div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">+ ${remainingCount} more item(s)...</div>` : ''}
+            ${q.amount_in_words ? `<div style="font-size: 0.75rem; color: #0284c7; font-weight: 600; margin-top: 6px;">${q.amount_in_words}</div>` : ''}
+          </div>
+
+          <!-- Actions Bar -->
+          <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 4px;">
+            <a href="/api/quotations/${q._id}/pdf" target="_blank" class="btn-icon" style="color: #2563eb; border: 1px solid #93c5fd; border-radius: 6px; padding: 6px 12px; text-decoration: none; font-size: 0.82rem; background: #eff6ff; display: flex; align-items: center; gap: 6px;" title="Print / PDF">
+              <i data-lucide="printer" style="width: 15px; height: 15px;"></i> View / Print PDF
+            </a>
+            <button onclick="window.deleteQuotation('${q._id}')" class="btn-icon" style="color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; padding: 6px 10px; font-size: 0.82rem; background: #fff5f5; display: flex; align-items: center; gap: 4px;" title="Delete">
+              <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    if (window.lucide) lucide.createIcons({ root: container });
+  }
+
+  window.deleteQuotation = async function(id) {
+    if (!confirm('Are you sure you want to delete this quotation record?')) return;
+    try {
+      const res = await fetch(`/api/quotations/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      await fetchQuotations();
+    } catch (err) {
+      alert('Error deleting quotation: ' + err.message);
+    }
+  };
+
+  if (quoteSearchInput) quoteSearchInput.addEventListener('input', renderQuotationCards);
+  if (quoteSheetFilter) quoteSheetFilter.addEventListener('change', renderQuotationCards);
 
 });
