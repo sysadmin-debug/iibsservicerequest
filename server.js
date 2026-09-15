@@ -1940,6 +1940,7 @@ app.get('/api/quotations', async (req, res) => {
 app.post('/api/quotations', async (req, res) => {
   try {
     const {
+      edit_id,
       vendor_name,
       vendor_address,
       quote_date,
@@ -1983,46 +1984,66 @@ app.post('/api/quotations', async (req, res) => {
 
     const amountInWords = quotationHelper.numberToWordsINR(grandTotal);
 
-    const newQuotation = new Quotation({
-      sheet_name: req.body.sheet_name || vendor_name,
-      vendor_name,
-      vendor_address: vendor_address || '',
-      quote_date: quote_date || new Date().toLocaleDateString('en-GB'),
-      client_name: client_name || 'International Institute of Business Studies',
-      client_address: client_address || 'Bangalore',
-      items: calculatedItems,
-      total_amount: grandTotal,
-      amount_in_words: amountInWords,
-      delivery_terms: delivery_terms || 'Delivery: within 7 working days',
-      terms: terms || ['Taxes: All Inclusive', 'Payment: 100% as Advance'],
-      source: 'created'
-    });
-
-    await newQuotation.save();
+    let savedQuotation;
+    if (edit_id) {
+      savedQuotation = await Quotation.findByIdAndUpdate(
+        edit_id,
+        {
+          sheet_name: req.body.sheet_name || vendor_name,
+          vendor_name,
+          vendor_address: vendor_address || '',
+          quote_date: quote_date || new Date().toLocaleDateString('en-GB'),
+          client_name: client_name || 'International Institute of Business Studies',
+          client_address: client_address || 'Bangalore',
+          items: calculatedItems,
+          total_amount: grandTotal,
+          amount_in_words: amountInWords,
+          delivery_terms: delivery_terms || 'Delivery: within 7 working days',
+          terms: terms || ['Taxes: All Inclusive', 'Payment: 100% as Advance']
+        },
+        { new: true }
+      );
+    } else {
+      savedQuotation = new Quotation({
+        sheet_name: req.body.sheet_name || vendor_name,
+        vendor_name,
+        vendor_address: vendor_address || '',
+        quote_date: quote_date || new Date().toLocaleDateString('en-GB'),
+        client_name: client_name || 'International Institute of Business Studies',
+        client_address: client_address || 'Bangalore',
+        items: calculatedItems,
+        total_amount: grandTotal,
+        amount_in_words: amountInWords,
+        delivery_terms: delivery_terms || 'Delivery: within 7 working days',
+        terms: terms || ['Taxes: All Inclusive', 'Payment: 100% as Advance'],
+        source: 'created'
+      });
+      await savedQuotation.save();
+    }
 
     let appendedSheetName = null;
-    if (save_to_excel !== false) {
+    if (save_to_excel) {
       try {
         appendedSheetName = quotationHelper.appendQuotationToExcel({
-          vendorName: newQuotation.vendor_name,
-          vendorAddress: newQuotation.vendor_address,
-          quoteDate: newQuotation.quote_date,
-          clientName: newQuotation.client_name,
-          clientAddress: newQuotation.client_address,
-          items: newQuotation.items,
-          totalAmount: newQuotation.total_amount,
-          amountInWords: newQuotation.amount_in_words,
-          deliveryTerms: newQuotation.delivery_terms,
-          terms: newQuotation.terms
+          vendorName: savedQuotation.vendor_name,
+          vendorAddress: savedQuotation.vendor_address,
+          quoteDate: savedQuotation.quote_date,
+          clientName: savedQuotation.client_name,
+          clientAddress: savedQuotation.client_address,
+          items: savedQuotation.items,
+          totalAmount: savedQuotation.total_amount,
+          amountInWords: savedQuotation.amount_in_words,
+          deliveryTerms: savedQuotation.delivery_terms,
+          terms: savedQuotation.terms
         });
-        newQuotation.sheet_name = appendedSheetName;
-        await newQuotation.save();
+        savedQuotation.sheet_name = appendedSheetName;
+        await savedQuotation.save();
       } catch (ex) {
         console.warn('Could not append quotation to excel file:', ex.message);
       }
     }
 
-    res.status(201).json({ success: true, quotation: newQuotation, appendedSheet: appendedSheetName });
+    res.status(200).json({ success: true, quotation: savedQuotation, appendedSheet: appendedSheetName });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

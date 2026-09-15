@@ -1,4 +1,4 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 const xlsx = require('xlsx');
 const PDFDocument = require('pdfkit');
@@ -475,7 +475,7 @@ function generateQuotationPDF(quotation, res) {
 
   curY += 15;
   doc.font('Helvetica-Oblique').fontSize(8).fillColor('#64748b')
-     .text('An electronic copy does not carry any signature. Generated via IIBS ServiceDesk.', leftMargin, curY, { align: 'center', width: contentWidth });
+     .text('An electronic copy does not carry any signature.', leftMargin, curY, { align: 'center', width: contentWidth });
 
   doc.end();
 }

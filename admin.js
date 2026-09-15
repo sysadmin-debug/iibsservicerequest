@@ -2921,6 +2921,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const termsArr = termsStr ? termsStr.split('\n').map(t => t.trim()).filter(Boolean) : [];
 
         const payload = {
+          edit_id: document.getElementById('quoteEditId').value.trim() || undefined,
           vendor_name: document.getElementById('quoteVendorName').value.trim(),
           vendor_address: document.getElementById('quoteVendorAddress').value.trim(),
           quote_date: document.getElementById('quoteDate').value.trim(),
@@ -3071,10 +3072,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           <!-- Actions Bar -->
           <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 4px;">
+            <button onclick="window.editQuotation('${q._id}')" class="btn-icon" style="color: #4f46e5; border: 1px solid #c7d2fe; border-radius: 6px; padding: 6px 12px; text-decoration: none; font-size: 0.82rem; background: #eef2ff; display: flex; align-items: center; gap: 6px; cursor: pointer;" title="Edit Quotation / Add Items">
+              <i data-lucide="edit-3" style="width: 15px; height: 15px;"></i> Edit & Add Items
+            </button>
             <a href="/api/quotations/${q._id}/pdf" target="_blank" class="btn-icon" style="color: #2563eb; border: 1px solid #93c5fd; border-radius: 6px; padding: 6px 12px; text-decoration: none; font-size: 0.82rem; background: #eff6ff; display: flex; align-items: center; gap: 6px;" title="Print / PDF">
               <i data-lucide="printer" style="width: 15px; height: 15px;"></i> View / Print PDF
             </a>
-            <button onclick="window.deleteQuotation('${q._id}')" class="btn-icon" style="color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; padding: 6px 10px; font-size: 0.82rem; background: #fff5f5; display: flex; align-items: center; gap: 4px;" title="Delete">
+            <button onclick="window.deleteQuotation('${q._id}')" class="btn-icon" style="color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; padding: 6px 10px; font-size: 0.82rem; background: #fff5f5; display: flex; align-items: center; gap: 4px; cursor: pointer;" title="Delete">
               <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
             </button>
           </div>
@@ -3084,6 +3088,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (window.lucide) lucide.createIcons({ root: container });
   }
+
+  window.editQuotation = function(id) {
+    const doc = quotationRecords.find(d => d._id === id);
+    if (doc) {
+      openQuotationModal(doc);
+    }
+  };
 
   window.deleteQuotation = async function(id) {
     if (!confirm('Are you sure you want to delete this quotation record?')) return;
