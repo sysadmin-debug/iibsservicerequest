@@ -384,7 +384,8 @@ function getCompanyStyle(vName = '') {
 }
 
 function generateQuotationPDF(quotation, res) {
-  const doc = new PDFDocument({ margins: { top: 35, bottom: 35, left: 35, right: 35 }, size: 'A4' });
+  // Balanced margins for professional full-page A4 document
+  const doc = new PDFDocument({ margins: { top: 40, bottom: 40, left: 40, right: 40 }, size: 'A4' });
 
   res.setHeader('Content-Type', 'application/pdf');
   const safeName = (quotation.vendorName || 'Vendor').replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -394,152 +395,150 @@ function generateQuotationPDF(quotation, res) {
 
   const style = getCompanyStyle(quotation.vendorName);
   const pageWidth = doc.page.width;
-  const leftMargin = 35;
-  const rightMargin = pageWidth - 35;
+  const leftMargin = 40;
+  const rightMargin = pageWidth - 40;
   const contentWidth = rightMargin - leftMargin;
 
   // ================= COMPANY HEADER (DISTINCT PER COMPANY) =================
   if (style.type === 'mangala') {
-    // Mangala: Centered clean formal header with double divider line
-    doc.fillColor(style.primaryColor).fontSize(20).font('Helvetica-Bold')
-       .text(quotation.vendorName.toUpperCase(), leftMargin, 40, { align: 'center', width: contentWidth });
-    doc.fillColor('#475569').fontSize(8.5).font('Helvetica')
-       .text(quotation.vendorAddress || '', leftMargin + 20, 66, { align: 'center', width: contentWidth - 40, lineGap: 2 });
+    doc.fillColor(style.primaryColor).fontSize(23).font('Helvetica-Bold')
+       .text(quotation.vendorName.toUpperCase(), leftMargin, 45, { align: 'center', width: contentWidth });
+    doc.fillColor('#475569').fontSize(10).font('Helvetica')
+       .text(quotation.vendorAddress || '', leftMargin + 20, 76, { align: 'center', width: contentWidth - 40, lineGap: 3 });
 
-    const sepY = doc.y + 8;
-    doc.moveTo(leftMargin, sepY).lineTo(rightMargin, sepY).strokeColor(style.primaryColor).lineWidth(1.5).stroke();
-    doc.moveTo(leftMargin, sepY + 3).lineTo(rightMargin, sepY + 3).strokeColor('#93c5fd').lineWidth(0.5).stroke();
-    doc.y = sepY + 12;
+    const sepY = doc.y + 14;
+    doc.moveTo(leftMargin, sepY).lineTo(rightMargin, sepY).strokeColor(style.primaryColor).lineWidth(2).stroke();
+    doc.moveTo(leftMargin, sepY + 4).lineTo(rightMargin, sepY + 4).strokeColor('#93c5fd').lineWidth(0.8).stroke();
+    doc.y = sepY + 22;
 
   } else if (style.type === 'gds') {
-    // GDS: Left modern badge header with green accent bar
-    doc.rect(leftMargin, 35, 6, 50).fill(style.primaryColor);
-    doc.fillColor(style.primaryColor).fontSize(18).font('Helvetica-Bold')
-       .text(quotation.vendorName, leftMargin + 14, 38);
-    doc.fillColor('#475569').fontSize(8.5).font('Helvetica')
-       .text(quotation.vendorAddress || '', leftMargin + 14, 62, { width: contentWidth - 100, lineGap: 2 });
+    doc.rect(leftMargin, 40, 8, 65).fill(style.primaryColor);
+    doc.fillColor(style.primaryColor).fontSize(22).font('Helvetica-Bold')
+       .text(quotation.vendorName, leftMargin + 18, 44);
+    doc.fillColor('#475569').fontSize(9.5).font('Helvetica')
+       .text(quotation.vendorAddress || '', leftMargin + 18, 74, { width: contentWidth - 120, lineGap: 3 });
 
-    doc.rect(rightMargin - 100, 38, 100, 22).fill(style.accentColor);
-    doc.fillColor(style.primaryColor).fontSize(9).font('Helvetica-Bold')
-       .text('QUOTATION', rightMargin - 100, 44, { width: 100, align: 'center' });
+    doc.rect(rightMargin - 120, 44, 120, 28).fill(style.accentColor);
+    doc.fillColor(style.primaryColor).fontSize(11).font('Helvetica-Bold')
+       .text('QUOTATION', rightMargin - 120, 52, { width: 120, align: 'center' });
 
-    doc.y = 95;
-    doc.moveTo(leftMargin, 95).lineTo(rightMargin, 95).strokeColor('#e2e8f0').lineWidth(1).stroke();
-    doc.y = 105;
+    doc.y = 120;
+    doc.moveTo(leftMargin, 120).lineTo(rightMargin, 120).strokeColor('#e2e8f0').lineWidth(1.5).stroke();
+    doc.y = 135;
 
   } else if (style.type === 'aditya') {
-    // Aditya: Classic corporate two-column block with HSN/Description emphasis
-    doc.rect(leftMargin, 35, contentWidth, 54).fill('#fef3c7');
-    doc.rect(leftMargin, 35, 5, 54).fill('#b45309');
-    doc.fillColor('#78350f').fontSize(18).font('Helvetica-Bold')
-       .text(quotation.vendorName, leftMargin + 15, 42);
-    doc.fillColor('#92400e').fontSize(8.5).font('Helvetica')
-       .text(quotation.vendorAddress || '', leftMargin + 15, 64, { lineGap: 2 });
+    doc.rect(leftMargin, 40, contentWidth, 68).fill('#fef3c7');
+    doc.rect(leftMargin, 40, 6, 68).fill('#b45309');
+    doc.fillColor('#78350f').fontSize(22).font('Helvetica-Bold')
+       .text(quotation.vendorName, leftMargin + 18, 48);
+    doc.fillColor('#92400e').fontSize(10).font('Helvetica')
+       .text(quotation.vendorAddress || '', leftMargin + 18, 76, { lineGap: 3 });
 
-    doc.y = 100;
+    doc.y = 130;
 
   } else if (style.type === 'scs') {
-    // SCS SAI: Full banner header with subtitle
-    doc.rect(leftMargin, 35, contentWidth, 60).fill('#312e81');
-    doc.fillColor('#ffffff').fontSize(16).font('Helvetica-Bold')
-       .text(quotation.vendorName, leftMargin, 42, { align: 'center', width: contentWidth });
-    doc.fillColor('#c7d2fe').fontSize(8.5).font('Helvetica')
-       .text(quotation.vendorAddress || '', leftMargin + 10, 64, { align: 'center', width: contentWidth - 20, lineGap: 2 });
+    doc.rect(leftMargin, 40, contentWidth, 75).fill('#312e81');
+    doc.fillColor('#ffffff').fontSize(20).font('Helvetica-Bold')
+       .text(quotation.vendorName, leftMargin, 48, { align: 'center', width: contentWidth });
+    doc.fillColor('#c7d2fe').fontSize(10).font('Helvetica')
+       .text(quotation.vendorAddress || '', leftMargin + 15, 75, { align: 'center', width: contentWidth - 30, lineGap: 3 });
 
-    doc.y = 105;
+    doc.y = 135;
 
   } else {
-    // Standard / Custom Vendor Header
-    doc.rect(leftMargin, 35, contentWidth, 55).fill(style.primaryColor);
-    doc.fillColor('#ffffff').fontSize(16).font('Helvetica-Bold')
-       .text((quotation.vendorName || 'QUOTATION').toUpperCase(), leftMargin + 15, 45, { width: contentWidth - 30 });
-    doc.fontSize(8.5).font('Helvetica').fillColor('#cbd5e1')
-       .text(quotation.vendorAddress || '', leftMargin + 15, 66, { width: contentWidth - 30 });
-    doc.y = 102;
+    doc.rect(leftMargin, 40, contentWidth, 70).fill(style.primaryColor);
+    doc.fillColor('#ffffff').fontSize(20).font('Helvetica-Bold')
+       .text((quotation.vendorName || 'QUOTATION').toUpperCase(), leftMargin + 18, 52, { width: contentWidth - 36 });
+    doc.fontSize(10).font('Helvetica').fillColor('#cbd5e1')
+       .text(quotation.vendorAddress || '', leftMargin + 18, 78, { width: contentWidth - 36 });
+    doc.y = 130;
   }
 
   // ================= METADATA (TO / DATE) =================
   const metaY = doc.y;
-  doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#1e293b').text('To,', leftMargin, metaY);
-  doc.fontSize(10.5).font('Helvetica-Bold').fillColor(style.primaryColor)
-     .text(quotation.clientName || 'International Institute of Business Studies', leftMargin, metaY + 12);
+  doc.fontSize(11).font('Helvetica-Bold').fillColor('#1e293b').text('To,', leftMargin, metaY);
+  doc.fontSize(12).font('Helvetica-Bold').fillColor(style.primaryColor)
+     .text(quotation.clientName || 'International Institute of Business Studies', leftMargin, metaY + 16);
   if (quotation.clientAddress) {
-    doc.font('Helvetica').fontSize(9).fillColor('#64748b').text(quotation.clientAddress, leftMargin, metaY + 25);
+    doc.font('Helvetica').fontSize(10).fillColor('#64748b').text(quotation.clientAddress, leftMargin, metaY + 33);
   }
 
-  // Right-aligned Date
-  doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#1e293b')
-     .text('Date: ' + (quotation.quoteDate || new Date().toLocaleDateString('en-GB')), rightMargin - 160, metaY, { width: 160, align: 'right' });
+  // Right-aligned Date Box
+  doc.fontSize(11).font('Helvetica-Bold').fillColor('#1e293b')
+     .text('Date: ' + (quotation.quoteDate || new Date().toLocaleDateString('en-GB')), rightMargin - 180, metaY, { width: 180, align: 'right' });
 
-  doc.y = metaY + 45;
-  doc.font('Helvetica').fontSize(9.5).fillColor('#334155')
+  doc.y = metaY + 58;
+  doc.font('Helvetica').fontSize(10.5).fillColor('#334155')
      .text('Dear Sir,\n  Please find the enclosed offer for your kind perusal and consideration.', leftMargin, doc.y);
 
-  doc.moveDown(0.9);
+  doc.moveDown(1.5);
 
-  // ================= ITEMS TABLE (FORMATTED SPECIALLY PER COMPANY) =================
+  // ================= ITEMS TABLE (GENEROUS FULL A4 PROPORTIONS) =================
   const tableTop = doc.y;
   const isAditya = style.type === 'aditya';
 
-  // Different column proportions for Aditya (includes Description & HSN) vs others
-  // Total contentWidth is ~525pt (595.28 - 70)
   const cols = isAditya ? [
-    { name: 'Sl. No', x: leftMargin, w: 35, align: 'center' },
-    { name: 'Product / Model', x: leftMargin + 35, w: 120, align: 'left' },
-    { name: 'Description', x: leftMargin + 155, w: 120, align: 'left' },
-    { name: 'Qty', x: leftMargin + 275, w: 35, align: 'center' },
-    { name: 'Rate (Rs)', x: leftMargin + 310, w: 55, align: 'right' },
-    { name: 'Total (Rs)', x: leftMargin + 365, w: 55, align: 'right' },
-    { name: 'GST', x: leftMargin + 420, w: 45, align: 'right' },
-    { name: 'Amount (Rs)', x: leftMargin + 465, w: contentWidth - 465, align: 'right' }
+    { name: 'Sl. No', x: leftMargin, w: 40, align: 'center' },
+    { name: 'Product / Model', x: leftMargin + 40, w: 125, align: 'left' },
+    { name: 'Description', x: leftMargin + 165, w: 115, align: 'left' },
+    { name: 'Qty', x: leftMargin + 280, w: 35, align: 'center' },
+    { name: 'Rate (Rs)', x: leftMargin + 315, w: 55, align: 'right' },
+    { name: 'Total (Rs)', x: leftMargin + 370, w: 55, align: 'right' },
+    { name: 'GST', x: leftMargin + 425, w: 45, align: 'right' },
+    { name: 'Amount (Rs)', x: leftMargin + 470, w: contentWidth - 470, align: 'right' }
   ] : [
-    { name: 'Sl. No', x: leftMargin, w: 35, align: 'center' },
-    { name: 'Product / Model', x: leftMargin + 35, w: 200, align: 'left' },
-    { name: 'Qty', x: leftMargin + 235, w: 40, align: 'center' },
-    { name: 'Rate (Rs)', x: leftMargin + 275, w: 65, align: 'right' },
-    { name: 'Total (Rs)', x: leftMargin + 340, w: 65, align: 'right' },
-    { name: 'GST (Rs)', x: leftMargin + 405, w: 50, align: 'right' },
-    { name: 'Amount (Rs)', x: leftMargin + 455, w: contentWidth - 455, align: 'right' }
+    { name: 'Sl. No', x: leftMargin, w: 45, align: 'center' },
+    { name: 'Product / Model', x: leftMargin + 45, w: 195, align: 'left' },
+    { name: 'Qty', x: leftMargin + 240, w: 45, align: 'center' },
+    { name: 'Rate (Rs)', x: leftMargin + 285, w: 65, align: 'right' },
+    { name: 'Total (Rs)', x: leftMargin + 350, w: 65, align: 'right' },
+    { name: 'GST (Rs)', x: leftMargin + 415, w: 50, align: 'right' },
+    { name: 'Amount (Rs)', x: leftMargin + 465, w: contentWidth - 465, align: 'right' }
   ];
 
+  const items = quotation.items || [];
+  // Calculate dynamic comfortable row height so small tables expand to fill the A4 page
+  const targetRowHeight = items.length <= 3 ? 42 : (items.length <= 6 ? 34 : 26);
+
   // Table Header Background
-  doc.rect(leftMargin, tableTop, contentWidth, 22).fill(style.tableHeaderBg);
-  doc.fillColor(style.tableHeaderColor).font('Helvetica-Bold').fontSize(8.5);
+  doc.rect(leftMargin, tableTop, contentWidth, 26).fill(style.tableHeaderBg);
+  doc.fillColor(style.tableHeaderColor).font('Helvetica-Bold').fontSize(9.5);
   cols.forEach(c => {
-    doc.text(c.name, c.x + 2, tableTop + 6, { width: c.w - 4, align: c.align });
+    doc.text(c.name, c.x + 2, tableTop + 8, { width: c.w - 4, align: c.align });
   });
 
-  let curY = tableTop + 22;
-  doc.font('Helvetica').fontSize(8.5).fillColor('#1e293b');
+  let curY = tableTop + 26;
+  doc.font('Helvetica').fontSize(9.5).fillColor('#1e293b');
 
-  const items = quotation.items || [];
   items.forEach((it, idx) => {
-    if (curY > doc.page.height - 120) {
+    if (curY > doc.page.height - 150) {
       doc.addPage();
-      curY = 35;
+      curY = 40;
     }
 
     const rowBg = idx % 2 === 1 ? style.accentColor : '#ffffff';
-    const rowHeight = isAditya && it.description ? 28 : 22;
+    const rowHeight = isAditya && it.description ? Math.max(targetRowHeight, 38) : targetRowHeight;
     doc.rect(leftMargin, curY, contentWidth, rowHeight).fill(rowBg);
     doc.fillColor('#1e293b');
 
-    doc.text(String(it.slNo || idx + 1), cols[0].x + 2, curY + 5, { width: cols[0].w - 4, align: cols[0].align });
-    doc.text(it.product || it.description || '', cols[1].x + 2, curY + 5, { width: cols[1].w - 4, align: cols[1].align });
+    const padTop = Math.max(5, (rowHeight - 14) / 2);
+
+    doc.text(String(it.slNo || idx + 1), cols[0].x + 2, curY + padTop, { width: cols[0].w - 4, align: cols[0].align });
+    doc.text(it.product || it.description || '', cols[1].x + 2, curY + padTop, { width: cols[1].w - 4, align: cols[1].align });
 
     if (isAditya) {
-      doc.text(it.description || it.product || '', cols[2].x + 2, curY + 5, { width: cols[2].w - 4, align: cols[2].align });
-      doc.text(String(it.quantity || 1), cols[3].x + 2, curY + 5, { width: cols[3].w - 4, align: cols[3].align });
-      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[4].x + 2, curY + 5, { width: cols[4].w - 4, align: cols[4].align });
-      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[5].x + 2, curY + 5, { width: cols[5].w - 4, align: cols[5].align });
-      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[6].x + 2, curY + 5, { width: cols[6].w - 4, align: cols[6].align });
-      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[7].x + 2, curY + 5, { width: cols[7].w - 4, align: cols[7].align });
+      doc.text(it.description || it.product || '', cols[2].x + 2, curY + padTop, { width: cols[2].w - 4, align: cols[2].align });
+      doc.text(String(it.quantity || 1), cols[3].x + 2, curY + padTop, { width: cols[3].w - 4, align: cols[3].align });
+      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[4].x + 2, curY + padTop, { width: cols[4].w - 4, align: cols[4].align });
+      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[5].x + 2, curY + padTop, { width: cols[5].w - 4, align: cols[5].align });
+      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[6].x + 2, curY + padTop, { width: cols[6].w - 4, align: cols[6].align });
+      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[7].x + 2, curY + padTop, { width: cols[7].w - 4, align: cols[7].align });
     } else {
-      doc.text(String(it.quantity || 1), cols[2].x + 2, curY + 5, { width: cols[2].w - 4, align: cols[2].align });
-      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[3].x + 2, curY + 5, { width: cols[3].w - 4, align: cols[3].align });
-      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[4].x + 2, curY + 5, { width: cols[4].w - 4, align: cols[4].align });
-      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[5].x + 2, curY + 5, { width: cols[5].w - 4, align: cols[5].align });
-      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[6].x + 2, curY + 5, { width: cols[6].w - 4, align: cols[6].align });
+      doc.text(String(it.quantity || 1), cols[2].x + 2, curY + padTop, { width: cols[2].w - 4, align: cols[2].align });
+      doc.text(Number(it.rate || 0).toLocaleString('en-IN'), cols[3].x + 2, curY + padTop, { width: cols[3].w - 4, align: cols[3].align });
+      doc.text(Number(it.total || 0).toLocaleString('en-IN'), cols[4].x + 2, curY + padTop, { width: cols[4].w - 4, align: cols[4].align });
+      doc.text(Number(it.gst || 0).toLocaleString('en-IN'), cols[5].x + 2, curY + padTop, { width: cols[5].w - 4, align: cols[5].align });
+      doc.text(Number(it.amount || 0).toLocaleString('en-IN'), cols[6].x + 2, curY + padTop, { width: cols[6].w - 4, align: cols[6].align });
     }
 
     doc.moveTo(leftMargin, curY + rowHeight).lineTo(rightMargin, curY + rowHeight).strokeColor('#e2e8f0').lineWidth(0.5).stroke();
@@ -547,44 +546,44 @@ function generateQuotationPDF(quotation, res) {
   });
 
   // Grand Total Summary Row
-  doc.rect(leftMargin, curY, contentWidth, 24).fill('#e2e8f0');
-  doc.fillColor(style.primaryColor).font('Helvetica-Bold').fontSize(10);
+  doc.rect(leftMargin, curY, contentWidth, 30).fill('#e2e8f0');
+  doc.fillColor(style.primaryColor).font('Helvetica-Bold').fontSize(11);
   const totalValCol = isAditya ? cols[7] : cols[6];
-  doc.text('Grand Total:', leftMargin + 10, curY + 6, { width: totalValCol.x - leftMargin - 15, align: 'right' });
-  doc.text('Rs. ' + Number(quotation.totalAmount || 0).toLocaleString('en-IN'), totalValCol.x + 2, curY + 6, { width: totalValCol.w - 4, align: totalValCol.align });
+  doc.text('Grand Total:', leftMargin + 10, curY + 8, { width: totalValCol.x - leftMargin - 15, align: 'right' });
+  doc.text('Rs. ' + Number(quotation.totalAmount || 0).toLocaleString('en-IN'), totalValCol.x + 2, curY + 8, { width: totalValCol.w - 4, align: totalValCol.align });
 
-  curY += 32;
+  curY += 42;
 
   // Amount in Words
   if (quotation.amountInWords) {
-    doc.rect(leftMargin, curY, contentWidth, 22).fill('#f8fafc');
-    doc.fillColor('#334155').font('Helvetica-Bold').fontSize(8.5)
-       .text(quotation.amountInWords, leftMargin + 8, curY + 6, { width: contentWidth - 16 });
-    curY += 28;
+    doc.rect(leftMargin, curY, contentWidth, 28).fill('#f8fafc');
+    doc.fillColor('#1e293b').font('Helvetica-Bold').fontSize(10)
+       .text(quotation.amountInWords, leftMargin + 12, curY + 8, { width: contentWidth - 24 });
+    curY += 38;
   }
 
-  // Filter out electronic copy disclaimer if present in terms to avoid duplicate
+  // Filter out duplicate disclaimer from terms
   const cleanTerms = (quotation.terms && Array.isArray(quotation.terms))
     ? quotation.terms.filter(t => !t.toLowerCase().includes('electronic copy'))
     : [];
 
   // Terms & Conditions / Delivery Footer
-  doc.font('Helvetica-Bold').fontSize(9).fillColor('#0f172a').text('Terms & Conditions:', leftMargin, curY);
-  curY += 12;
-  doc.font('Helvetica').fontSize(8.5).fillColor('#475569');
+  doc.font('Helvetica-Bold').fontSize(11).fillColor('#0f172a').text('Terms & Conditions:', leftMargin, curY);
+  curY += 16;
+  doc.font('Helvetica').fontSize(9.5).fillColor('#334155');
   if (quotation.deliveryTerms) {
-    doc.text('• ' + quotation.deliveryTerms, leftMargin + 8, curY);
-    curY += 12;
+    doc.text('• ' + quotation.deliveryTerms, leftMargin + 12, curY);
+    curY += 16;
   }
   cleanTerms.forEach(t => {
-    doc.text('• ' + t, leftMargin + 8, curY);
-    curY += 12;
+    doc.text('• ' + t, leftMargin + 12, curY);
+    curY += 15;
   });
 
-  // Single Disclaimer at the bottom
-  curY += 12;
-  doc.font('Helvetica-Oblique').fontSize(8).fillColor('#64748b')
-     .text('An electronic copy does not carry any signature.', leftMargin, curY, { align: 'center', width: contentWidth });
+  // Position disclaimer towards bottom of the A4 page
+  const footerY = Math.max(curY + 25, doc.page.height - 55);
+  doc.font('Helvetica-Oblique').fontSize(8.5).fillColor('#64748b')
+     .text('An electronic copy does not carry any signature.', leftMargin, footerY, { align: 'center', width: contentWidth });
 
   doc.end();
 }
