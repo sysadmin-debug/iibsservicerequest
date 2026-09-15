@@ -462,7 +462,7 @@
           <button id="syncQuotationExcelBtn" class="btn-secondary" style="margin-bottom: 0;">
             <i data-lucide="refresh-cw"></i> Reload Templates
           </button>
-          <button id="addQuotationBtn" class="btn-primary" style="margin-bottom: 0;">
+          <button id="addQuotationBtn" class="btn-primary" style="margin-bottom: 0;" onclick="window.openQuotationModal()">
             <i data-lucide="plus"></i> Create Quotation
           </button>
         </div>
@@ -1234,7 +1234,7 @@
             Generate quotation matching Quotation.xlsx format (Mangala IT, GDS Techno Service, etc.)
           </p>
         </div>
-        <button type="button" class="btn-icon" id="quoteModalCloseIcon" style="border: none; background: transparent; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+        <button type="button" class="btn-icon" id="quoteModalCloseIcon" onclick="window.closeQuotationModal()" style="border: none; background: transparent; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
       </div>
 
       <form id="quotationForm">
@@ -1328,7 +1328,7 @@
         </div>
 
         <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
-          <button type="button" class="btn-secondary" id="quoteModalCloseBtn">Cancel</button>
+          <button type="button" class="btn-secondary" id="quoteModalCloseBtn" onclick="window.closeQuotationModal()">Cancel</button>
           <button type="submit" class="btn-primary" id="quoteSubmitBtn" style="display: flex; align-items: center; gap: 6px;">
             <i data-lucide="check"></i> Save Quotation
           </button>
@@ -1337,7 +1337,7 @@
     </div>
   </div>
 
-  <script src="admin.js?v=2"></script>
+  <script src="admin.js?v=3"></script>
 </body>
 </html>
 

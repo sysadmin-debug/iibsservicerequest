@@ -2878,13 +2878,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     recalcQuotationTotals();
+    quoteModal.classList.add('visible');
     quoteModal.classList.add('active');
     if (window.lucide) lucide.createIcons({ root: quoteModal });
   }
 
+  window.openQuotationModal = openQuotationModal;
+
   function closeQuotationModal() {
+    quoteModal.classList.remove('visible');
     quoteModal.classList.remove('active');
   }
+
+  window.closeQuotationModal = closeQuotationModal;
 
   if (addQuoteBtn) addQuoteBtn.addEventListener('click', () => openQuotationModal());
   if (quoteModalCloseBtn) quoteModalCloseBtn.addEventListener('click', closeQuotationModal);

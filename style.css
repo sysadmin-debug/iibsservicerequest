@@ -1141,8 +1141,9 @@ textarea {
   justify-content: center;
 }
 
-.modal-overlay.visible {
-  display: flex;
+.modal-overlay.visible,
+.modal-overlay.active {
+  display: flex !important;
   animation: modalFadeIn 0.3s ease-out;
 }
 
