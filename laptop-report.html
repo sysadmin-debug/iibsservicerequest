@@ -329,16 +329,16 @@
       <!-- Laptop Status Summary -->
       <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center;">
         <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; flex: 1; min-width: 150px;">
-          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Total Eligible (2026-2028)</h3>
-          <p id="statTotalEligible" style="font-size: 2rem; font-weight: 700; color: #059669; margin: 0;">194</p>
+          <h3 id="statTotalEligibleTitle" style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Total Eligible (2026-2028)</h3>
+          <p id="statTotalEligible" style="font-size: 2rem; font-weight: 700; color: #059669; margin: 0;">0</p>
         </div>
         <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; flex: 1; min-width: 150px;">
-          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Ready to Issue</h3>
-          <p id="statReadyToIssue" style="font-size: 2rem; font-weight: 700; color: #4f46e5; margin: 0;">166</p>
+          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">COLLECTED</h3>
+          <p id="statCollected" style="font-size: 2rem; font-weight: 700; color: #4f46e5; margin: 0;">0</p>
         </div>
         <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; flex: 1; min-width: 150px;">
-          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">Small Due Clearance (*)</h3>
-          <p id="statCanceled" style="font-size: 2rem; font-weight: 700; color: #dc2626; margin: 0;">28</p>
+          <h3 style="font-family: 'Outfit'; font-size: 0.9rem; color: #64748b; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.5px;">CANCEL</h3>
+          <p id="statCancel" style="font-size: 2rem; font-weight: 700; color: #dc2626; margin: 0;">0</p>
         </div>
       </div>
 
@@ -2943,11 +2943,14 @@
         return lowerName !== 'student name' && lowerName !== 'student name ';
       });
 
+      let batchItems = filtered;
       if (batchFilter === 'Active-2026-2028') {
-        filtered = filtered.filter(item => activeBatches.includes(item.course));
+        batchItems = batchItems.filter(item => activeBatches.includes(item.course));
       } else if (batchFilter !== 'All') {
-        filtered = filtered.filter(item => item.course === batchFilter);
+        batchItems = batchItems.filter(item => item.course === batchFilter);
       }
+
+      filtered = batchItems;
 
       if (statusFilter !== 'All') {
         filtered = filtered.filter(item => item.status === statusFilter);
@@ -2957,13 +2960,24 @@
       }
 
       // Update dynamic stats for visible batch
-      const totalEligible = filtered.length;
-      const smallDues = filtered.filter(i => (i.name && i.name.includes('*')) || i.hasDue).length;
-      const readyToIssue = totalEligible - smallDues;
-      
+      const targetItems = nameFilter ? filtered : batchItems;
+      const totalEligible = targetItems.length;
+      const collected = targetItems.filter(i => i.status === 'Received' || i.status === 'Collected').length;
+      const cancel = targetItems.filter(i => i.status === 'Cancel' || i.status === 'Cancelled').length;
+
+      if (document.getElementById('statTotalEligibleTitle')) {
+        if (batchFilter === 'Active-2026-2028' || batchFilter === 'All' || (batchFilter && batchFilter.includes('2026-2028'))) {
+          document.getElementById('statTotalEligibleTitle').textContent = 'TOTAL ELIGIBLE (2026-2028)';
+        } else {
+          document.getElementById('statTotalEligibleTitle').textContent = 'TOTAL ELIGIBLE';
+        }
+      }
+
       if (document.getElementById('statTotalEligible')) document.getElementById('statTotalEligible').textContent = totalEligible;
-      if (document.getElementById('statReadyToIssue')) document.getElementById('statReadyToIssue').textContent = readyToIssue;
-      if (document.getElementById('statCanceled')) document.getElementById('statCanceled').textContent = smallDues;
+      if (document.getElementById('statCollected')) document.getElementById('statCollected').textContent = collected;
+      if (document.getElementById('statCancel')) document.getElementById('statCancel').textContent = cancel;
+      if (document.getElementById('statReadyToIssue')) document.getElementById('statReadyToIssue').textContent = collected;
+      if (document.getElementById('statCanceled')) document.getElementById('statCanceled').textContent = cancel;
 
       // Group by course
       const grouped = {};
