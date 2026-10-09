@@ -1,0 +1,26 @@
+﻿[
+    {
+        "id":  "DEV-01",
+        "model":  "DS-K1T804AMF",
+        "serialNumber":  "GE7271248",
+        "location":  "Management / Cash Office",
+        "name":  "Management",
+        "status":  "Online",
+        "port":  80,
+        "ip":  "192.168.1.118",
+        "sdkPort":  8000,
+        "lastSync":  "2026-10-09 16:24:22"
+    },
+    {
+        "id":  "DEV-02",
+        "model":  "DS-K1T804AMF",
+        "serialNumber":  "FY4516268",
+        "location":  "Staff Entry / Pump Island",
+        "name":  "Staff",
+        "status":  "Online",
+        "port":  80,
+        "ip":  "192.168.1.100",
+        "sdkPort":  8000,
+        "lastSync":  "2026-10-09 16:24:22"
+    }
+]

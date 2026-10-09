@@ -1,0 +1,64 @@
+[
+  {
+    "id": "S1",
+    "name": "1st Shift (Morning)",
+    "code": "Morning",
+    "startTime": "06:00",
+    "endTime": "14:00",
+    "durationHours": 8,
+    "color": "#D97706",
+    "bgClass": "shift-s1",
+    "checkInWindow": "05:00 - 08:00",
+    "checkOutWindow": "13:30 - 15:00"
+  },
+  {
+    "id": "S2",
+    "name": "2nd Shift (Afternoon)",
+    "code": "Afternoon",
+    "startTime": "14:00",
+    "endTime": "20:00",
+    "durationHours": 6,
+    "color": "#2563EB",
+    "bgClass": "shift-s2",
+    "checkInWindow": "13:00 - 15:00",
+    "checkOutWindow": "19:30 - 21:00"
+  },
+  {
+    "id": "S3",
+    "name": "3rd Shift (Night)",
+    "code": "Night",
+    "startTime": "20:00",
+    "endTime": "06:00",
+    "durationHours": 10,
+    "isNextDay": true,
+    "color": "#7C3AED",
+    "bgClass": "shift-s3",
+    "checkInWindow": "19:00 - 22:00",
+    "checkOutWindow": "05:30 - 07:30"
+  },
+  {
+    "id": "D12",
+    "name": "12H Day Shift",
+    "code": "12H-Day",
+    "startTime": "06:00",
+    "endTime": "18:00",
+    "durationHours": 12,
+    "color": "#0D9488",
+    "bgClass": "shift-d12",
+    "checkInWindow": "05:00 - 08:00",
+    "checkOutWindow": "17:30 - 19:00"
+  },
+  {
+    "id": "N12",
+    "name": "12H Night Shift",
+    "code": "12H-Night",
+    "startTime": "18:00",
+    "endTime": "06:00",
+    "durationHours": 12,
+    "isNextDay": true,
+    "color": "#4B5563",
+    "bgClass": "shift-n12",
+    "checkInWindow": "17:00 - 19:30",
+    "checkOutWindow": "05:30 - 07:30"
+  }
+]

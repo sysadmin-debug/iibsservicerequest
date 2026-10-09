@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Babu Raju Ram Fuel Station - Attendance Manager</title>
+  <link rel="stylesheet" href="styles.css?v=2.1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <i class="fa-solid fa-gas-pump"></i>
+        </div>
+        <div>
+          <h1 class="brand-title">Babu Raju Ram Fuel Station</h1>
+          <p class="brand-subtitle">Biometric & Shift Attendance Management System</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="device-badge online" id="deviceStatusBadge" title="2 Biometric Terminals Configured">
+          <span class="status-dot"></span>
+          <span id="deviceStatusText">Biometric: <strong>2 Terminals Online</strong> (.174 / .100)</span>
+        </div>
+        <div class="clock-display" id="liveClock">16-Sep-2026 --:--:--</div>
+        <button class="btn btn-outline" id="btnQuickBiometric" style="border-color: #f59e0b; color: #f59e0b; font-weight: 700; background: rgba(245, 158, 11, 0.1);">
+          <i class="fa-solid fa-fingerprint"></i> Biometric Finger
+        </button>
+        <button class="btn btn-primary" id="btnQuickAddStaff">
+          <i class="fa-solid fa-user-plus"></i> Add Employee
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-bar">
+      <div class="nav-links">
+        <button class="nav-btn active" data-tab="tab-attendance">
+          <i class="fa-solid fa-clock"></i> Shiftwise Attendance
+        </button>
+        <button class="nav-btn" data-tab="tab-dashboard">
+          <i class="fa-solid fa-chart-pie"></i> Shift Dashboard
+        </button>
+        <button class="nav-btn" data-tab="tab-staff">
+          <i class="fa-solid fa-users"></i> Employee Directory (<span id="navStaffCount">34</span>)
+        </button>
+        <button class="nav-btn" data-tab="tab-reports">
+          <i class="fa-solid fa-file-excel"></i> Report Generator
+        </button>
+      </div>
+      <div class="nav-actions">
+        <button class="btn btn-outline" id="btnSyncDevice">
+          <i class="fa-solid fa-rotate"></i> Sync Machine
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- TAB 1: SHIFTWISE ATTENDANCE -->
+      <section id="tab-attendance" class="tab-pane active">
+        <!-- Shift Filter & Actions Toolbar -->
+        <div class="toolbar-card">
+          <div class="toolbar-left">
+            <div style="display: inline-flex; align-items: center; gap: 0.35rem; background: #f8fafc; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid #cbd5e1; flex-wrap: wrap;">
+              <label class="input-label" style="font-size: 0.75rem; font-weight: 700; color: #1e40af;">FROM:</label>
+              <input type="date" id="attFromDate" class="form-control date-input" style="width: 125px; padding: 0.2rem 0.4rem; font-size: 0.8rem;" value="2026-09-14">
+              <label class="input-label" style="font-size: 0.75rem; font-weight: 700; color: #047857;">TO:</label>
+              <input type="date" id="attToDate" class="form-control date-input" style="width: 125px; padding: 0.2rem 0.4rem; font-size: 0.8rem;">
+              <button class="btn btn-outline btn-sm" id="btnFilterDates" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; font-weight: 600;">
+                <i class="fa-solid fa-filter"></i> Apply
+              </button>
+              <button class="btn btn-sm" id="btnAttPresetToday" style="padding: 0.2rem 0.55rem; font-size: 0.75rem; font-weight: 700; background: #059669; color: #fff; border: none; border-radius: 4px;">
+                <i class="fa-solid fa-circle-dot"></i> Today Live
+              </button>
+              <button class="btn btn-sm" id="btnAttPreset14" style="padding: 0.2rem 0.55rem; font-size: 0.75rem; font-weight: 600; background: #1e40af; color: #fff; border: none; border-radius: 4px;">
+                14th to Today
+              </button>
+            </div>
+            
+            <div class="shift-filter-group">
+              <button class="filter-pill active" data-shift="ALL">All Shifts</button>
+              <button class="filter-pill pill-s1" data-shift="S1">1st Shift (06:00 - 14:00)</button>
+              <button class="filter-pill pill-s2" data-shift="S2">2nd Shift (14:00 - 20:00)</button>
+              <button class="filter-pill pill-s3" data-shift="S3">3rd Shift (20:00 - 06:00)</button>
+              <button class="filter-pill pill-supp" data-shift="SUPP">12H Support</button>
+            </div>
+
+            <div class="shift-filter-group" style="margin-left: 0.75rem; padding-left: 0.75rem; border-left: 2px solid #cbd5e1;">
+              <button class="filter-pill filter-pill-cat active" data-cat="Staff" id="pillStaff" style="font-weight: 700; color: #047857; background: #ecfdf5; border: 1.5px solid #059669;"><i class="fa-solid fa-gas-pump"></i> ⛽ Staff (29)</button>
+              <button class="filter-pill filter-pill-cat" data-cat="Management" id="pillMgmt" style="font-weight: 700; color: #1e40af; background: #eff6ff; border: 1.5px solid #2563eb;"><i class="fa-solid fa-user-tie"></i> 👔 Management (5)</button>
+            </div>
+          </div>
+
+          <div class="toolbar-right">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="attSearchInput" placeholder="Search employee..." class="search-input">
+            </div>
+            <button class="btn btn-outline" id="btnRotateShiftsAtt" title="Rotate shifts: 1st -> 3rd -> 2nd -> 1st">
+              <i class="fa-solid fa-arrows-rotate"></i> Rotate Shifts
+            </button>
+            <button class="btn btn-success" id="btnQuickExportExcel" title="Download current view as formatted Excel file">
+              <i class="fa-solid fa-file-excel"></i> Download Report (Excel)
+            </button>
+            <button class="btn btn-secondary" onclick="window.print()">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance Category Header Banner (Strict Separation) -->
+        <div id="attCategoryBanner" style="padding: 0.6rem 1rem; margin-bottom: 0.75rem; background: #ecfdf5; border-left: 4px solid #059669; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+          <span id="attCategoryBannerText" style="font-size: 0.85rem; font-weight: 700; color: #065f46;">
+            <i class="fa-solid fa-gas-pump"></i> <strong>Station Operational Staff (29 Personnel)</strong> — Strictly Forecourt Cashiers, Supervisors, Air Boys & Office Admin
+          </span>
+          <span style="font-size: 0.75rem; font-weight: 700; color: #047857; background: #dcfce7; padding: 0.2rem 0.6rem; border-radius: 9999px; border: 1px solid #a7f3d0;">
+            Zero Mixing Guarantee
+          </span>
+        </div>
+
+        <!-- Attendance Data Table -->
+        <div class="table-card">
+          <table class="data-table" id="attendanceTable">
+            <thead>
+              <tr>
+                <th style="width: 35px;">Sl.</th>
+                <th>Date</th>
+                <th>Employee Name</th>
+                <th>Designation</th>
+                <th>Category</th>
+                <th>Assigned Shift</th>
+                <th style="color: #047857;">Punch 1 (In 1)</th>
+                <th style="color: #b45309;">Punch 2 (Out 1)</th>
+                <th>S1 Hrs</th>
+                <th style="color: #047857;">Punch 3 (In 2)</th>
+                <th style="color: #b45309;">Punch 4 (Out 2)</th>
+                <th>S2 Hrs</th>
+                <th style="color: #7c3aed;">Punch 5 (In 3)</th>
+                <th style="color: #db2777;">Punch 6 (Out 3)</th>
+                <th>S3 Hrs</th>
+                <th style="font-weight: 700; color: #1e3a8a;">Total Work</th>
+                <th>Duty Mode</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 2: DASHBOARD -->
+      <section id="tab-dashboard" class="tab-pane">
+        <!-- Shift Rotation Cycle Banner -->
+        <div class="rotation-banner" style="background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); color: #ffffff; padding: 1.1rem 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.08); border-left: 5px solid #f59e0b;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem; color: #fbbf24;">
+              <i class="fa-solid fa-arrows-spin"></i> Petrol Bunk Shift Rotation System Active
+            </h3>
+            <p style="font-size: 0.875rem; color: #e0e7ff; margin-top: 0.35rem;">
+              Rotation Cycle: <strong>1st Shift (06:00 - 14:00)</strong> ➔ <strong>2nd Shift (14:00 - 20:00)</strong> ➔ <strong>3rd Shift (20:00 - 06:00)</strong> ➔ <strong>1st Shift</strong>
+            </p>
+          </div>
+          <button class="btn btn-success" id="btnRotateShiftsDash">
+            <i class="fa-solid fa-arrows-rotate"></i> Rotate All Staff Shifts Now
+          </button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card stat-total">
+            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-details">
+              <span class="stat-num" id="dashTotalStaff">34</span>
+              <span class="stat-label">Total Registered Staff</span>
+            </div>
+          </div>
+          <div class="stat-card stat-shift1">
+            <div class="stat-icon"><i class="fa-solid fa-sun"></i></div>
+            <div class="stat-details">
+              <span class="stat-num" id="dashS1Count">15</span>
+              <span class="stat-label">1st Shift (06:00 - 14:00)</span>
+            </div>
+          </div>
+          <div class="stat-card stat-shift2">
+            <div class="stat-icon"><i class="fa-solid fa-cloud-sun"></i></div>
+            <div class="stat-details">
+              <span class="stat-num" id="dashS2Count">9</span>
+              <span class="stat-label">2nd Shift (14:00 - 20:00)</span>
+            </div>
+          </div>
+          <div class="stat-card stat-shift3">
+            <div class="stat-icon"><i class="fa-solid fa-moon"></i></div>
+            <div class="stat-details">
+              <span class="stat-num" id="dashS3Count">6</span>
+              <span class="stat-label">3rd Shift (20:00 - 06:00)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shift Schedule Overview Cards -->
+        <div class="shifts-overview-card">
+          <h2 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Petrol Bunk Shift Timetable & Allocation</h2>
+          <div class="shift-cards-grid">
+            <div class="shift-info-card s1-card">
+              <div class="shift-badge-header">1st Shift (Morning)</div>
+              <div class="shift-hours">06:00 AM – 02:00 PM (8 Hours)</div>
+              <p class="shift-roles"><strong>Roles:</strong> 2 Supervisors, 6 Cashiers</p>
+              <div class="shift-staff-tags" id="tagsS1"></div>
+            </div>
+
+            <div class="shift-info-card s2-card">
+              <div class="shift-badge-header">2nd Shift (Afternoon)</div>
+              <div class="shift-hours">02:00 PM – 08:00 PM (6 Hours)</div>
+              <p class="shift-roles"><strong>Roles:</strong> 6 Cashiers</p>
+              <div class="shift-staff-tags" id="tagsS2"></div>
+            </div>
+
+            <div class="shift-info-card s3-card">
+              <div class="shift-badge-header">3rd Shift (Night)</div>
+              <div class="shift-hours">08:00 PM – 06:00 AM (+1 Day, 10 Hours)</div>
+              <p class="shift-roles"><strong>Roles:</strong> 1 Supervisor, 5 Cashiers</p>
+              <div class="shift-staff-tags" id="tagsS3"></div>
+            </div>
+
+            <div class="shift-info-card supp-card">
+              <div class="shift-badge-header">12-Hour Support Shifts</div>
+              <div class="shift-hours">06:00 AM/PM – 12 Hours</div>
+              <p class="shift-roles"><strong>Roles:</strong> Air Boys, Marshals, Housekeeping</p>
+              <div class="shift-staff-tags" id="tagsSupp"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connected Biometric Terminals Card -->
+        <div class="shifts-overview-card" style="margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h2 class="card-title" style="margin-bottom: 0;">
+              <i class="fa-solid fa-fingerprint"></i> Configured Biometric Terminals (2 Machines)
+            </h2>
+            <button class="btn btn-outline" onclick="syncAllDevices()" style="font-size: 0.825rem;">
+              <i class="fa-solid fa-rotate"></i> Ping & Sync Both Terminals
+            </button>
+          </div>
+          <div class="shift-cards-grid">
+            <div class="shift-info-card" style="border-top-color: #10b981;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="shift-badge-header">Management (192.168.1.174)</div>
+                <span class="status-pill status-present" id="term1Status">● Online</span>
+              </div>
+              <div class="shift-hours">IP: <strong>192.168.1.174</strong> (Port 80 / SDK 8000)</div>
+              <p class="shift-roles"><strong>Location:</strong> Management Office & Cash Cabin</p>
+              <p class="shift-roles"><strong>Model:</strong> Hikvision DS-K1T804AMF</p>
+            </div>
+
+            <div class="shift-info-card" style="border-top-color: #10b981;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="shift-badge-header">Staff (192.168.1.100)</div>
+                <span class="status-pill status-present" id="term2Status">● Online</span>
+              </div>
+              <div class="shift-hours">IP: <strong>192.168.1.100</strong> (Port 80 / SDK 8000)</div>
+              <p class="shift-roles"><strong>Location:</strong> Staff Entry / Pump Station</p>
+              <p class="shift-roles"><strong>Model:</strong> Hikvision DS-K1T804AMF</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: EMPLOYEE MANAGEMENT (ADD / DELETE) -->
+      <section id="tab-staff" class="tab-pane">
+        <div class="toolbar-card">
+          <div class="toolbar-left">
+            <h2 class="section-heading"><i class="fa-solid fa-id-card"></i> Manage Petrol Bunk Employees</h2>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-outline" id="btnRotateShiftsStaff" title="Rotate shifts forward: 1st -> 3rd -> 2nd -> 1st">
+              <i class="fa-solid fa-arrows-rotate"></i> Rotate Shifts (1st ➔ 3rd ➔ 2nd)
+            </button>
+            <button class="btn btn-primary" id="btnAddStaffModal">
+              <i class="fa-solid fa-user-plus"></i> + Add New Employee
+            </button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <table class="data-table" id="staffTable">
+            <thead>
+              <tr>
+                <th style="width: 45px;">ID</th>
+                <th>Staff Name</th>
+                <th>Designation</th>
+                <th>Assigned Shift</th>
+                <th>Shift Hours</th>
+                <th>Terminal Machine</th>
+                <th style="min-width: 170px;">Biometric Finger Data</th>
+                <th style="text-align: center; min-width: 130px;">Machine Role</th>
+                <th>Mobile No.</th>
+                <th>Status</th>
+                <th style="text-align: center; width: 110px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="staffTbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 4: REPORT CREATION & DOWNLOAD -->
+      <section id="tab-reports" class="tab-pane">
+        <div class="report-box-card">
+          <div class="report-header">
+            <div class="report-icon-large"><i class="fa-solid fa-file-excel"></i></div>
+            <div>
+              <h2 class="card-title">Generate Petrol Bunk Shiftwise Attendance Report</h2>
+              <p class="card-desc">Download formatted daily/monthly reports in Excel or CSV ready for administration & payroll.</p>
+            </div>
+          </div>
+
+          <!-- Quick Preset Buttons -->
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.25rem; padding: 0.75rem 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; align-items: center;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #475569;"><i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> QUICK RANGE:</span>
+            <button type="button" class="btn btn-sm" id="btnQuick14ToToday" style="font-weight: 700; background: #1e40af; color: #ffffff; border: none; padding: 0.35rem 0.8rem;">
+              <i class="fa-solid fa-calendar-days"></i> 14th to Today (Selected Report)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" id="btnQuickToday" style="font-weight: 600; padding: 0.35rem 0.75rem;">
+              Today Only
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" id="btnQuickYesterday" style="font-weight: 600; padding: 0.35rem 0.75rem;">
+              Yesterday Only (15th)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" id="btnQuick14th" style="font-weight: 600; padding: 0.35rem 0.75rem;">
+              14th Only
+            </button>
+          </div>
+
+          <div class="report-form-grid">
+            <div class="form-group">
+              <label><i class="fa-solid fa-calendar-arrow-down" style="color: #2563eb;"></i> From Date:</label>
+              <input type="date" id="repFromDate" class="form-control" value="2026-09-14">
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-solid fa-calendar-check" style="color: #059669;"></i> To Date:</label>
+              <input type="date" id="repToDate" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label>Select Shift:</label>
+              <select id="repShift" class="form-control">
+                <option value="ALL">All Shifts (Complete Bunk Report)</option>
+                <option value="S1">1st Shift (Morning: 06:00 - 14:00)</option>
+                <option value="S2">2nd Shift (Afternoon: 14:00 - 20:00)</option>
+                <option value="S3">3rd Shift (Night: 20:00 - 06:00)</option>
+                <option value="SUPP">12H Support Shifts</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Designation Filter:</label>
+              <select id="repDesignation" class="form-control">
+                <option value="ALL">All Designations</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="Cashier">Cashier</option>
+                <option value="Air Boy">Air Boy</option>
+                <option value="Marshal">Marshal</option>
+                <option value="Housekeeper">Housekeeper</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-solid fa-users-gear" style="color: #2563eb;"></i> Category (Staff vs Management):</label>
+              <select id="repCategory" class="form-control">
+                <option value="ALL">All (Staff & Management Separated)</option>
+                <option value="Staff" selected>⛽ Station Staff Only (29 Staff)</option>
+                <option value="Management">👔 Management Only (5 Leaders)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="report-actions-row">
+            <button class="btn btn-success btn-lg" id="btnDownloadExcel">
+              <i class="fa-solid fa-file-excel"></i> Download Excel Report (.xlsx)
+            </button>
+            <button class="btn btn-primary btn-lg" id="btnDownloadCsv">
+              <i class="fa-solid fa-file-csv"></i> Download CSV File
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="window.print()">
+              <i class="fa-solid fa-print"></i> Print Official Report
+            </button>
+          </div>
+
+          <div class="report-notice">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Reports automatically update with every biometric punch sync and reflect staff additions/deletions.</span>
+          </div>
+        </div>
+
+        <!-- CARD 2: MONTHLY 4-PUNCH DETAILED ATTENDANCE & PAYROLL REPORT -->
+        <div class="report-box-card" style="margin-top: 2rem; border-top: 4px solid #059669;">
+          <div class="report-header">
+            <div class="report-icon-large" style="background: #ecfdf5; color: #059669;"><i class="fa-solid fa-calendar-days"></i></div>
+            <div>
+              <h2 class="card-title">Monthly 4-Punch Detailed Report (Month-End & Payroll)</h2>
+              <p class="card-desc">Generate comprehensive month-end reports with individual employee totals, days present/absent, double-shift tracking, and daily 4-punch breakdown.</p>
+            </div>
+          </div>
+
+          <div class="report-form-grid">
+            <div class="form-group">
+              <label><i class="fa-solid fa-calendar-check" style="color: #059669;"></i> Select Month:</label>
+              <input type="month" id="repMonthSelect" class="form-control" value="2026-09">
+            </div>
+
+            <div class="form-group">
+              <label>Select Shift Filter:</label>
+              <select id="repMonthShift" class="form-control">
+                <option value="ALL">All Shifts (Complete Bunk Report)</option>
+                <option value="S1">1st Shift (Morning: 06:00 - 14:00)</option>
+                <option value="S2">2nd Shift (Afternoon: 14:00 - 20:00)</option>
+                <option value="S3">3rd Shift (Night: 20:00 - 06:00)</option>
+                <option value="SUPP">12H Support Shifts</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Designation Filter:</label>
+              <select id="repMonthDesignation" class="form-control">
+                <option value="ALL">All Designations</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="Cashier">Cashier</option>
+                <option value="Air Boy">Air Boy</option>
+                <option value="Marshal">Marshal</option>
+                <option value="Housekeeper">Housekeeper</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-solid fa-users-gear" style="color: #059669;"></i> Category (Staff vs Management):</label>
+              <select id="repMonthCategory" class="form-control">
+                <option value="ALL">All (Staff & Management Separated)</option>
+                <option value="Staff" selected>⛽ Station Staff Only (29 Staff)</option>
+                <option value="Management">👔 Management Only (5 Leaders)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="report-actions-row">
+            <button class="btn btn-success btn-lg" id="btnDownloadMonthExcel" style="background: #059669; border-color: #059669;">
+              <i class="fa-solid fa-file-excel"></i> Download Monthly 4-Punch Report (.xlsx)
+            </button>
+            <button class="btn btn-primary btn-lg" id="btnDownloadMonthCsv" style="background: #0284c7; border-color: #0284c7;">
+              <i class="fa-solid fa-file-csv"></i> Download Monthly CSV
+            </button>
+          </div>
+
+          <div class="report-notice" style="background: #f0fdf4; border-color: #bbf7d0; color: #166534;">
+            <i class="fa-solid fa-calculator" style="color: #059669;"></i>
+            <span><strong>Month-End Payroll Ready:</strong> Generates a multi-sheet Excel workbook with Sheet 1 showing Monthly Summary (Days Present, Double Shifts, Total Hours) and Sheet 2 showing full Day-by-Day 4-Punch Attendance Logs.</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MODAL: ADD EMPLOYEE -->
+    <div class="modal-overlay" id="addStaffModal">
+      <div class="modal-card" style="max-width: 580px;">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-user-plus"></i> Add New Petrol Bunk Employee</h3>
+          <button class="modal-close" id="btnCloseModal">&times;</button>
+        </div>
+
+        <form id="addStaffForm">
+          <div class="modal-body" style="gap: 1rem;">
+            <!-- Row 1: Employee ID & Category -->
+            <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label><i class="fa-solid fa-fingerprint" style="color: #f59e0b;"></i> Machine / Employee ID: *</label>
+                <input type="text" id="formStaffEmpNo" required class="form-control" placeholder="e.g. 44" style="font-weight: 700; font-family: monospace;">
+                <small style="color: #64748b; font-size: 0.72rem;">Suggested machine ID on terminal</small>
+              </div>
+              <div class="form-group">
+                <label><i class="fa-solid fa-layer-group" style="color: #2563eb;"></i> Category: *</label>
+                <select id="formStaffCategory" required class="form-control" style="font-weight: 600;">
+                  <option value="Staff" selected>⛽ Station Operational Staff</option>
+                  <option value="Management">👔 Management / Leadership</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 2: Name & Designation -->
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label>Employee Name: *</label>
+                <input type="text" id="formStaffName" required class="form-control" placeholder="e.g. Ramesh Kumar">
+              </div>
+              <div class="form-group">
+                <label>Designation: *</label>
+                <select id="formStaffDesignation" required class="form-control">
+                  <option value="Cashier">Cashier</option>
+                  <option value="Supervisor">Supervisor</option>
+                  <option value="Air Boy">Air Boy</option>
+                  <option value="Marshal">Marshal</option>
+                  <option value="Housekeeper">Housekeeper</option>
+                  <option value="Accountant">Accountant</option>
+                  <option value="Station In-Charge">Station In-Charge</option>
+                  <option value="Manager">Manager</option>
+                  <option value="System Administrator">System Administrator</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 3: Shift & Department -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label>Assigned Shift: *</label>
+                <select id="formStaffShift" required class="form-control">
+                  <option value="1st Shift (Morning)">1st Shift (Morning: 06:00 - 14:00)</option>
+                  <option value="2nd Shift (Afternoon)">2nd Shift (Afternoon: 14:00 - 20:00)</option>
+                  <option value="3rd Shift (Night)">3rd Shift (Night: 20:00 - 06:00)</option>
+                  <option value="12H Day Shift">12H Day Shift (06:00 - 18:00)</option>
+                  <option value="12H Night Shift">12H Night Shift (18:00 - 06:00)</option>
+                  <option value="General Shift">General Shift (09:00 - 18:00)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Department:</label>
+                <select id="formStaffDepartment" class="form-control">
+                  <option value="Forecourt Operations">Forecourt Operations</option>
+                  <option value="Cash & Fuel Sales">Cash & Fuel Sales</option>
+                  <option value="Forecourt Services">Forecourt Services</option>
+                  <option value="Station Maintenance">Station Maintenance</option>
+                  <option value="Management & Administration">Management & Administration</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 4: Biometric Terminal Machine & Mobile -->
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label><i class="fa-solid fa-server" style="color: #059669;"></i> Biometric Machine: *</label>
+                <select id="formStaffTerminal" required class="form-control">
+                  <option value="DEV-02" selected>Staff Terminal (192.168.1.100)</option>
+                  <option value="DEV-01">Management Terminal (192.168.1.174)</option>
+                  <option value="BOTH">Both Biometric Terminals (.100 & .174)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Mobile Number (Optional):</label>
+                <input type="text" id="formStaffMobile" class="form-control" placeholder="e.g. 98XXXXXXXX">
+              </div>
+            </div>
+
+            <!-- Row 5: Biometric Privilege (Super vs Normal) -->
+            <div class="form-group" style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 8px; padding: 0.65rem 0.9rem;">
+              <label style="color: #92400e; font-weight: 700; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
+                <i class="fa-solid fa-crown" style="color: #d97706;"></i> Biometric Machine Role / Privilege: *
+              </label>
+              <select id="formStaffBioRole" required class="form-control" style="font-weight: 700;">
+                <option value="normal" selected>👤 Normal Employee (Attendance Punch Only)</option>
+                <option value="super">👑 Super User (Full Terminal Menu, Keypad & Settings Access)</option>
+              </select>
+              <small style="color: #b45309; font-size: 0.72rem; display: block; margin-top: 0.25rem;">
+                <strong>Normal:</strong> punches attendance only. <strong>Super:</strong> can press Menu/OK on the machine to unlock device settings.
+              </small>
+            </div>
+
+            <!-- Row 6: Immediate Fingerprint Enrollment Checkbox -->
+            <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 8px; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; margin-top: 0.25rem;">
+              <input type="checkbox" id="formStaffEnrollFinger" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+              <label for="formStaffEnrollFinger" style="font-size: 0.85rem; font-weight: 600; color: #1e40af; cursor: pointer; margin: 0;">
+                <i class="fa-solid fa-fingerprint" style="color: #2563eb;"></i> Open Biometric Finger Registration immediately after saving
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="btnCancelModal">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save & Register Employee</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: BIOMETRIC FINGERPRINT REGISTRATION -->
+    <div class="modal-overlay" id="biometricModal">
+      <div class="modal-card" style="max-width: 620px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0f2744 0%, #1e3a8a 100%);">
+          <h3><i class="fa-solid fa-fingerprint" style="color: #f59e0b;"></i> Biometric Fingerprint Registration</h3>
+          <button class="modal-close" id="btnCloseBiometricModal">&times;</button>
+        </div>
+
+        <div class="modal-body" style="gap: 1rem;">
+          <!-- 1. Employee Selector & Terminal Status -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.9rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <label style="font-weight: 700; color: #1e293b; font-size: 0.85rem; margin: 0;">
+                <i class="fa-solid fa-user-check" style="color: #2563eb;"></i> SELECT EMPLOYEE:
+              </label>
+              <div id="bioTerminalBadge" style="font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; display: inline-flex; align-items: center; gap: 0.35rem;">
+                <span class="status-dot" style="width: 7px; height: 7px; background: #10b981; border-radius: 50%;"></span>
+                <span id="bioTerminalBadgeText">Staff Terminal (192.168.1.100) Online</span>
+              </div>
+            </div>
+            <select id="bioSelectEmployee" class="form-control" style="font-weight: 600; font-size: 0.9rem;">
+              <!-- Populated via JS -->
+            </select>
+          </div>
+
+          <!-- Biometric Privilege (Super vs Normal) Selection -->
+          <div style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 8px; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #92400e; display: flex; align-items: center; gap: 0.4rem;">
+                <i class="fa-solid fa-crown" style="color: #d97706;"></i> Biometric Privilege / Role:
+              </div>
+              <div style="font-size: 0.75rem; color: #b45309;">
+                Current Terminal Privilege: <strong id="bioActiveRoleBadge">👤 Normal Employee (Punch Only)</strong>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.4rem; align-items: center;">
+              <select id="bioChangeRoleSelect" class="form-control" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; font-weight: 700; width: 195px;">
+                <option value="normal">👤 Normal (Punch Only)</option>
+                <option value="super">👑 Super (Menu Access)</option>
+              </select>
+              <button type="button" class="btn btn-outline btn-sm" id="btnBioSaveRole" style="padding: 0.25rem 0.65rem; font-size: 0.75rem; font-weight: 700; border-color: #d97706; color: #92400e; background: #fef3c7;">
+                <i class="fa-solid fa-check"></i> Set Role
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Machine Profile Sync Status -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0.9rem; background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 6px;">
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #065f46;">
+                <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Machine User Profile Active
+              </div>
+              <div style="font-size: 0.75rem; color: #047857;">
+                Terminal recognized ID: <strong id="bioActiveEmpNo">#--</strong> | Name: <strong id="bioActiveName">--</strong>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm" id="btnBioReSync" style="font-size: 0.75rem; padding: 0.25rem 0.55rem;" title="Push user record to biometric terminal">
+              <i class="fa-solid fa-rotate"></i> Re-Sync to Machine
+            </button>
+          </div>
+
+          <!-- 3. Step-by-Step Machine Enrollment Instructions -->
+          <div style="border: 1px solid #cbd5e1; border-radius: 10px; overflow: hidden;">
+            <div style="background: #f1f5f9; padding: 0.6rem 0.9rem; font-size: 0.825rem; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 0.4rem;">
+              <i class="fa-solid fa-hand-pointer" style="color: #f59e0b;"></i>
+              PHYSICAL ENROLLMENT ON BIOMETRIC MACHINE KEYPAD:
+            </div>
+            <div style="padding: 0.8rem 1rem; font-size: 0.825rem; color: #1e293b; display: flex; flex-direction: column; gap: 0.5rem; background: #ffffff;">
+              <div style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                <span style="background: #2563eb; color: #fff; font-size: 0.72rem; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</span>
+                <div>At terminal <strong id="bioStepTerminalText">Staff Terminal (192.168.1.100)</strong>, hold <strong>[OK]</strong> or press <strong>[MENU]</strong>. Enter admin password (<code>Admin@123</code>) or swipe admin finger.</div>
+              </div>
+              <div style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                <span style="background: #2563eb; color: #fff; font-size: 0.72rem; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</span>
+                <div>Go to <strong>User</strong> ➔ <strong>User List</strong> ➔ Scroll to ID <strong style="color: #b45309;" id="bioStepEmpNo">#--</strong> (profile is already pre-created).</div>
+              </div>
+              <div style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                <span style="background: #2563eb; color: #fff; font-size: 0.72rem; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</span>
+                <div>Select <strong>Fingerprint</strong> ➔ Select <strong>Finger 1</strong> (e.g. Right Index finger).</div>
+              </div>
+              <div style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                <span style="background: #2563eb; color: #fff; font-size: 0.72rem; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">4</span>
+                <div>Ask employee to place their finger flat and firm on the optical sensor <strong>3 times</strong> until the terminal says <em>"Thank You / Success"</em>. Press <strong>[ESC]</strong> to return to clock screen.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Interactive Live Verification & Punch Test Panel -->
+          <div style="background: #f8fafc; border: 1.5px dashed #94a3b8; border-radius: 12px; padding: 1.25rem; text-align: center; position: relative;">
+            <div id="bioLiveIdleView">
+              <div style="width: 56px; height: 56px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 0.6rem; border: 2px solid #bfdbfe;">
+                <i class="fa-solid fa-fingerprint"></i>
+              </div>
+              <h4 style="margin-bottom: 0.3rem; font-size: 1rem; color: #0f2744;">Verify Biometric Fingerprint Live</h4>
+              <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1rem;">After placing finger on the machine, click below to verify the terminal recognizes their fingerprint.</p>
+              
+              <div style="display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap;">
+                <button type="button" class="btn btn-success btn-lg" id="btnBioStartVerify" style="font-weight: 700; padding: 0.65rem 1.5rem; background: #059669; border-color: #059669;">
+                  <i class="fa-solid fa-fingerprint"></i> Test & Verify Fingerprint Punch Now
+                </button>
+                <button type="button" class="btn btn-outline" id="btnBioWakeSensor" title="Wake terminal scanner optical sensor remotely">
+                  <i class="fa-solid fa-bolt"></i> Trigger Sensor
+                </button>
+              </div>
+            </div>
+
+            <!-- Listening / Scanning state -->
+            <div id="bioLiveScanningView" style="display: none;">
+              <div class="bio-radar-wrapper" style="margin: 0 auto 0.75rem auto;">
+                <div class="bio-radar-circle"></div>
+                <div class="bio-radar-icon"><i class="fa-solid fa-fingerprint"></i></div>
+              </div>
+              <h4 style="color: #1e40af; font-size: 1.05rem; margin-bottom: 0.25rem;">Terminal Scanner Listening...</h4>
+              <p style="font-size: 0.85rem; color: #334155; font-weight: 600;">
+                Ask <span id="bioScanEmpName" style="color: #2563eb;">Employee</span> to touch their finger to the machine scanner now!
+              </p>
+              <div style="margin: 0.75rem auto; font-family: monospace; font-size: 1.1rem; font-weight: 800; color: #d97706;" id="bioScanCountdown">
+                Waiting for punch: 30s
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm" id="btnBioCancelScan">Cancel Test</button>
+            </div>
+
+            <!-- Success state -->
+            <div id="bioLiveSuccessView" style="display: none; background: #ecfdf5; border: 1.5px solid #059669; border-radius: 10px; padding: 1rem;">
+              <div style="font-size: 2.2rem; color: #059669; margin-bottom: 0.4rem;">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <h3 style="color: #065f46; font-size: 1.15rem; margin-bottom: 0.25rem;">Biometric Finger Successfully Verified!</h3>
+              <p style="font-size: 0.85rem; color: #047857; margin-bottom: 0.6rem;" id="bioSuccessDetails">
+                Punch confirmed for <strong>#44 - Ramesh Kumar</strong> at 12:45 PM on Staff Terminal (.100).
+              </p>
+              <span style="display: inline-block; background: #d1fae5; color: #065f46; font-size: 0.75rem; font-weight: 800; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid #6ee7b7;">
+                FINGERPRINT ENROLLED & ACTIVE
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="justify-content: space-between;">
+          <button type="button" class="btn btn-outline" id="btnBioMarkManual">
+            <i class="fa-solid fa-check-double"></i> Mark as Registered Manually
+          </button>
+          <button type="button" class="btn btn-primary" id="btnBioDone">
+            <i class="fa-solid fa-check"></i> Done & Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js?v=2.1"></script>
+</body>
+</html>

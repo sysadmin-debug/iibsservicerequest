@@ -1,0 +1,628 @@
+﻿BABU RAJU RAM FUEL STATION - MONTHLY 4-PUNCH ATTENDANCE & PAYROLL REPORT
+Month: September 2026 (2026-09),Generated: 2026-10-03 17:09:50,Strict Staff & Management Separation
+
+=== SECTION 1: MANAGEMENT TEAM PAYROLL SUMMARY (5 LEADERS) ===
+Sl No,Emp ID,Employee Name,Designation,Category,Assigned Shift,Days Present,Days Absent,Double Shifts,Total Hours Worked,Avg Daily Hours,Attendance Rate
+1,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",15,0,0,112.00 hrs,7.47 hrs,100%
+2,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",15,0,0,104.00 hrs,6.93 hrs,100%
+3,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",15,0,0,120.00 hrs,8.00 hrs,100%
+4,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",15,0,0,105.00 hrs,7.00 hrs,100%
+5,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",15,0,0,104.00 hrs,6.93 hrs,100%
+TOTALS,,"GRAND TOTALS",,,,75,0,0,545.00 hrs,,
+
+=== SECTION 2: STATION OPERATIONAL STAFF PAYROLL SUMMARY (29 STAFF) ===
+Sl No,Emp ID,Employee Name,Designation,Category,Assigned Shift,Days Present,Days Absent,Double Shifts,Total Hours Worked,Avg Daily Hours,Attendance Rate
+1,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",1,16,0,10.00 hrs,10.00 hrs,6%
+2,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",7,10,1,68.12 hrs,9.73 hrs,41%
+3,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",11,6,0,99.48 hrs,9.04 hrs,65%
+4,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",14,3,0,125.37 hrs,8.96 hrs,82%
+5,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",15,2,0,170.03 hrs,11.34 hrs,88%
+6,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",15,2,1,127.54 hrs,8.50 hrs,88%
+7,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",15,2,2,127.44 hrs,8.50 hrs,88%
+8,18,"Sandeepa K","Cashier","Staff","3rd Shift (20:00 - 06:00)",16,1,0,131.72 hrs,8.23 hrs,94%
+9,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",14,3,0,97.05 hrs,6.93 hrs,82%
+10,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14,3,1,49.24 hrs,3.52 hrs,82%
+11,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",17,0,7,163.89 hrs,9.64 hrs,100%
+12,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",0,17,0,0.00 hrs,0.00 hrs,0%
+13,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",12,5,4,119.79 hrs,9.98 hrs,71%
+14,28,"Nagesh Babu S","Supervisor","Staff","1st Shift (06:00 - 14:00)",13,4,0,140.31 hrs,10.79 hrs,76%
+15,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",12,5,0,91.28 hrs,7.61 hrs,71%
+16,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",6,11,0,55.03 hrs,9.17 hrs,35%
+17,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",17,0,0,183.63 hrs,10.80 hrs,100%
+18,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",13,4,5,125.13 hrs,9.63 hrs,76%
+19,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",16,1,6,145.36 hrs,9.09 hrs,94%
+20,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",15,2,0,178.82 hrs,11.92 hrs,88%
+21,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14,3,5,139.58 hrs,9.97 hrs,82%
+22,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",14,3,4,106.17 hrs,7.58 hrs,82%
+23,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",15,2,0,127.63 hrs,8.51 hrs,88%
+24,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",14,3,13,152.94 hrs,10.92 hrs,82%
+25,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",15,2,12,157.17 hrs,10.48 hrs,88%
+26,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",11,6,0,89.04 hrs,8.09 hrs,65%
+27,6,"Ananda","Cashier","Staff","3rd Shift (20:00 - 06:00)",14,3,1,120.19 hrs,8.59 hrs,82%
+28,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",12,5,0,77.16 hrs,6.43 hrs,71%
+29,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",14,3,0,120.64 hrs,8.62 hrs,82%
+TOTALS,,"GRAND TOTALS",,,,366,127,62,3299.75 hrs,,
+
+=== SECTION 3: MANAGEMENT TEAM DAILY 4-PUNCH LOGS ===
+Sl No,Date,Emp ID,Employee Name,Designation,Category,Assigned Shift,Punch 1 (In 1),Punch 2 (Out 1),Shift 1 Hrs,Punch 3 (In 2),Punch 4 (Out 2),Shift 2 Hrs,Punch 5 (In 3),Punch 6 (Out 3),Shift 3 Hrs,Total Hours,Duty Mode,Status
+1,14-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+2,14-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+3,14-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+4,14-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+5,14-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+6,15-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+7,15-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+8,15-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+9,15-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+10,15-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",10:44,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+11,16-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+12,16-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+13,16-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+14,16-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+15,16-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+16,17-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+17,17-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",16:53,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+18,17-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+19,17-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+20,17-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+21,18-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+22,18-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+23,18-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+24,18-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+25,18-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+26,19-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+27,19-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+28,19-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+29,19-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+30,19-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+31,20-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+32,20-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+33,20-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+34,20-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+35,20-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+36,21-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+37,21-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+38,21-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+39,21-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+40,21-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+41,22-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+42,22-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+43,22-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+44,22-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+45,22-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+46,23-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+47,23-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",10:50,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+48,23-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+49,23-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+50,23-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+51,24-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+52,24-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+53,24-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+54,24-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+55,24-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+56,25-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+57,25-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+58,25-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+59,25-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+60,25-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+61,26-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+62,26-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+63,26-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+64,26-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+65,26-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+66,27-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+67,27-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+68,27-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+69,27-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+70,27-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+71,28-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+72,28-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+73,28-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+74,28-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+75,28-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+76,29-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+77,29-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+78,29-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+79,29-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+80,29-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+81,30-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",13:01,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+82,30-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+83,30-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+84,30-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+85,30-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",15:32,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+
+=== SECTION 4: STATION OPERATIONAL STAFF DAILY 4-PUNCH LOGS ===
+Sl No,Date,Emp ID,Employee Name,Designation,Category,Assigned Shift,Punch 1 (In 1),Punch 2 (Out 1),Shift 1 Hrs,Punch 3 (In 2),Punch 4 (Out 2),Shift 2 Hrs,Punch 5 (In 3),Punch 6 (Out 3),Shift 3 Hrs,Total Hours,Duty Mode,Status
+1,14-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+2,14-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+3,14-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+4,14-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",08:45,15:52,7.12,--:--,--:--,0,--:--,--:--,0,7.12 hrs,"1 Shift(s)",Present
+5,14-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",09:05,17:54,8.81,--:--,--:--,0,--:--,--:--,0,8.81 hrs,"1 Shift(s)",Present
+6,14-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+7,14-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:19,14:21,8.03,--:--,--:--,0,--:--,--:--,0,8.03 hrs,"1 Shift(s)",Present
+8,14-09-2026,18,"Sandeepa K","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:48,06:56 (+1),11.13,--:--,--:--,0,--:--,--:--,0,11.13 hrs,"1 Shift (Night 3rd Shift)",Present
+9,14-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:11,14:21,8.18,--:--,--:--,0,--:--,--:--,0,8.18 hrs,"1 Shift(s)",Present
+10,14-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:24,20:12,5.8,--:--,--:--,0,--:--,--:--,0,5.8 hrs,"1 Shift(s)",Present
+11,14-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",15:17,20:35,5.3,--:--,--:--,0,--:--,--:--,0,5.3 hrs,"1 Shift(s)",Present
+12,14-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+13,14-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",06:18,14:22,8.07,14:22,19:55,5.55,--:--,--:--,0,13.62 hrs,"2 Shift(s)",Present
+14,14-09-2026,28,"Nagesh Babu S","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+15,14-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+16,14-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+17,14-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",09:04,17:52,8.81,--:--,--:--,0,--:--,--:--,0,8.81 hrs,"1 Shift(s)",Present
+18,14-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",14:06,19:51,5.75,--:--,--:--,0,--:--,--:--,0,5.75 hrs,"1 Shift(s)",Present
+19,14-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:06,20:18,14.21,--:--,--:--,0,--:--,--:--,0,14.21 hrs,"2 Shift(s)",Present
+20,14-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+21,14-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",09:04,14:05,5.02,--:--,--:--,0,--:--,--:--,0,5.02 hrs,"1 Shift(s)",Present
+22,14-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:06,14:06,7.99,14:06,19:49,5.72,--:--,--:--,0,13.71 hrs,"2 Shift(s)",Present
+23,14-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+24,14-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+25,14-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+26,14-09-2026,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+27,14-09-2026,6,"Ananda","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:16,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+28,14-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",14:05,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+29,14-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",09:17,17:46,8.47,--:--,--:--,0,--:--,--:--,0,8.47 hrs,"1 Shift(s)",Present
+30,15-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+31,15-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+32,15-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:02,06:25 (+1),10.39,--:--,--:--,0,--:--,--:--,0,10.39 hrs,"1 Shift (Night 3rd Shift)",Present
+33,15-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",06:28,15:00,8.52,--:--,--:--,0,--:--,--:--,0,8.52 hrs,"1 Shift(s)",Present
+34,15-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:16,17:49,11.55,--:--,--:--,0,--:--,--:--,0,11.55 hrs,"1 Shift(s)",Present
+35,15-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:15,15:03,8.81,--:--,--:--,0,--:--,--:--,0,8.81 hrs,"1 Shift(s)",Present
+36,15-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:11,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+37,15-09-2026,18,"Sandeepa K","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:59,06:45 (+1),10.78,--:--,--:--,0,--:--,--:--,0,10.78 hrs,"1 Shift (Night 3rd Shift)",Present
+38,15-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:57,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+39,15-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:58,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+40,15-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:57,20:13,6.27,--:--,--:--,0,--:--,--:--,0,6.27 hrs,"1 Shift(s)",Present
+41,15-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+42,15-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",06:25,14:08,7.71,14:08,20:13,6.1,--:--,--:--,0,13.81 hrs,"2 Shift(s)",Present
+43,15-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",19:59,07:16 (+1),11.28,--:--,--:--,0,--:--,--:--,0,11.28 hrs,"1 Shift (Night 3rd Shift)",Present
+44,15-09-2026,29,"Venkatesha C","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:59,06:11 (+1),10.21,--:--,--:--,0,--:--,--:--,0,10.21 hrs,"1 Shift (Night 3rd Shift)",Present
+45,15-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+46,15-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:16,17:49,11.55,--:--,--:--,0,--:--,--:--,0,11.55 hrs,"1 Shift(s)",Present
+47,15-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:02,14:14,8.19,14:14,20:04,5.85,--:--,--:--,0,14.04 hrs,"2 Shift(s)",Present
+48,15-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:56,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+49,15-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",18:04,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+50,15-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",10:53,14:14,3.34,--:--,--:--,0,--:--,--:--,0,3.34 hrs,"1 Shift(s)",Present
+51,15-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:56,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+52,15-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+53,15-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",16:27,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+54,15-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",16:29,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+55,15-09-2026,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+56,15-09-2026,6,"Ananda","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:04,06:25 (+1),10.35,--:--,--:--,0,--:--,--:--,0,10.35 hrs,"1 Shift (Night 3rd Shift)",Present
+57,15-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",08:20,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+58,15-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",08:58,17:50,8.87,--:--,--:--,0,--:--,--:--,0,8.87 hrs,"1 Shift(s)",Present
+59,16-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+60,16-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+61,16-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",14:34,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+62,16-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+63,16-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:37,17:48,11.19,--:--,--:--,0,--:--,--:--,0,11.19 hrs,"1 Shift(s)",Present
+64,16-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",07:10,14:35,7.42,--:--,--:--,0,--:--,--:--,0,7.42 hrs,"1 Shift(s)",Present
+65,16-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:15,14:20,8.07,--:--,--:--,0,--:--,--:--,0,8.07 hrs,"1 Shift(s)",Present
+66,16-09-2026,18,"Sandeepa K","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+67,16-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+68,16-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:24,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+69,16-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:58,21:35,7.61,21:35,22:56,1.35,--:--,--:--,0,8.96 hrs,"2 Shift(s)",Present
+70,16-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+71,16-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",06:43,14:43,8.01,--:--,--:--,0,--:--,--:--,0,8.01 hrs,"1 Shift(s)",Present
+72,16-09-2026,28,"Nagesh Babu S","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+73,16-09-2026,29,"Venkatesha C","Cashier","Staff","3rd Shift (20:00 - 06:00)",22:56,06:43 (+1),7.78,--:--,--:--,0,--:--,--:--,0,7.78 hrs,"1 Shift (Night 3rd Shift)",Present
+74,16-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+75,16-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:37,17:50,11.21,--:--,--:--,0,--:--,--:--,0,11.21 hrs,"1 Shift(s)",Present
+76,16-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+77,16-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:58,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+78,16-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:56,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+79,16-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+80,16-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:11,14:21,8.17,--:--,--:--,0,--:--,--:--,0,8.17 hrs,"1 Shift(s)",Present
+81,16-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:38,17:50,11.19,--:--,--:--,0,--:--,--:--,0,11.19 hrs,"1 Shift(s)",Present
+82,16-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:43,17:47,11.07,--:--,--:--,0,--:--,--:--,0,11.07 hrs,"2 Shift(s)",Present
+83,16-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:43,17:47,11.07,--:--,--:--,0,--:--,--:--,0,11.07 hrs,"2 Shift(s)",Present
+84,16-09-2026,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",11:44,15:17,3.55,--:--,--:--,0,--:--,--:--,0,3.55 hrs,"1 Shift(s)",Present
+85,16-09-2026,6,"Ananda","Cashier","Staff","3rd Shift (20:00 - 06:00)",22:57,07:10 (+1),8.23,--:--,--:--,0,--:--,--:--,0,8.23 hrs,"1 Shift (Night 3rd Shift)",Present
+86,16-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+87,16-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",07:10,15:57,8.78,--:--,--:--,0,--:--,--:--,0,8.78 hrs,"1 Shift(s)",Present
+88,17-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+89,17-09-2026,11,"Ambarish","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:01,07:00 (+1),10.98,--:--,--:--,0,--:--,--:--,0,10.98 hrs,"1 Shift (Night 3rd Shift)",Present
+90,17-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:04,06:20 (+1),10.27,--:--,--:--,0,--:--,--:--,0,10.27 hrs,"1 Shift (Night 3rd Shift)",Present
+91,17-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",08:42,17:41,8.98,--:--,--:--,0,--:--,--:--,0,8.98 hrs,"1 Shift(s)",Present
+92,17-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:10,17:47,11.61,--:--,--:--,0,--:--,--:--,0,11.61 hrs,"1 Shift(s)",Present
+93,17-09-2026,16,"Nikhil Kumar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:00,07:00 (+1),11,--:--,--:--,0,--:--,--:--,0,11 hrs,"1 Shift (Night 3rd Shift)",Present
+94,17-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:19,14:38,8.31,14:38,20:17,5.66,--:--,--:--,0,13.97 hrs,"2 Shift(s)",Present
+95,17-09-2026,18,"Sandeepa K","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:44,06:48 (+1),11.08,--:--,--:--,0,--:--,--:--,0,11.08 hrs,"1 Shift (Night 3rd Shift)",Present
+96,17-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:59,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+97,17-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+98,17-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:47,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+99,17-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+100,17-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",06:09,14:34,8.4,14:34,20:00,5.44,--:--,--:--,0,13.84 hrs,"2 Shift(s)",Present
+101,17-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",19:59,07:20 (+1),11.34,--:--,--:--,0,--:--,--:--,0,11.34 hrs,"1 Shift (Night 3rd Shift)",Present
+102,17-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+103,17-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+104,17-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:11,17:46,11.59,--:--,--:--,0,--:--,--:--,0,11.59 hrs,"1 Shift(s)",Present
+105,17-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:13,14:11,7.96,--:--,--:--,0,--:--,--:--,0,7.96 hrs,"1 Shift(s)",Present
+106,17-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:30,14:30,7.99,--:--,--:--,0,--:--,--:--,0,7.99 hrs,"1 Shift(s)",Present
+107,17-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:50,05:57 (+1),12.11,--:--,--:--,0,--:--,--:--,0,12.11 hrs,"1 Shift (12H Night Shift)",Present
+108,17-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:19,14:23,8.07,--:--,--:--,0,--:--,--:--,0,8.07 hrs,"1 Shift(s)",Present
+109,17-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",14:11,19:59,5.8,--:--,--:--,0,--:--,--:--,0,5.8 hrs,"1 Shift(s)",Present
+110,17-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",08:44,17:41,8.94,--:--,--:--,0,--:--,--:--,0,8.94 hrs,"1 Shift(s)",Present
+111,17-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:10,17:48,11.64,--:--,--:--,0,--:--,--:--,0,11.64 hrs,"2 Shift(s)",Present
+112,17-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:10,17:43,11.55,--:--,--:--,0,--:--,--:--,0,11.55 hrs,"2 Shift(s)",Present
+113,17-09-2026,43,"Santhosh g","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:01,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+114,17-09-2026,6,"Ananda","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+115,17-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",10:04,14:36,4.54,--:--,--:--,0,--:--,--:--,0,4.54 hrs,"1 Shift(s)",Present
+116,17-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",07:20,15:55,8.58,--:--,--:--,0,--:--,--:--,0,8.58 hrs,"1 Shift(s)",Present
+117,18-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+118,18-09-2026,11,"Ambarish","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:38,07:05 (+1),11.45,--:--,--:--,0,--:--,--:--,0,11.45 hrs,"1 Shift (Night 3rd Shift)",Present
+119,18-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",21:02,06:10 (+1),9.13,--:--,--:--,0,--:--,--:--,0,9.13 hrs,"1 Shift (Night 3rd Shift)",Present
+120,18-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",08:39,17:44,9.09,--:--,--:--,0,--:--,--:--,0,9.09 hrs,"1 Shift(s)",Present
+121,18-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",07:19,17:46,10.44,--:--,--:--,0,--:--,--:--,0,10.44 hrs,"1 Shift(s)",Present
+122,18-09-2026,16,"Nikhil Kumar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:07,07:07 (+1),11,--:--,--:--,0,--:--,--:--,0,11 hrs,"1 Shift (Night 3rd Shift)",Present
+123,18-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:15,14:29,8.23,--:--,--:--,0,--:--,--:--,0,8.23 hrs,"1 Shift(s)",Present
+124,18-09-2026,18,"Sandeepa K","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:52,06:16 (+1),10.4,--:--,--:--,0,--:--,--:--,0,10.4 hrs,"1 Shift (Night 3rd Shift)",Present
+125,18-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:57,20:18,6.34,--:--,--:--,0,--:--,--:--,0,6.34 hrs,"1 Shift(s)",Present
+126,18-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:03,20:18,6.24,--:--,--:--,0,--:--,--:--,0,6.24 hrs,"1 Shift(s)",Present
+127,18-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:58,20:12,6.23,--:--,--:--,0,--:--,--:--,0,6.23 hrs,"1 Shift(s)",Present
+128,18-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+129,18-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",13:58,20:08,6.17,--:--,--:--,0,--:--,--:--,0,6.17 hrs,"1 Shift(s)",Present
+130,18-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",20:08,07:07 (+1),11,--:--,--:--,0,--:--,--:--,0,11 hrs,"1 Shift (Night 3rd Shift)",Present
+131,18-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",06:15,14:32,8.29,--:--,--:--,0,--:--,--:--,0,8.29 hrs,"1 Shift(s)",Present
+132,18-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",06:00,14:07,8.13,--:--,--:--,0,--:--,--:--,0,8.13 hrs,"1 Shift(s)",Present
+133,18-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:11,17:46,11.57,--:--,--:--,0,--:--,--:--,0,11.57 hrs,"1 Shift(s)",Present
+134,18-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:00,14:07,8.13,14:07,20:07,5.99,--:--,--:--,0,14.12 hrs,"2 Shift(s)",Present
+135,18-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:10,14:12,8.04,--:--,--:--,0,--:--,--:--,0,8.04 hrs,"1 Shift(s)",Present
+136,18-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:47,06:23 (+1),12.6,--:--,--:--,0,--:--,--:--,0,12.6 hrs,"1 Shift (12H Night Shift)",Present
+137,18-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:29,14:16,7.79,--:--,--:--,0,--:--,--:--,0,7.79 hrs,"1 Shift(s)",Present
+138,18-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+139,18-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:12,17:37,11.42,--:--,--:--,0,--:--,--:--,0,11.42 hrs,"1 Shift(s)",Present
+140,18-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:10,17:47,11.62,--:--,--:--,0,--:--,--:--,0,11.62 hrs,"2 Shift(s)",Present
+141,18-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:10,15:05,8.91,--:--,--:--,0,--:--,--:--,0,8.91 hrs,"1 Shift(s)",Present
+142,18-09-2026,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+143,18-09-2026,6,"Ananda","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:08,07:17 (+1),11.15,--:--,--:--,0,--:--,--:--,0,11.15 hrs,"1 Shift (Night 3rd Shift)",Present
+144,18-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",06:09,14:35,8.43,--:--,--:--,0,--:--,--:--,0,8.43 hrs,"1 Shift(s)",Present
+145,18-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",07:15,15:57,8.7,--:--,--:--,0,--:--,--:--,0,8.7 hrs,"1 Shift(s)",Present
+146,19-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+147,19-09-2026,11,"Ambarish","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:31,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+148,19-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:25,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+149,19-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",08:40,17:47,9.11,--:--,--:--,0,--:--,--:--,0,9.11 hrs,"1 Shift(s)",Present
+150,19-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:24,17:54,11.51,--:--,--:--,0,--:--,--:--,0,11.51 hrs,"1 Shift(s)",Present
+151,19-09-2026,16,"Nikhil Kumar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:04,07:20 (+1),11.26,--:--,--:--,0,--:--,--:--,0,11.26 hrs,"1 Shift (Night 3rd Shift)",Present
+152,19-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:16,14:31,8.26,--:--,--:--,0,--:--,--:--,0,8.26 hrs,"1 Shift(s)",Present
+153,19-09-2026,18,"Sandeepa K","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:47,07:06 (+1),11.31,--:--,--:--,0,--:--,--:--,0,11.31 hrs,"1 Shift (Night 3rd Shift)",Present
+154,19-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",17:59,20:21,2.37,--:--,--:--,0,--:--,--:--,0,2.37 hrs,"1 Shift(s)",Present
+155,19-09-2026,22,"Muthyalappa","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:02,06:39 (+1),10.63,--:--,--:--,0,--:--,--:--,0,10.63 hrs,"1 Shift (Night 3rd Shift)",Present
+156,19-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:17,14:05,7.79,14:05,20:02,5.95,--:--,--:--,0,13.74 hrs,"2 Shift(s)",Present
+157,19-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+158,19-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+159,19-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",20:04,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+160,19-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+161,19-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",06:23,14:04,7.67,--:--,--:--,0,--:--,--:--,0,7.67 hrs,"1 Shift(s)",Present
+162,19-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:24,17:54,11.51,--:--,--:--,0,--:--,--:--,0,11.51 hrs,"1 Shift(s)",Present
+163,19-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:12,14:15,8.05,--:--,--:--,0,--:--,--:--,0,8.05 hrs,"1 Shift(s)",Present
+164,19-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:16,14:41,8.41,--:--,--:--,0,--:--,--:--,0,8.41 hrs,"1 Shift(s)",Present
+165,19-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",18:00,06:22 (+1),12.36,--:--,--:--,0,--:--,--:--,0,12.36 hrs,"1 Shift (12H Night Shift)",Present
+166,19-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:28,14:36,8.13,--:--,--:--,0,--:--,--:--,0,8.13 hrs,"1 Shift(s)",Present
+167,19-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",14:04,20:08,6.07,--:--,--:--,0,--:--,--:--,0,6.07 hrs,"1 Shift(s)",Present
+168,19-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",17:53,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+169,19-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:17,17:53,11.6,--:--,--:--,0,--:--,--:--,0,11.6 hrs,"2 Shift(s)",Present
+170,19-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:17,17:54,11.62,--:--,--:--,0,--:--,--:--,0,11.62 hrs,"2 Shift(s)",Present
+171,19-09-2026,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",06:10,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+172,19-09-2026,6,"Ananda","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:04,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+173,19-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+174,19-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",07:02,15:53,8.84,--:--,--:--,0,--:--,--:--,0,8.84 hrs,"1 Shift(s)",Present
+175,20-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+176,20-09-2026,11,"Ambarish","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:41,07:00 (+1),11.32,--:--,--:--,0,--:--,--:--,0,11.32 hrs,"1 Shift (Night 3rd Shift)",Present
+177,20-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+178,20-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",06:30,15:48,9.3,--:--,--:--,0,--:--,--:--,0,9.3 hrs,"1 Shift(s)",Present
+179,20-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:10,17:51,11.68,--:--,--:--,0,--:--,--:--,0,11.68 hrs,"1 Shift(s)",Present
+180,20-09-2026,16,"Nikhil Kumar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:03,06:53 (+1),10.83,--:--,--:--,0,--:--,--:--,0,10.83 hrs,"1 Shift (Night 3rd Shift)",Present
+181,20-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:39,14:22,7.72,14:22,20:34,6.19,--:--,--:--,0,13.91 hrs,"2 Shift(s)",Present
+182,20-09-2026,18,"Sandeepa K","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:50,06:53 (+1),11.05,--:--,--:--,0,--:--,--:--,0,11.05 hrs,"1 Shift (Night 3rd Shift)",Present
+183,20-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+184,20-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:12,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+185,20-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:25,20:15,5.84,--:--,--:--,0,--:--,--:--,0,5.84 hrs,"1 Shift(s)",Present
+186,20-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+187,20-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+188,20-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",20:05,06:53 (+1),10.79,--:--,--:--,0,--:--,--:--,0,10.79 hrs,"1 Shift (Night 3rd Shift)",Present
+189,20-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",06:22,14:22,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift(s)",Present
+190,20-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+191,20-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:09,17:51,11.7,--:--,--:--,0,--:--,--:--,0,11.7 hrs,"1 Shift(s)",Present
+192,20-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+193,20-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:11,14:10,8,14:10,20:18,6.13,--:--,--:--,0,14.13 hrs,"2 Shift(s)",Present
+194,20-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:59,06:22 (+1),12.38,--:--,--:--,0,--:--,--:--,0,12.38 hrs,"1 Shift (12H Night Shift)",Present
+195,20-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",07:13,14:39,7.43,--:--,--:--,0,--:--,--:--,0,7.43 hrs,"1 Shift(s)",Present
+196,20-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:22,14:43,8.36,14:43,20:05,5.37,--:--,--:--,0,13.73 hrs,"2 Shift(s)",Present
+197,20-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:09,17:51,11.7,--:--,--:--,0,--:--,--:--,0,11.7 hrs,"1 Shift(s)",Present
+198,20-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+199,20-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+200,20-09-2026,43,"Santhosh g","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:05,07:00 (+1),10.91,--:--,--:--,0,--:--,--:--,0,10.91 hrs,"1 Shift (Night 3rd Shift)",Present
+201,20-09-2026,6,"Ananda","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:46,05:58 (+1),10.22,--:--,--:--,0,--:--,--:--,0,10.22 hrs,"1 Shift (Night 3rd Shift)",Present
+202,20-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",06:47,14:10,7.38,--:--,--:--,0,--:--,--:--,0,7.38 hrs,"1 Shift(s)",Present
+203,20-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+204,21-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+205,21-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+206,21-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+207,21-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",07:17,15:53,8.6,--:--,--:--,0,--:--,--:--,0,8.6 hrs,"1 Shift(s)",Present
+208,21-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:15,18:03,11.79,--:--,--:--,0,--:--,--:--,0,11.79 hrs,"1 Shift(s)",Present
+209,21-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:23,20:58,6.59,--:--,--:--,0,--:--,--:--,0,6.59 hrs,"1 Shift(s)",Present
+210,21-09-2026,17,"Sridhar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:00,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+211,21-09-2026,18,"Sandeepa K","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:51,06:24 (+1),10.55,--:--,--:--,0,--:--,--:--,0,10.55 hrs,"1 Shift (Night 3rd Shift)",Present
+212,21-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:11,14:21,8.18,--:--,--:--,0,--:--,--:--,0,8.18 hrs,"1 Shift(s)",Present
+213,21-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:24,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+214,21-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:10,14:21,8.19,14:21,20:08,5.78,--:--,--:--,0,13.97 hrs,"2 Shift(s)",Present
+215,21-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+216,21-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",06:16,14:21,8.08,--:--,--:--,0,--:--,--:--,0,8.08 hrs,"1 Shift(s)",Present
+217,21-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",20:30,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+218,21-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",06:15,14:21,8.1,--:--,--:--,0,--:--,--:--,0,8.1 hrs,"1 Shift(s)",Present
+219,21-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+220,21-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:15,17:52,11.62,--:--,--:--,0,--:--,--:--,0,11.62 hrs,"1 Shift(s)",Present
+221,21-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+222,21-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:17,14:27,8.17,14:27,20:23,5.93,--:--,--:--,0,14.1 hrs,"2 Shift(s)",Present
+223,21-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:48,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+224,21-09-2026,39,"Gangadharappa","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:59,06:30 (+1),10.52,--:--,--:--,0,--:--,--:--,0,10.52 hrs,"1 Shift (Night 3rd Shift)",Present
+225,21-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:24,14:21,7.95,14:21,20:22,6.02,--:--,--:--,0,13.97 hrs,"2 Shift(s)",Present
+226,21-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",17:55,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+227,21-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:13,17:53,11.66,--:--,--:--,0,--:--,--:--,0,11.66 hrs,"2 Shift(s)",Present
+228,21-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:14,17:52,11.64,--:--,--:--,0,--:--,--:--,0,11.64 hrs,"2 Shift(s)",Present
+229,21-09-2026,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",14:23,20:23,6,--:--,--:--,0,--:--,--:--,0,6 hrs,"1 Shift(s)",Present
+230,21-09-2026,6,"Ananda","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:54,20:26,6.53,--:--,--:--,0,--:--,--:--,0,6.53 hrs,"1 Shift(s)",Present
+231,21-09-2026,7,"Rajanna G M","Office Admin","Staff","3rd Shift (20:00 - 06:00)",19:59,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+232,21-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",08:54,17:50,8.95,--:--,--:--,0,--:--,--:--,0,8.95 hrs,"1 Shift(s)",Present
+233,22-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+234,22-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+235,22-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:47,07:03 (+1),10.26,--:--,--:--,0,--:--,--:--,0,10.26 hrs,"1 Shift (Night 3rd Shift)",Present
+236,22-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+237,22-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:13,17:52,11.66,--:--,--:--,0,--:--,--:--,0,11.66 hrs,"1 Shift(s)",Present
+238,22-09-2026,16,"Nikhil Kumar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:22,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+239,22-09-2026,17,"Sridhar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:53,07:03 (+1),11.15,--:--,--:--,0,--:--,--:--,0,11.15 hrs,"1 Shift (Night 3rd Shift)",Present
+240,22-09-2026,18,"Sandeepa K","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:59,20:03,6.08,--:--,--:--,0,--:--,--:--,0,6.08 hrs,"1 Shift(s)",Present
+241,22-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:13,14:26,8.22,--:--,--:--,0,--:--,--:--,0,8.22 hrs,"1 Shift(s)",Present
+242,22-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:58,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+243,22-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:11,14:11,8.01,14:44,20:17,6.09,--:--,--:--,0,14.1 hrs,"2 Shift(s)",Present
+244,22-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+245,22-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",06:13,14:36,8.4,--:--,--:--,0,--:--,--:--,0,8.4 hrs,"1 Shift(s)",Present
+246,22-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",20:03,07:02 (+1),10.98,--:--,--:--,0,--:--,--:--,0,10.98 hrs,"1 Shift (Night 3rd Shift)",Present
+247,22-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",13:58,20:04,6.11,--:--,--:--,0,--:--,--:--,0,6.11 hrs,"1 Shift(s)",Present
+248,22-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+249,22-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:13,17:53,11.65,--:--,--:--,0,--:--,--:--,0,11.65 hrs,"1 Shift(s)",Present
+250,22-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+251,22-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+252,22-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+253,22-09-2026,39,"Gangadharappa","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:11,07:03 (+1),10.86,--:--,--:--,0,--:--,--:--,0,10.86 hrs,"1 Shift (Night 3rd Shift)",Present
+254,22-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:19,20:03,13.73,--:--,--:--,0,--:--,--:--,0,13.73 hrs,"2 Shift(s)",Present
+255,22-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",17:36,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+256,22-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:14,17:53,11.66,--:--,--:--,0,--:--,--:--,0,11.66 hrs,"2 Shift(s)",Present
+257,22-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:13,17:54,11.69,--:--,--:--,0,--:--,--:--,0,11.69 hrs,"2 Shift(s)",Present
+258,22-09-2026,43,"Santhosh g","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:06,07:03 (+1),10.95,--:--,--:--,0,--:--,--:--,0,10.95 hrs,"1 Shift (Night 3rd Shift)",Present
+259,22-09-2026,6,"Ananda","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:07,14:13,8.1,--:--,--:--,0,--:--,--:--,0,8.1 hrs,"1 Shift(s)",Present
+260,22-09-2026,7,"Rajanna G M","Office Admin","Staff","3rd Shift (20:00 - 06:00)",19:55,07:04 (+1),11.15,--:--,--:--,0,--:--,--:--,0,11.15 hrs,"1 Shift (Night 3rd Shift)",Present
+261,22-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",07:12,15:54,8.7,--:--,--:--,0,--:--,--:--,0,8.7 hrs,"1 Shift(s)",Present
+262,23-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+263,23-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+264,23-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:01,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+265,23-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",06:35,15:48,9.22,--:--,--:--,0,--:--,--:--,0,9.22 hrs,"1 Shift(s)",Present
+266,23-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:13,17:55,11.7,--:--,--:--,0,--:--,--:--,0,11.7 hrs,"1 Shift(s)",Present
+267,23-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:58,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+268,23-09-2026,17,"Sridhar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:41,07:08 (+1),10.45,--:--,--:--,0,--:--,--:--,0,10.45 hrs,"1 Shift (Night 3rd Shift)",Present
+269,23-09-2026,18,"Sandeepa K","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:58,20:13,6.26,--:--,--:--,0,--:--,--:--,0,6.26 hrs,"1 Shift(s)",Present
+270,23-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:10,14:15,8.08,--:--,--:--,0,--:--,--:--,0,8.08 hrs,"1 Shift(s)",Present
+271,23-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:18,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+272,23-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:13,14:19,8.11,--:--,--:--,0,--:--,--:--,0,8.11 hrs,"1 Shift(s)",Present
+273,23-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+274,23-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",06:12,14:15,8.04,--:--,--:--,0,--:--,--:--,0,8.04 hrs,"1 Shift(s)",Present
+275,23-09-2026,28,"Nagesh Babu S","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+276,23-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",13:58,20:31,6.56,--:--,--:--,0,--:--,--:--,0,6.56 hrs,"1 Shift(s)",Present
+277,23-09-2026,30,"Srinivasa k v","Cashier","Staff","3rd Shift (20:00 - 06:00)",21:43,06:21 (+1),8.62,--:--,--:--,0,--:--,--:--,0,8.62 hrs,"1 Shift (Night 3rd Shift)",Present
+278,23-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:14,17:55,11.7,--:--,--:--,0,--:--,--:--,0,11.7 hrs,"1 Shift(s)",Present
+279,23-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",05:59,14:03,8.08,14:03,20:14,6.18,--:--,--:--,0,14.26 hrs,"2 Shift(s)",Present
+280,23-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:12,14:15,8.05,--:--,--:--,0,--:--,--:--,0,8.05 hrs,"1 Shift(s)",Present
+281,23-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:46,06:14 (+1),12.46,--:--,--:--,0,--:--,--:--,0,12.46 hrs,"1 Shift (12H Night Shift)",Present
+282,23-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+283,23-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+284,23-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:05,17:41,11.61,--:--,--:--,0,--:--,--:--,0,11.61 hrs,"1 Shift(s)",Present
+285,23-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:13,17:46,11.56,--:--,--:--,0,--:--,--:--,0,11.56 hrs,"2 Shift(s)",Present
+286,23-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:13,17:47,11.57,--:--,--:--,0,--:--,--:--,0,11.57 hrs,"2 Shift(s)",Present
+287,23-09-2026,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+288,23-09-2026,6,"Ananda","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+289,23-09-2026,7,"Rajanna G M","Office Admin","Staff","3rd Shift (20:00 - 06:00)",21:43,07:01 (+1),9.3,--:--,--:--,0,--:--,--:--,0,9.3 hrs,"1 Shift (Night 3rd Shift)",Present
+290,23-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",09:03,17:45,8.7,--:--,--:--,0,--:--,--:--,0,8.7 hrs,"1 Shift(s)",Present
+291,24-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+292,24-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+293,24-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+294,24-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",06:41,15:50,9.15,--:--,--:--,0,--:--,--:--,0,9.15 hrs,"1 Shift(s)",Present
+295,24-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+296,24-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:21,20:26,6.08,--:--,--:--,0,--:--,--:--,0,6.08 hrs,"1 Shift(s)",Present
+297,24-09-2026,17,"Sridhar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:36,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+298,24-09-2026,18,"Sandeepa K","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:04,20:05,6.01,--:--,--:--,0,--:--,--:--,0,6.01 hrs,"1 Shift(s)",Present
+299,24-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:02,15:17,9.26,--:--,--:--,0,--:--,--:--,0,9.26 hrs,"1 Shift(s)",Present
+300,24-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+301,24-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:13,14:31,8.29,14:31,20:26,5.92,--:--,--:--,0,14.21 hrs,"2 Shift(s)",Present
+302,24-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+303,24-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",06:16,13:30,7.22,13:30,14:11,0.7,--:--,--:--,0,7.92 hrs,"2 Shift(s)",Present
+304,24-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",20:02,06:49 (+1),10.79,--:--,--:--,0,--:--,--:--,0,10.79 hrs,"1 Shift (Night 3rd Shift)",Present
+305,24-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+306,24-09-2026,30,"Srinivasa k v","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:36,06:27 (+1),9.85,--:--,--:--,0,--:--,--:--,0,9.85 hrs,"1 Shift (Night 3rd Shift)",Present
+307,24-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:14,18:02,11.79,--:--,--:--,0,--:--,--:--,0,11.79 hrs,"1 Shift(s)",Present
+308,24-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:11,14:08,7.95,--:--,--:--,0,--:--,--:--,0,7.95 hrs,"1 Shift(s)",Present
+309,24-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:15,14:27,8.22,--:--,--:--,0,--:--,--:--,0,8.22 hrs,"1 Shift(s)",Present
+310,24-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:51,06:14 (+1),12.38,--:--,--:--,0,--:--,--:--,0,12.38 hrs,"1 Shift (12H Night Shift)",Present
+311,24-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",00:15,06:43,6.47,06:43,20:01,13.29,--:--,--:--,0,19.76 hrs,"3 Shift(s)",Present
+312,24-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",14:16,20:02,5.76,--:--,--:--,0,--:--,--:--,0,5.76 hrs,"1 Shift(s)",Present
+313,24-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:02,17:53,11.85,--:--,--:--,0,--:--,--:--,0,11.85 hrs,"1 Shift(s)",Present
+314,24-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:13,17:53,11.66,--:--,--:--,0,--:--,--:--,0,11.66 hrs,"2 Shift(s)",Present
+315,24-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:13,17:53,11.66,--:--,--:--,0,--:--,--:--,0,11.66 hrs,"2 Shift(s)",Present
+316,24-09-2026,43,"Santhosh g","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:36,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+317,24-09-2026,6,"Ananda","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:29,15:18,8.82,15:18,20:28,5.17,--:--,--:--,0,13.99 hrs,"2 Shift(s)",Present
+318,24-09-2026,7,"Rajanna G M","Office Admin","Staff","3rd Shift (20:00 - 06:00)",19:46,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+319,24-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",08:54,17:51,8.95,--:--,--:--,0,--:--,--:--,0,8.95 hrs,"1 Shift(s)",Present
+320,25-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+321,25-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+322,25-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",06:23,14:23,7.99,--:--,--:--,0,--:--,--:--,0,7.99 hrs,"1 Shift(s)",Present
+323,25-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",06:34,15:50,9.26,--:--,--:--,0,--:--,--:--,0,9.26 hrs,"1 Shift(s)",Present
+324,25-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:11,17:58,11.77,--:--,--:--,0,--:--,--:--,0,11.77 hrs,"1 Shift(s)",Present
+325,25-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:59,20:20,6.35,--:--,--:--,0,--:--,--:--,0,6.35 hrs,"1 Shift(s)",Present
+326,25-09-2026,17,"Sridhar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",21:55,07:14 (+1),9.31,--:--,--:--,0,--:--,--:--,0,9.31 hrs,"1 Shift (Night 3rd Shift)",Present
+327,25-09-2026,18,"Sandeepa K","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:58,20:14,6.26,--:--,--:--,0,--:--,--:--,0,6.26 hrs,"1 Shift(s)",Present
+328,25-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:38,14:10,7.54,--:--,--:--,0,--:--,--:--,0,7.54 hrs,"1 Shift(s)",Present
+329,25-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:04,20:14,6.16,--:--,--:--,0,--:--,--:--,0,6.16 hrs,"1 Shift(s)",Present
+330,25-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:12,14:09,7.95,--:--,--:--,0,--:--,--:--,0,7.95 hrs,"1 Shift(s)",Present
+331,25-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+332,25-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+333,25-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",20:02,07:14 (+1),11.2,--:--,--:--,0,--:--,--:--,0,11.2 hrs,"1 Shift (Night 3rd Shift)",Present
+334,25-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",13:58,20:33,6.59,--:--,--:--,0,--:--,--:--,0,6.59 hrs,"1 Shift(s)",Present
+335,25-09-2026,30,"Srinivasa k v","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:02,06:20 (+1),10.31,--:--,--:--,0,--:--,--:--,0,10.31 hrs,"1 Shift (Night 3rd Shift)",Present
+336,25-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:12,17:57,11.74,--:--,--:--,0,--:--,--:--,0,11.74 hrs,"1 Shift(s)",Present
+337,25-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",13:33,20:02,6.49,--:--,--:--,0,--:--,--:--,0,6.49 hrs,"1 Shift(s)",Present
+338,25-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:13,14:32,8.32,--:--,--:--,0,--:--,--:--,0,8.32 hrs,"1 Shift(s)",Present
+339,25-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:50,06:19 (+1),12.49,--:--,--:--,0,--:--,--:--,0,12.49 hrs,"1 Shift (12H Night Shift)",Present
+340,25-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:51,19:58,13.12,--:--,--:--,0,--:--,--:--,0,13.12 hrs,"2 Shift(s)",Present
+341,25-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:17,13:32,7.26,--:--,--:--,0,--:--,--:--,0,7.26 hrs,"1 Shift(s)",Present
+342,25-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:10,17:45,11.58,--:--,--:--,0,--:--,--:--,0,11.58 hrs,"1 Shift(s)",Present
+343,25-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:12,17:50,11.63,--:--,--:--,0,--:--,--:--,0,11.63 hrs,"2 Shift(s)",Present
+344,25-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:12,17:50,11.63,--:--,--:--,0,--:--,--:--,0,11.63 hrs,"2 Shift(s)",Present
+345,25-09-2026,43,"Santhosh g","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:02,07:14 (+1),11.2,--:--,--:--,0,--:--,--:--,0,11.2 hrs,"1 Shift (Night 3rd Shift)",Present
+346,25-09-2026,6,"Ananda","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+347,25-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+348,25-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",08:50,17:50,9.01,--:--,--:--,0,--:--,--:--,0,9.01 hrs,"1 Shift(s)",Present
+349,26-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+350,26-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+351,26-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:05,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+352,26-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",06:39,15:50,9.18,--:--,--:--,0,--:--,--:--,0,9.18 hrs,"1 Shift(s)",Present
+353,26-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:17,17:47,11.5,--:--,--:--,0,--:--,--:--,0,11.5 hrs,"1 Shift(s)",Present
+354,26-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:12,20:49,6.61,--:--,--:--,0,--:--,--:--,0,6.61 hrs,"1 Shift(s)",Present
+355,26-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+356,26-09-2026,18,"Sandeepa K","Cashier","Staff","2nd Shift (14:00 - 20:00)",13:55,20:11,6.27,--:--,--:--,0,--:--,--:--,0,6.27 hrs,"1 Shift(s)",Present
+357,26-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:03,14:29,8.43,--:--,--:--,0,--:--,--:--,0,8.43 hrs,"1 Shift(s)",Present
+358,26-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:03,20:10,6.12,--:--,--:--,0,--:--,--:--,0,6.12 hrs,"1 Shift(s)",Present
+359,26-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:16,14:11,7.91,14:11,20:11,6,--:--,--:--,0,13.91 hrs,"2 Shift(s)",Present
+360,26-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+361,26-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+362,26-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",20:11,06:49 (+1),10.63,--:--,--:--,0,--:--,--:--,0,10.63 hrs,"1 Shift (Night 3rd Shift)",Present
+363,26-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",14:05,20:43,6.64,--:--,--:--,0,--:--,--:--,0,6.64 hrs,"1 Shift(s)",Present
+364,26-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+365,26-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:18,17:47,11.48,--:--,--:--,0,--:--,--:--,0,11.48 hrs,"1 Shift(s)",Present
+366,26-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:14,14:10,7.94,--:--,--:--,0,--:--,--:--,0,7.94 hrs,"1 Shift(s)",Present
+367,26-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:16,14:29,8.22,--:--,--:--,0,--:--,--:--,0,8.22 hrs,"1 Shift(s)",Present
+368,26-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:47,06:10 (+1),12.38,--:--,--:--,0,--:--,--:--,0,12.38 hrs,"1 Shift (12H Night Shift)",Present
+369,26-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:36,19:57,13.35,--:--,--:--,0,--:--,--:--,0,13.35 hrs,"2 Shift(s)",Present
+370,26-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",14:00,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+371,26-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:07,17:48,11.68,--:--,--:--,0,--:--,--:--,0,11.68 hrs,"1 Shift(s)",Present
+372,26-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:17,17:48,11.52,--:--,--:--,0,--:--,--:--,0,11.52 hrs,"2 Shift(s)",Present
+373,26-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:16,17:46,11.49,--:--,--:--,0,--:--,--:--,0,11.49 hrs,"2 Shift(s)",Present
+374,26-09-2026,43,"Santhosh g","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:30,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+375,26-09-2026,6,"Ananda","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:11,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+376,26-09-2026,7,"Rajanna G M","Office Admin","Staff","3rd Shift (20:00 - 06:00)",20:04,06:09 (+1),10.09,--:--,--:--,0,--:--,--:--,0,10.09 hrs,"1 Shift (Night 3rd Shift)",Present
+377,26-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+378,27-09-2026,10,"Santhosh M","Cashier","Staff","3rd Shift (20:00 - 06:00)",18:47,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+379,27-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+380,27-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+381,27-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",06:30,15:30,9,--:--,--:--,0,--:--,--:--,0,9 hrs,"1 Shift(s)",Present
+382,27-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:10,17:54,11.74,--:--,--:--,0,--:--,--:--,0,11.74 hrs,"1 Shift(s)",Present
+383,27-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+384,27-09-2026,17,"Sridhar S","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:58,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+385,27-09-2026,18,"Sandeepa K","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:03,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+386,27-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:04,15:04,9.01,--:--,--:--,0,--:--,--:--,0,9.01 hrs,"1 Shift(s)",Present
+387,27-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:06,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+388,27-09-2026,24,"Sanjeeth","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:08,15:21,9.22,15:21,20:05,4.74,--:--,--:--,0,13.96 hrs,"2 Shift(s)",Present
+389,27-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+390,27-09-2026,26,"Sandeep M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+391,27-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",20:08,07:12 (+1),11.08,--:--,--:--,0,--:--,--:--,0,11.08 hrs,"1 Shift (Night 3rd Shift)",Present
+392,27-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",13:53,20:31,6.65,--:--,--:--,0,--:--,--:--,0,6.65 hrs,"1 Shift(s)",Present
+393,27-09-2026,30,"Srinivasa k v","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:59,06:25 (+1),10.45,--:--,--:--,0,--:--,--:--,0,10.45 hrs,"1 Shift (Night 3rd Shift)",Present
+394,27-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:09,17:52,11.71,--:--,--:--,0,--:--,--:--,0,11.71 hrs,"1 Shift(s)",Present
+395,27-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:08,19:54,13.76,--:--,--:--,0,--:--,--:--,0,13.76 hrs,"2 Shift(s)",Present
+396,27-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:08,14:21,8.22,14:21,15:21,1,--:--,--:--,0,9.22 hrs,"2 Shift(s)",Present
+397,27-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:52,06:09 (+1),12.28,--:--,--:--,0,--:--,--:--,0,12.28 hrs,"1 Shift (12H Night Shift)",Present
+398,27-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:27,20:01,13.57,--:--,--:--,0,--:--,--:--,0,13.57 hrs,"2 Shift(s)",Present
+399,27-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+400,27-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:04,17:53,11.81,--:--,--:--,0,--:--,--:--,0,11.81 hrs,"1 Shift(s)",Present
+401,27-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:10,20:07,13.94,--:--,--:--,0,--:--,--:--,0,13.94 hrs,"2 Shift(s)",Present
+402,27-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:09,15:41,9.54,--:--,--:--,0,--:--,--:--,0,9.54 hrs,"1 Shift(s)",Present
+403,27-09-2026,43,"Santhosh g","Cashier","Staff","3rd Shift (20:00 - 06:00)",22:19,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+404,27-09-2026,6,"Ananda","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:31,14:12,7.69,--:--,--:--,0,--:--,--:--,0,7.69 hrs,"1 Shift(s)",Present
+405,27-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",15:21,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+406,27-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",09:14,15:56,6.7,--:--,--:--,0,--:--,--:--,0,6.7 hrs,"1 Shift(s)",Present
+407,28-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+408,28-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",05:59,21:26,15.47,--:--,--:--,0,--:--,--:--,0,15.47 hrs,"2 Shift(s)",Present
+409,28-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+410,28-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",06:37,16:11,9.58,--:--,--:--,0,--:--,--:--,0,9.58 hrs,"1 Shift(s)",Present
+411,28-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:10,17:49,11.65,--:--,--:--,0,--:--,--:--,0,11.65 hrs,"1 Shift(s)",Present
+412,28-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:07,14:56,8.81,--:--,--:--,0,--:--,--:--,0,8.81 hrs,"1 Shift(s)",Present
+413,28-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+414,28-09-2026,18,"Sandeepa K","Cashier","Staff","2nd Shift (14:00 - 20:00)",05:59,14:28,8.49,--:--,--:--,0,--:--,--:--,0,8.49 hrs,"1 Shift(s)",Present
+415,28-09-2026,20,"Ganagaraju P","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+416,28-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+417,28-09-2026,24,"Sanjeeth","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:46,06:31 (+1),10.74,--:--,--:--,0,--:--,--:--,0,10.74 hrs,"1 Shift (Night 3rd Shift)",Present
+418,28-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+419,28-09-2026,26,"Sandeep M","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:45,06:59 (+1),11.23,--:--,--:--,0,--:--,--:--,0,11.23 hrs,"1 Shift (Night 3rd Shift)",Present
+420,28-09-2026,28,"Nagesh Babu S","Supervisor","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+421,28-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",06:10,14:25,8.25,--:--,--:--,0,--:--,--:--,0,8.25 hrs,"1 Shift(s)",Present
+422,28-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+423,28-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",17:49,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+424,28-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",07:00,14:14,7.24,14:14,19:55,5.68,--:--,--:--,0,12.92 hrs,"2 Shift(s)",Present
+425,28-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:11,14:20,8.15,14:20,20:24,6.08,--:--,--:--,0,14.23 hrs,"2 Shift(s)",Present
+426,28-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:47,06:11 (+1),12.4,--:--,--:--,0,--:--,--:--,0,12.4 hrs,"1 Shift (12H Night Shift)",Present
+427,28-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",07:27,14:23,6.93,14:23,20:01,5.64,--:--,--:--,0,12.57 hrs,"2 Shift(s)",Present
+428,28-09-2026,4,"Chandan SR","Supervisor","Staff","3rd Shift (20:00 - 06:00)",19:43,06:30 (+1),10.79,--:--,--:--,0,--:--,--:--,0,10.79 hrs,"1 Shift (Night 3rd Shift)",Present
+429,28-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",14:09,17:47,3.63,--:--,--:--,0,--:--,--:--,0,3.63 hrs,"1 Shift(s)",Present
+430,28-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:11,17:53,11.7,--:--,--:--,0,--:--,--:--,0,11.7 hrs,"2 Shift(s)",Present
+431,28-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:10,17:53,11.72,--:--,--:--,0,--:--,--:--,0,11.72 hrs,"2 Shift(s)",Present
+432,28-09-2026,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",14:20,20:46,6.43,--:--,--:--,0,--:--,--:--,0,6.43 hrs,"1 Shift(s)",Present
+433,28-09-2026,6,"Ananda","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:27,07:11 (+1),11.74,--:--,--:--,0,--:--,--:--,0,11.74 hrs,"1 Shift (Night 3rd Shift)",Present
+434,28-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+435,28-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+436,29-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+437,29-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",06:31,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+438,29-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:58,06:34 (+1),10.6,--:--,--:--,0,--:--,--:--,0,10.6 hrs,"1 Shift (Night 3rd Shift)",Present
+439,29-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+440,29-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:11,17:37,11.43,--:--,--:--,0,--:--,--:--,0,11.43 hrs,"1 Shift(s)",Present
+441,29-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:15,14:40,8.41,14:40,20:38,5.98,--:--,--:--,0,14.39 hrs,"2 Shift(s)",Present
+442,29-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:14,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+443,29-09-2026,18,"Sandeepa K","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:39,14:17,7.63,--:--,--:--,0,--:--,--:--,0,7.63 hrs,"1 Shift(s)",Present
+444,29-09-2026,20,"Ganagaraju P","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:59,06:26 (+1),10.46,--:--,--:--,0,--:--,--:--,0,10.46 hrs,"1 Shift (Night 3rd Shift)",Present
+445,29-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:49,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+446,29-09-2026,24,"Sanjeeth","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:49,06:07 (+1),10.3,--:--,--:--,0,--:--,--:--,0,10.3 hrs,"1 Shift (Night 3rd Shift)",Present
+447,29-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+448,29-09-2026,26,"Sandeep M","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:46,06:07 (+1),10.36,--:--,--:--,0,--:--,--:--,0,10.36 hrs,"1 Shift (Night 3rd Shift)",Present
+449,29-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",19:57,07:10 (+1),11.22,--:--,--:--,0,--:--,--:--,0,11.22 hrs,"1 Shift (Night 3rd Shift)",Present
+450,29-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",06:12,14:18,8.1,--:--,--:--,0,--:--,--:--,0,8.1 hrs,"1 Shift(s)",Present
+451,29-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+452,29-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",05:50,17:50,11.99,--:--,--:--,0,--:--,--:--,0,11.99 hrs,"1 Shift(s)",Present
+453,29-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",14:14,20:00,5.76,--:--,--:--,0,--:--,--:--,0,5.76 hrs,"1 Shift(s)",Present
+454,29-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:13,14:21,8.15,--:--,--:--,0,--:--,--:--,0,8.15 hrs,"1 Shift(s)",Present
+455,29-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:37,06:12 (+1),12.57,--:--,--:--,0,--:--,--:--,0,12.57 hrs,"1 Shift (12H Night Shift)",Present
+456,29-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:06,20:09,6.05,--:--,--:--,0,--:--,--:--,0,6.05 hrs,"1 Shift(s)",Present
+457,29-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",14:21,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+458,29-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:55,17:32,10.63,--:--,--:--,0,--:--,--:--,0,10.63 hrs,"1 Shift(s)",Present
+459,29-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+460,29-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:11,17:36,11.41,--:--,--:--,0,--:--,--:--,0,11.41 hrs,"2 Shift(s)",Present
+461,29-09-2026,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+462,29-09-2026,6,"Ananda","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:35,06:23 (+1),10.81,--:--,--:--,0,--:--,--:--,0,10.81 hrs,"1 Shift (Night 3rd Shift)",Present
+463,29-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+464,29-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",07:16,15:50,8.58,--:--,--:--,0,--:--,--:--,0,8.58 hrs,"1 Shift(s)",Present
+465,30-09-2026,10,"Santhosh M","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+466,30-09-2026,11,"Ambarish","Cashier","Staff","1st Shift (06:00 - 14:00)",06:00,14:54,8.9,--:--,--:--,0,--:--,--:--,0,8.9 hrs,"1 Shift(s)",Present
+467,30-09-2026,12,"Kiran J","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:12,07:03 (+1),10.84,--:--,--:--,0,--:--,--:--,0,10.84 hrs,"1 Shift (Night 3rd Shift)",Present
+468,30-09-2026,13,"Gayathri","Housekeeper","Staff","Day Shift (07:00 - 16:00)",08:26,17:42,9.26,--:--,--:--,0,--:--,--:--,0,9.26 hrs,"1 Shift(s)",Present
+469,30-09-2026,14,"Basgeet","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+470,30-09-2026,16,"Nikhil Kumar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:08,14:31,8.39,--:--,--:--,0,--:--,--:--,0,8.39 hrs,"1 Shift(s)",Present
+471,30-09-2026,17,"Sridhar S","Cashier","Staff","2nd Shift (14:00 - 20:00)",14:37,20:40,6.06,--:--,--:--,0,--:--,--:--,0,6.06 hrs,"1 Shift(s)",Present
+472,30-09-2026,18,"Sandeepa K","Cashier","Staff","2nd Shift (14:00 - 20:00)",05:58,14:23,8.42,--:--,--:--,0,--:--,--:--,0,8.42 hrs,"1 Shift(s)",Present
+473,30-09-2026,20,"Ganagaraju P","Cashier","Staff","3rd Shift (20:00 - 06:00)",19:52,06:51 (+1),10.98,--:--,--:--,0,--:--,--:--,0,10.98 hrs,"1 Shift (Night 3rd Shift)",Present
+474,30-09-2026,22,"Muthyalappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:24,20:41,14.29,--:--,--:--,0,--:--,--:--,0,14.29 hrs,"2 Shift(s)",Present
+475,30-09-2026,24,"Sanjeeth","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:00,06:18 (+1),10.3,--:--,--:--,0,--:--,--:--,0,10.3 hrs,"1 Shift (Night 3rd Shift)",Present
+476,30-09-2026,25,"Narasimha Murthy","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+477,30-09-2026,26,"Sandeep M","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:00,06:18 (+1),10.31,--:--,--:--,0,--:--,--:--,0,10.31 hrs,"1 Shift (Night 3rd Shift)",Present
+478,30-09-2026,28,"Nagesh Babu S","Supervisor","Staff","3rd Shift (20:00 - 06:00)",20:11,--:--,10,--:--,--:--,0,--:--,--:--,0,10 hrs,"1 Shift (Night Shift Completed)",Present
+479,30-09-2026,29,"Venkatesha C","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+480,30-09-2026,30,"Srinivasa k v","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+481,30-09-2026,33,"Ramesh Chand","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",05:50,17:51,12.01,--:--,--:--,0,--:--,--:--,0,12.01 hrs,"1 Shift(s)",Present
+482,30-09-2026,35,"Prashanth K","Supervisor","Staff","1st Shift (06:00 - 14:00)",14:03,20:11,6.13,--:--,--:--,0,--:--,--:--,0,6.13 hrs,"1 Shift(s)",Present
+483,30-09-2026,36,"Abhijeet Kumar","Cashier","Staff","2nd Shift (14:00 - 20:00)",06:07,14:24,8.28,14:24,20:11,5.79,--:--,--:--,0,14.07 hrs,"2 Shift(s)",Present
+484,30-09-2026,38,"Ranju kumar","Air Boy","Staff","12H Night Shift (18:00 - 06:00)",17:50,06:15 (+1),12.41,--:--,--:--,0,--:--,--:--,0,12.41 hrs,"1 Shift (12H Night Shift)",Present
+485,30-09-2026,39,"Gangadharappa","Cashier","Staff","2nd Shift (14:00 - 20:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+486,30-09-2026,4,"Chandan SR","Supervisor","Staff","1st Shift (06:00 - 14:00)",06:56,14:08,7.18,--:--,--:--,0,--:--,--:--,0,7.18 hrs,"1 Shift(s)",Present
+487,30-09-2026,40,"Arvind","Air Boy","Staff","12H Day Shift (06:00 - 18:00)",06:11,17:46,11.59,--:--,--:--,0,--:--,--:--,0,11.59 hrs,"1 Shift(s)",Present
+488,30-09-2026,41,"Ravi Kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:11,17:51,11.68,--:--,--:--,0,--:--,--:--,0,11.68 hrs,"2 Shift(s)",Present
+489,30-09-2026,42,"Lav kumar","Cashier","Staff","1st Shift (06:00 - 14:00)",06:11,17:51,11.67,--:--,--:--,0,--:--,--:--,0,11.67 hrs,"2 Shift(s)",Present
+490,30-09-2026,43,"Santhosh g","Cashier","Staff","1st Shift (06:00 - 14:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Absent
+491,30-09-2026,6,"Ananda","Cashier","Staff","3rd Shift (20:00 - 06:00)",20:02,07:24 (+1),11.38,--:--,--:--,0,--:--,--:--,0,11.38 hrs,"1 Shift (Night 3rd Shift)",Present
+492,30-09-2026,7,"Rajanna G M","Office Admin","Staff","General Shift (09:00 - 18:00)",13:56,20:12,6.27,--:--,--:--,0,--:--,--:--,0,6.27 hrs,"1 Shift(s)",Present
+493,30-09-2026,9,"Goramma","Housekeeper","Staff","Day Shift (07:00 - 16:00)",07:08,15:56,8.81,--:--,--:--,0,--:--,--:--,0,8.81 hrs,"1 Shift(s)",Present

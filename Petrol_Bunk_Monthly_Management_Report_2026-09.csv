@@ -1,0 +1,99 @@
+﻿BABU RAJU RAM FUEL STATION - MONTHLY MANAGEMENT ATTENDANCE & PAYROLL REPORT
+Month: September 2026 (2026-09) | Management Team (5 Leaders) Only
+
+=== SECTION 1: MANAGEMENT TEAM PAYROLL SUMMARY (5 LEADERS) ===
+Sl No,Emp ID,Employee Name,Designation,Category,Assigned Shift,Days Present,Days Absent,Double Shifts,Total Hours Worked,Avg Daily Hours,Attendance Rate
+1,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",15,0,0,112.00 hrs,7.47 hrs,100%
+2,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",15,0,0,104.00 hrs,6.93 hrs,100%
+3,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",15,0,0,120.00 hrs,8.00 hrs,100%
+4,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",15,0,0,105.00 hrs,7.00 hrs,100%
+5,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",15,0,0,104.00 hrs,6.93 hrs,100%
+TOTALS,,"GRAND TOTALS",,,,75,0,0,545.00 hrs,,
+
+=== SECTION 2: MANAGEMENT TEAM DAILY 4-PUNCH LOGS ===
+Sl No,Date,Emp ID,Employee Name,Designation,Category,Assigned Shift,Punch 1 (In 1),Punch 2 (Out 1),Shift 1 Hrs,Punch 3 (In 2),Punch 4 (Out 2),Shift 2 Hrs,Punch 5 (In 3),Punch 6 (Out 3),Shift 3 Hrs,Total Hours,Duty Mode,Status
+1,14-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+2,14-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+3,14-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+4,14-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+5,14-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+6,15-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+7,15-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+8,15-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+9,15-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+10,15-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",10:44,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+11,16-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+12,16-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+13,16-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+14,16-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+15,16-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+16,17-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+17,17-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",16:53,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+18,17-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+19,17-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+20,17-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+21,18-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+22,18-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+23,18-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+24,18-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+25,18-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+26,19-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+27,19-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+28,19-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+29,19-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+30,19-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+31,20-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+32,20-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+33,20-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+34,20-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+35,20-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+36,21-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+37,21-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+38,21-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+39,21-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+40,21-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+41,22-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+42,22-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+43,22-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+44,22-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+45,22-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+46,23-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+47,23-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",10:50,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+48,23-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+49,23-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+50,23-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+51,24-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+52,24-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+53,24-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+54,24-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+55,24-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+56,25-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+57,25-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+58,25-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+59,25-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+60,25-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+61,26-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+62,26-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+63,26-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+64,26-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+65,26-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+66,27-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+67,27-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+68,27-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+69,27-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+70,27-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",--:--,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"0 Shift(s)",Weekly Off
+71,28-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+72,28-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+73,28-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+74,28-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+75,28-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+76,29-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+77,29-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+78,29-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+79,29-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+80,29-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+81,30-09-2026,1,"Admin","System Administrator","Management","General Shift (09:00 - 18:00)",13:01,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present
+82,30-09-2026,15,"Nagaraj k G","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+83,30-09-2026,19,"Abhishek","Manager","Management","General Shift (09:00 - 18:00)",09:00,18:00,8,--:--,--:--,0,--:--,--:--,0,8 hrs,"1 Shift (General)",On-Duty
+84,30-09-2026,3,"Lavanya N","Accountant","Management","General Shift (09:30 - 17:30)",09:30,17:30,7,--:--,--:--,0,--:--,--:--,0,7 hrs,"1 Shift (General)",On-Duty
+85,30-09-2026,SBRRFS0012,"Sudhakar V","Station In-Charge","Management","General Shift (09:00 - 18:00)",15:32,--:--,0,--:--,--:--,0,--:--,--:--,0,0 hrs,"1 Shift (Single Punch)",Present

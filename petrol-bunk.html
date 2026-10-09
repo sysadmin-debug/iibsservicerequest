@@ -1,0 +1,4174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IIBS â€“ Babu Raju Ram Fuel Station 4-Punch Attendance</title>
+  <meta name="description" content="IIBS Babu Raju Ram Fuel Station Biometric 4-Punch Shiftwise Attendance Management">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    body {
+      background: #0f172a;
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding-bottom: 3rem;
+    }
+    .bunk-container {
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      padding: 0 1.25rem;
+    }
+    .bunk-header-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      border-left: 5px solid #f59e0b;
+    }
+    .bunk-title-group h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .bunk-title-group p {
+      margin: 0.35rem 0 0 0;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+    .device-pills {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .device-pill {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--card-border);
+      padding: 0.45rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .status-dot-green {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 8px #10b981;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .stat-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+    .si-total { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .si-s1 { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .si-s2 { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .si-s3 { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+    .si-supp { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
+    .stat-val { font-size: 1.5rem; font-weight: 700; font-family: 'Outfit', sans-serif; line-height: 1.2; }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+    /* Controls & Toolbar */
+    .toolbar-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .toolbar-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .filter-btn-group {
+      display: inline-flex;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      padding: 0.25rem;
+      border-radius: 8px;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    .filter-btn.active {
+      background: #3b82f6;
+      color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .action-btn {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .action-btn:hover { background: #1d4ed8; }
+    .action-btn.outline {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+    }
+    .action-btn.outline:hover { background: rgba(255,255,255,0.05); }
+    .action-btn.success { background: #059669; }
+    .action-btn.success:hover { background: #047857; }
+    .action-btn.purple { background: #7c3aed; }
+    .action-btn.purple:hover { background: #6d28d9; }
+
+    .search-input-bunk {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      width: 220px;
+    }
+
+    /* Table */
+    .table-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow-x: auto;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .bunk-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.825rem;
+    }
+    .bunk-table th {
+      background: #0f172a;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 0.75rem 0.9rem;
+      border-bottom: 1px solid var(--card-border);
+      white-space: nowrap;
+    }
+    .bunk-table td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      white-space: nowrap;
+    }
+    .bunk-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .bunk-table tr.row-double-shift {
+      background: rgba(245, 158, 11, 0.08) !important;
+      border-left: 3px solid #f59e0b;
+    }
+
+    /* Shift & Status Chips */
+    .shift-chip {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.725rem;
+      font-weight: 600;
+    }
+    .chip-s1 { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .chip-s2 { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .chip-s3 { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .chip-supp { background: rgba(236, 72, 153, 0.15); color: #ec4899; border: 1px solid rgba(236, 72, 153, 0.3); }
+
+    .badge-mgmt {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: rgba(30, 58, 138, 0.5); color: #93c5fd; border: 1px solid #3b82f6;
+      padding: 0.2rem 0.55rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700;
+    }
+    .badge-staff {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: rgba(6, 78, 59, 0.5); color: #6ee7b7; border: 1px solid #10b981;
+      padding: 0.2rem 0.55rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700;
+    }
+
+    .badge-double {
+      background: #f59e0b;
+      color: #000;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.4rem;
+      display: inline-block;
+    }
+
+    .badge-triple {
+      background: #c084fc;
+      color: #000;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.4rem;
+      display: inline-block;
+    }
+
+    .status-chip {
+      padding: 0.2rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.725rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .status-present { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .status-onduty { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .status-scheduled { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+    .status-absent { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 1000;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content-box {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+      width: 100%; max-width: 440px; overflow: hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body class="admin-page">
+
+  <!-- Ambient Background Orbs -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- Navigation Header (Matches IIBS ServiceDesk) -->
+  <header id="mainHeader">
+    <div class="nav-container">
+      <div class="logo" id="mainLogo">
+        <img src="logo.jpeg" alt="IIBS Logo" class="logo-img" style="height: 40px; border-radius: 8px;">
+        <span>IIBS <span class="logo-accent">ServiceDesk</span></span>
+      </div>
+      <nav id="navLinks">
+        <a href="admin.html"><i data-lucide="home" class="nav-icon"></i> Admin Home</a>
+        <a href="admin.html#inventory"><i data-lucide="package"></i> Stock Register</a>
+        <a href="laptop-report.html"><i data-lucide="laptop"></i> Laptop Report</a>
+        <a href="staff-laptop-report.html"><i data-lucide="monitor"></i> Staff Laptop Report</a>
+        <a href="petrol-bunk.html" class="active"><i data-lucide="fuel"></i> Petrol Bunk Attendance</a>
+        <a href="admin.html#help"><i data-lucide="life-buoy" class="nav-icon"></i> Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="bunk-container">
+      
+      <!-- Top Title & Terminals Card -->
+      <div class="bunk-header-card">
+        <div class="bunk-title-group">
+          <h1><i data-lucide="fuel" style="color: #f59e0b;"></i> Babu Raju Ram Fuel Station</h1>
+          <p>Biometric 4-Punch Shiftwise Attendance & Employee Management System (Staff & Management Strictly Separated)</p>
+        </div>
+        <div class="device-pills">
+          <div class="device-pill">
+            <span class="status-dot-green"></span>
+            <span>Mgmt: <strong>192.168.1.174</strong> (DEV-01)</span>
+          </div>
+          <div class="device-pill">
+            <span class="status-dot-green"></span>
+            <span>Staff: <strong>192.168.1.100</strong> (DEV-02)</span>
+          </div>
+          <button class="action-btn" onclick="openAddModal()">
+            <i data-lucide="user-plus"></i> Add Employee
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Bar (Shift Counts) -->
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-icon-wrap si-total"><i data-lucide="users"></i></div>
+          <div>
+            <div class="stat-val" id="cntTotal">34</div>
+            <div class="stat-lbl">Registered Staff (29 Staff + 5 Mgmt)</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon-wrap si-s1"><i data-lucide="sun"></i></div>
+          <div>
+            <div class="stat-val" id="cntS1">15</div>
+            <div class="stat-lbl">1st Shift (06:00 - 14:00)</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon-wrap si-s2"><i data-lucide="cloud-sun"></i></div>
+          <div>
+            <div class="stat-val" id="cntS2">9</div>
+            <div class="stat-lbl">2nd Shift (14:00 - 20:00)</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon-wrap si-s3"><i data-lucide="moon"></i></div>
+          <div>
+            <div class="stat-val" id="cntS3">6</div>
+            <div class="stat-lbl">3rd Shift (20:00 - 06:00)</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon-wrap si-supp"><i data-lucide="clock"></i></div>
+          <div>
+            <div class="stat-val" id="cntSupp">4</div>
+            <div class="stat-lbl">12H Support Shifts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar-bar">
+        <!-- Date Range & Preset Row -->
+        <div class="toolbar-row">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #0f172a; padding: 0.35rem 0.75rem; border-radius: 8px; border: 1px solid var(--card-border);">
+              <label style="font-size: 0.75rem; font-weight: 700; color: #3b82f6;">FROM:</label>
+              <input type="date" id="dateFrom" value="2026-09-14" style="background: #1e293b; color: #fff; border: 1px solid #334155; border-radius: 6px; padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: #10b981;">TO:</label>
+              <input type="date" id="dateTo" value="2026-09-16" style="background: #1e293b; color: #fff; border: 1px solid #334155; border-radius: 6px; padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+              <button class="filter-btn active" onclick="applyCustomDate()" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;"><i data-lucide="filter"></i> Apply</button>
+            </div>
+
+            <div class="filter-btn-group">
+              <button class="filter-btn preset-btn active" id="btnPreset14" onclick="applyPreset('14_to_today')"><i data-lucide="calendar-days"></i> 14th to Today</button>
+              <button class="filter-btn preset-btn" id="btnPresetToday" onclick="applyPreset('today')">Today (16th)</button>
+              <button class="filter-btn preset-btn" id="btnPreset15" onclick="applyPreset('yesterday')">15th</button>
+              <button class="filter-btn preset-btn" id="btnPreset14Only" onclick="applyPreset('14th')">14th</button>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="action-btn success" onclick="downloadExcelReport()">
+              <i data-lucide="file-spreadsheet"></i> Export 4-Punch Excel
+            </button>
+            <button class="action-btn purple" onclick="downloadMonthlyReport()">
+              <i data-lucide="calendar"></i> Monthly 4-Punch Report
+            </button>
+            <button class="action-btn outline" onclick="downloadCsvReport()">
+              <i data-lucide="download"></i> CSV
+            </button>
+            <button class="action-btn outline" onclick="window.print()">
+              <i data-lucide="printer"></i> Print
+            </button>
+          </div>
+        </div>
+
+        <!-- Shift & Search Row -->
+        <div class="toolbar-row">
+          <div class="filter-btn-group">
+            <button class="filter-btn active" onclick="filterShift('ALL', this)">All Shifts (<span id="filteredRecordCount">100</span>)</button>
+            <button class="filter-btn" onclick="filterShift('S1', this)">1st Shift</button>
+            <button class="filter-btn" onclick="filterShift('S2', this)">2nd Shift</button>
+            <button class="filter-btn" onclick="filterShift('S3', this)">3rd Shift</button>
+            <button class="filter-btn" onclick="filterShift('SUPP', this)">12H Support</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <button class="action-btn outline" onclick="rotateShifts()" title="Rotate shifts: 1st -> 3rd -> 2nd -> 1st">
+              <i data-lucide="rotate-cw"></i> Rotate Shifts
+            </button>
+            <input type="text" id="searchStaff" oninput="searchEmployee(this.value)" placeholder="Search employee or role..." class="search-input-bunk">
+          </div>
+        </div>
+
+        <!-- Category Separation Filter Row (Strict Zero Mixing) -->
+        <div class="toolbar-row" style="margin-top: 0.25rem; padding-top: 0.6rem; border-top: 1px dashed #334155;">
+          <div class="filter-btn-group">
+            <span style="font-size: 0.78rem; font-weight: 700; color: #94a3b8; align-self: center; margin-right: 0.4rem;"><i data-lucide="shield"></i> CATEGORY:</span>
+            <button class="filter-btn active" id="btnCatStaff" onclick="filterCategory('Staff', this)"><i data-lucide="fuel" style="color: #10b981;"></i> â›½ Station Staff (29 Personnel)</button>
+            <button class="filter-btn" id="btnCatMgmt" onclick="filterCategory('Management', this)"><i data-lucide="briefcase" style="color: #f59e0b;"></i> ðŸ‘” Management (5 Leaders)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance Table -->
+      <div class="table-box">
+        <table class="bunk-table">
+          <thead>
+            <tr>
+              <th style="width: 35px;">Sl.</th>
+              <th>Date</th>
+              <th>Employee Name</th>
+              <th>Designation</th>
+              <th>Category</th>
+              <th>Assigned Shift</th>
+              <th style="color: #34d399;">Punch 1 (In 1)</th>
+              <th style="color: #fbbf24;">Punch 2 (Out 1)</th>
+              <th>S1 Hrs</th>
+              <th style="color: #34d399;">Punch 3 (In 2)</th>
+              <th style="color: #fbbf24;">Punch 4 (Out 2)</th>
+              <th>S2 Hrs</th>
+              <th style="color: #a78bfa;">Punch 5 (In 3)</th>
+              <th style="color: #f472b6;">Punch 6 (Out 3)</th>
+              <th>S3 Hrs</th>
+              <th style="font-weight: 700; color: #60a5fa;">Total Work</th>
+              <th>Duty Mode</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceRows">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: Add Employee -->
+  <div class="modal-overlay" id="addEmpModal">
+    <div class="modal-content-box">
+      <div style="padding: 1.25rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; font-size: 1.1rem; font-family: 'Outfit', sans-serif;"><i data-lucide="user-plus"></i> Add Petrol Bunk Employee</h3>
+        <button onclick="closeAddModal()" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+      <form onsubmit="saveStaff(event)" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+          <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Employee Name: *</label>
+          <input type="text" id="newName" required placeholder="e.g. Ramesh Kumar" style="width: 100%; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; padding: 0.6rem; border-radius: 6px; color: #fff; outline: none;">
+        </div>
+        <div>
+          <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Category: *</label>
+          <select id="newCat" style="width: 100%; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; padding: 0.6rem; border-radius: 6px; color: #fff; outline: none;">
+            <option value="Staff" selected>â›½ Station Staff (DEV-02)</option>
+            <option value="Management">ðŸ‘” Management (DEV-01)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Designation: *</label>
+          <select id="newRole" style="width: 100%; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; padding: 0.6rem; border-radius: 6px; color: #fff; outline: none;">
+            <option value="Cashier">Cashier</option>
+            <option value="Supervisor">Supervisor</option>
+            <option value="Air Boy">Air Boy</option>
+            <option value="Marshal">Marshal</option>
+            <option value="Housekeeper">Housekeeper</option>
+            <option value="Manager">Manager</option>
+            <option value="Accountant">Accountant</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0.35rem;">Assigned Shift: *</label>
+          <select id="newShift" style="width: 100%; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; padding: 0.6rem; border-radius: 6px; color: #fff; outline: none;">
+            <option value="S1">1st Shift (Morning: 06:00 - 14:00)</option>
+            <option value="S2">2nd Shift (Afternoon: 14:00 - 20:00)</option>
+            <option value="S3">3rd Shift (Night: 20:00 - 06:00)</option>
+            <option value="D12">12H Day Shift (06:00 - 18:00)</option>
+            <option value="N12">12H Night Shift (18:00 - 06:00)</option>
+            <option value="GEN">General Shift (09:00 - 18:00)</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+          <button type="button" onclick="closeAddModal()" class="action-btn outline">Cancel</button>
+          <button type="submit" class="action-btn">Register Employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Embedded 34 Staff Roster
+    let staffList = [
+    {
+        "id":  1,
+        "employeeNo":  "1",
+        "name":  "Admin",
+        "designation":  "System Administrator",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174"
+    },
+    {
+        "id":  2,
+        "employeeNo":  "SBRRFS0012",
+        "name":  "Sudhakar V",
+        "designation":  "Station In-Charge",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174"
+    },
+    {
+        "id":  3,
+        "employeeNo":  "3",
+        "name":  "Lavanya N",
+        "designation":  "Accountant",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration",
+        "shift":  "General Shift (09:30 - 17:30)",
+        "shiftCode":  "GEN",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174"
+    },
+    {
+        "id":  4,
+        "employeeNo":  "4",
+        "name":  "Chandan SR",
+        "designation":  "Supervisor",
+        "category":  "Staff",
+        "department":  "Forecourt Operations",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  5,
+        "employeeNo":  "6",
+        "name":  "Ananda",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  6,
+        "employeeNo":  "7",
+        "name":  "Rajanna G M",
+        "designation":  "Office Admin",
+        "category":  "Staff",
+        "department":  "Administration \u0026 Station Staff",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  7,
+        "employeeNo":  "9",
+        "name":  "Goramma",
+        "designation":  "Housekeeper",
+        "category":  "Staff",
+        "department":  "Station Maintenance",
+        "shift":  "Day Shift (07:00 - 16:00)",
+        "shiftCode":  "D12",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  8,
+        "employeeNo":  "10",
+        "name":  "Santhosh M",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  9,
+        "employeeNo":  "11",
+        "name":  "Ambarish",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  10,
+        "employeeNo":  "12",
+        "name":  "Kiran J",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "3rd Shift (20:00 - 06:00)",
+        "shiftCode":  "S3",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  11,
+        "employeeNo":  "13",
+        "name":  "Gayathri",
+        "designation":  "Housekeeper",
+        "category":  "Staff",
+        "department":  "Station Maintenance",
+        "shift":  "Day Shift (07:00 - 16:00)",
+        "shiftCode":  "D12",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  12,
+        "employeeNo":  "14",
+        "name":  "Basgeet",
+        "designation":  "Air Boy",
+        "category":  "Staff",
+        "department":  "Forecourt Services",
+        "shift":  "12H Day Shift (06:00 - 18:00)",
+        "shiftCode":  "D12",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  13,
+        "employeeNo":  "15",
+        "name":  "Nagaraj k G",
+        "designation":  "Manager",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174"
+    },
+    {
+        "id":  14,
+        "employeeNo":  "16",
+        "name":  "Nikhil Kumar S",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  15,
+        "employeeNo":  "17",
+        "name":  "Sridhar S",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  16,
+        "employeeNo":  "18",
+        "name":  "Sandeepa K",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  17,
+        "employeeNo":  "19",
+        "name":  "Abhishek",
+        "designation":  "Manager",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174"
+    },
+    {
+        "id":  18,
+        "employeeNo":  "20",
+        "name":  "Ganagaraju P",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  19,
+        "employeeNo":  "22",
+        "name":  "Muthyalappa",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  20,
+        "employeeNo":  "24",
+        "name":  "Sanjeeth",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  21,
+        "employeeNo":  "25",
+        "name":  "Narasimha Murthy",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  22,
+        "employeeNo":  "26",
+        "name":  "Sandeep M",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  23,
+        "employeeNo":  "28",
+        "name":  "Nagesh Babu S",
+        "designation":  "Supervisor",
+        "category":  "Staff",
+        "department":  "Forecourt Operations",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  24,
+        "employeeNo":  "29",
+        "name":  "Venkatesha C",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  25,
+        "employeeNo":  "30",
+        "name":  "Srinivasa k v",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  26,
+        "employeeNo":  "33",
+        "name":  "Ramesh Chand",
+        "designation":  "Air Boy",
+        "category":  "Staff",
+        "department":  "Forecourt Services",
+        "shift":  "12H Day Shift (06:00 - 18:00)",
+        "shiftCode":  "D12",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  27,
+        "employeeNo":  "35",
+        "name":  "Prashanth K",
+        "designation":  "Supervisor",
+        "category":  "Staff",
+        "department":  "Forecourt Operations",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  28,
+        "employeeNo":  "36",
+        "name":  "Abhijeet Kumar",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  29,
+        "employeeNo":  "38",
+        "name":  "Ranju kumar",
+        "designation":  "Air Boy",
+        "category":  "Staff",
+        "department":  "Forecourt Services",
+        "shift":  "12H Night Shift (18:00 - 06:00)",
+        "shiftCode":  "N12",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  30,
+        "employeeNo":  "39",
+        "name":  "Gangadharappa",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  31,
+        "employeeNo":  "40",
+        "name":  "Arvind",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  32,
+        "employeeNo":  "41",
+        "name":  "Ravi Kumar",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  33,
+        "employeeNo":  "42",
+        "name":  "Lav kumar",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  34,
+        "employeeNo":  "43",
+        "name":  "Santhosh g",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "mobile":  "98XXXXXXXX",
+        "status":  "Active",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    }
+]
+;
+
+    // Embedded 4-Punch Attendance Records
+    let attendanceList = [
+    {
+        "id":  1,
+        "date":  "2026-09-16",
+        "staffId":  1,
+        "employeeNo":  "1",
+        "name":  "Admin",
+        "designation":  "System Administrator",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "09:00",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174"
+    },
+    {
+        "id":  2,
+        "date":  "2026-09-16",
+        "staffId":  2,
+        "employeeNo":  "SBRRFS0012",
+        "name":  "Sudhakar V",
+        "designation":  "Station In-Charge",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "09:00",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174"
+    },
+    {
+        "id":  3,
+        "date":  "2026-09-16",
+        "staffId":  3,
+        "employeeNo":  "3",
+        "name":  "Lavanya N",
+        "designation":  "Accountant",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration",
+        "shift":  "General Shift (09:30 - 17:30)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:30",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "09:30",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174"
+    },
+    {
+        "id":  4,
+        "date":  "2026-09-16",
+        "staffId":  4,
+        "employeeNo":  "4",
+        "name":  "Chandan SR",
+        "designation":  "Supervisor",
+        "category":  "Staff",
+        "department":  "Forecourt Operations",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "06:11",
+        "punch2":  "14:21",
+        "shift1Hours":  8.17,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:11",
+        "punchOut":  "14:21",
+        "hoursWorked":  8.17,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "shiftDetail":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  5,
+        "date":  "2026-09-16",
+        "staffId":  5,
+        "employeeNo":  "6",
+        "name":  "Ananda",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "06:25",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:25",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  6,
+        "date":  "2026-09-16",
+        "staffId":  6,
+        "employeeNo":  "7",
+        "name":  "Rajanna G M",
+        "designation":  "Office Admin",
+        "category":  "Staff",
+        "department":  "Administration \u0026 Station Staff",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  7,
+        "date":  "2026-09-16",
+        "staffId":  7,
+        "employeeNo":  "9",
+        "name":  "Goramma",
+        "designation":  "Housekeeper",
+        "category":  "Staff",
+        "department":  "Station Maintenance",
+        "shift":  "Day Shift (07:00 - 16:00)",
+        "shiftCode":  "D12",
+        "punch1":  "07:10",
+        "punch2":  "15:57",
+        "shift1Hours":  8.78,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "07:10",
+        "punchOut":  "15:57",
+        "hoursWorked":  8.78,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (12H Support)",
+        "shiftDetail":  "1 Shift (12H Support)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  8,
+        "date":  "2026-09-16",
+        "staffId":  8,
+        "employeeNo":  "10",
+        "name":  "Santhosh M",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  9,
+        "date":  "2026-09-16",
+        "staffId":  9,
+        "employeeNo":  "11",
+        "name":  "Ambarish",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  10,
+        "date":  "2026-09-16",
+        "staffId":  10,
+        "employeeNo":  "12",
+        "name":  "Kiran J",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "3rd Shift (20:00 - 06:00)",
+        "shiftCode":  "S3",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Scheduled",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  11,
+        "date":  "2026-09-16",
+        "staffId":  11,
+        "employeeNo":  "13",
+        "name":  "Gayathri",
+        "designation":  "Housekeeper",
+        "category":  "Staff",
+        "department":  "Station Maintenance",
+        "shift":  "Day Shift (07:00 - 16:00)",
+        "shiftCode":  "D12",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  12,
+        "date":  "2026-09-16",
+        "staffId":  12,
+        "employeeNo":  "14",
+        "name":  "Basgeet",
+        "designation":  "Air Boy",
+        "category":  "Staff",
+        "department":  "Forecourt Services",
+        "shift":  "12H Day Shift (06:00 - 18:00)",
+        "shiftCode":  "D12",
+        "punch1":  "06:37",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:37",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  13,
+        "date":  "2026-09-16",
+        "staffId":  13,
+        "employeeNo":  "15",
+        "name":  "Nagaraj k G",
+        "designation":  "Manager",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "09:00",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174"
+    },
+    {
+        "id":  14,
+        "date":  "2026-09-16",
+        "staffId":  14,
+        "employeeNo":  "16",
+        "name":  "Nikhil Kumar S",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "07:10",
+        "punch2":  "14:35",
+        "shift1Hours":  7.42,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "07:10",
+        "punchOut":  "14:35",
+        "hoursWorked":  7.42,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "shiftDetail":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  15,
+        "date":  "2026-09-16",
+        "staffId":  15,
+        "employeeNo":  "17",
+        "name":  "Sridhar S",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "06:15",
+        "punch2":  "14:20",
+        "shift1Hours":  8.07,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:15",
+        "punchOut":  "14:20",
+        "hoursWorked":  8.07,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "shiftDetail":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  16,
+        "date":  "2026-09-16",
+        "staffId":  16,
+        "employeeNo":  "18",
+        "name":  "Sandeepa K",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "06:07",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:07",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  17,
+        "date":  "2026-09-16",
+        "staffId":  17,
+        "employeeNo":  "19",
+        "name":  "Abhishek",
+        "designation":  "Manager",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "09:00",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174"
+    },
+    {
+        "id":  18,
+        "date":  "2026-09-16",
+        "staffId":  18,
+        "employeeNo":  "20",
+        "name":  "Ganagaraju P",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  19,
+        "date":  "2026-09-16",
+        "staffId":  19,
+        "employeeNo":  "22",
+        "name":  "Muthyalappa",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "14:24",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "14:24",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  20,
+        "date":  "2026-09-16",
+        "staffId":  20,
+        "employeeNo":  "24",
+        "name":  "Sanjeeth",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "13:58",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "13:58",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  21,
+        "date":  "2026-09-16",
+        "staffId":  21,
+        "employeeNo":  "25",
+        "name":  "Narasimha Murthy",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  22,
+        "date":  "2026-09-16",
+        "staffId":  22,
+        "employeeNo":  "26",
+        "name":  "Sandeep M",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "06:43",
+        "punch2":  "14:43",
+        "shift1Hours":  8.01,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:43",
+        "punchOut":  "14:43",
+        "hoursWorked":  8.01,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "shiftDetail":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  23,
+        "date":  "2026-09-16",
+        "staffId":  23,
+        "employeeNo":  "28",
+        "name":  "Nagesh Babu S",
+        "designation":  "Supervisor",
+        "category":  "Staff",
+        "department":  "Forecourt Operations",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "07:16",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "07:16",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  24,
+        "date":  "2026-09-16",
+        "staffId":  24,
+        "employeeNo":  "29",
+        "name":  "Venkatesha C",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "06:11",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:11",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  25,
+        "date":  "2026-09-16",
+        "staffId":  25,
+        "employeeNo":  "30",
+        "name":  "Srinivasa k v",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  26,
+        "date":  "2026-09-16",
+        "staffId":  26,
+        "employeeNo":  "33",
+        "name":  "Ramesh Chand",
+        "designation":  "Air Boy",
+        "category":  "Staff",
+        "department":  "Forecourt Services",
+        "shift":  "12H Day Shift (06:00 - 18:00)",
+        "shiftCode":  "D12",
+        "punch1":  "06:37",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:37",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  27,
+        "date":  "2026-09-16",
+        "staffId":  27,
+        "employeeNo":  "35",
+        "name":  "Prashanth K",
+        "designation":  "Supervisor",
+        "category":  "Staff",
+        "department":  "Forecourt Operations",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  28,
+        "date":  "2026-09-16",
+        "staffId":  28,
+        "employeeNo":  "36",
+        "name":  "Abhijeet Kumar",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "13:58",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "13:58",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  29,
+        "date":  "2026-09-16",
+        "staffId":  29,
+        "employeeNo":  "38",
+        "name":  "Ranju kumar",
+        "designation":  "Air Boy",
+        "category":  "Staff",
+        "department":  "Forecourt Services",
+        "shift":  "12H Night Shift (18:00 - 06:00)",
+        "shiftCode":  "N12",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Scheduled",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  30,
+        "date":  "2026-09-16",
+        "staffId":  30,
+        "employeeNo":  "39",
+        "name":  "Gangadharappa",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  31,
+        "date":  "2026-09-16",
+        "staffId":  31,
+        "employeeNo":  "40",
+        "name":  "Arvind",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "06:38",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:38",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  32,
+        "date":  "2026-09-16",
+        "staffId":  32,
+        "employeeNo":  "41",
+        "name":  "Ravi Kumar",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "06:43",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:43",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  33,
+        "date":  "2026-09-16",
+        "staffId":  33,
+        "employeeNo":  "42",
+        "name":  "Lav kumar",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "06:43",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:43",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (In Progress)",
+        "shiftDetail":  "1 Shift (In Progress)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  34,
+        "date":  "2026-09-16",
+        "staffId":  34,
+        "employeeNo":  "43",
+        "name":  "Santhosh g",
+        "designation":  "Cashier",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "11:44",
+        "punch2":  "15:17",
+        "shift1Hours":  3.55,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "11:44",
+        "punchOut":  "15:17",
+        "hoursWorked":  3.55,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "shiftDetail":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100"
+    },
+    {
+        "id":  1,
+        "date":  "2026-09-14",
+        "staffId":  1,
+        "employeeNo":  "1",
+        "name":  "Admin",
+        "designation":  "System Administrator",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "18:00",
+        "shift1Hours":  8,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  8,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (General)",
+        "status":  "On-Duty",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration"
+    },
+    {
+        "id":  2,
+        "date":  "2026-09-14",
+        "staffId":  3,
+        "employeeNo":  "3",
+        "name":  "Lavanya N",
+        "designation":  "Accountant",
+        "shift":  "General Shift (09:30 - 17:30)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:30",
+        "punch2":  "17:30",
+        "shift1Hours":  7,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  7,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (General)",
+        "status":  "On-Duty",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration"
+    },
+    {
+        "id":  3,
+        "date":  "2026-09-14",
+        "staffId":  4,
+        "employeeNo":  "4",
+        "name":  "Chandan SR",
+        "designation":  "Supervisor",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "06:06",
+        "punch2":  "14:06",
+        "shift1Hours":  7.99,
+        "punch3":  "14:06",
+        "punch4":  "19:49",
+        "shift2Hours":  5.72,
+        "punchIn":  "06:06",
+        "punchOut":  "19:49",
+        "hoursWorked":  13.71,
+        "shiftsCount":  2,
+        "dutyMode":  "2 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Operations"
+    },
+    {
+        "id":  4,
+        "date":  "2026-09-14",
+        "staffId":  5,
+        "employeeNo":  "6",
+        "name":  "Ananda",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "--:--",
+        "punch2":  "20:16",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "20:16",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed In)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  5,
+        "date":  "2026-09-14",
+        "staffId":  6,
+        "employeeNo":  "7",
+        "name":  "Rajanna G M",
+        "designation":  "Office Admin",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "14:05",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "14:05",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed Out)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Administration \u0026 Station Staff"
+    },
+    {
+        "id":  6,
+        "date":  "2026-09-14",
+        "staffId":  7,
+        "employeeNo":  "9",
+        "name":  "Goramma",
+        "designation":  "Housekeeper",
+        "shift":  "Day Shift (07:00 - 16:00)",
+        "shiftCode":  "D12",
+        "punch1":  "09:17",
+        "punch2":  "17:46",
+        "shift1Hours":  8.47,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "09:17",
+        "punchOut":  "17:46",
+        "hoursWorked":  8.47,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (12H Support)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Station Maintenance"
+    },
+    {
+        "id":  8,
+        "date":  "2026-09-14",
+        "staffId":  9,
+        "employeeNo":  "11",
+        "name":  "Ambarish",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  9,
+        "date":  "2026-09-14",
+        "staffId":  10,
+        "employeeNo":  "12",
+        "name":  "Kiran J",
+        "designation":  "Cashier",
+        "shift":  "3rd Shift (20:00 - 06:00)",
+        "shiftCode":  "S3",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  10,
+        "date":  "2026-09-14",
+        "staffId":  11,
+        "employeeNo":  "13",
+        "name":  "Gayathri",
+        "designation":  "Housekeeper",
+        "shift":  "Day Shift (07:00 - 16:00)",
+        "shiftCode":  "D12",
+        "punch1":  "08:45",
+        "punch2":  "15:52",
+        "shift1Hours":  7.12,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "08:45",
+        "punchOut":  "15:52",
+        "hoursWorked":  7.12,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (12H Support)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Station Maintenance"
+    },
+    {
+        "id":  11,
+        "date":  "2026-09-14",
+        "staffId":  12,
+        "employeeNo":  "14",
+        "name":  "Basgeet",
+        "designation":  "Air Boy",
+        "shift":  "12H Day Shift (06:00 - 18:00)",
+        "shiftCode":  "D12",
+        "punch1":  "09:05",
+        "punch2":  "17:54",
+        "shift1Hours":  8.81,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "09:05",
+        "punchOut":  "17:54",
+        "hoursWorked":  8.81,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (12H Support)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Services"
+    },
+    {
+        "id":  12,
+        "date":  "2026-09-14",
+        "staffId":  13,
+        "employeeNo":  "15",
+        "name":  "Nagaraj k G",
+        "designation":  "Manager",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "18:00",
+        "shift1Hours":  8,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  8,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (General)",
+        "status":  "On-Duty",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration"
+    },
+    {
+        "id":  13,
+        "date":  "2026-09-14",
+        "staffId":  14,
+        "employeeNo":  "16",
+        "name":  "Nikhil Kumar S",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  14,
+        "date":  "2026-09-14",
+        "staffId":  15,
+        "employeeNo":  "17",
+        "name":  "Sridhar S",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "06:19",
+        "punch2":  "14:21",
+        "shift1Hours":  8.03,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:19",
+        "punchOut":  "14:21",
+        "hoursWorked":  8.03,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  15,
+        "date":  "2026-09-14",
+        "staffId":  16,
+        "employeeNo":  "18",
+        "name":  "Sandeepa K",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "--:--",
+        "punch2":  "19:48",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "19:48",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed In)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  16,
+        "date":  "2026-09-14",
+        "staffId":  17,
+        "employeeNo":  "19",
+        "name":  "Abhishek",
+        "designation":  "Manager",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "18:00",
+        "shift1Hours":  8,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  8,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (General)",
+        "status":  "On-Duty",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration"
+    },
+    {
+        "id":  17,
+        "date":  "2026-09-14",
+        "staffId":  18,
+        "employeeNo":  "20",
+        "name":  "Ganagaraju P",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "06:11",
+        "punch2":  "14:21",
+        "shift1Hours":  8.18,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:11",
+        "punchOut":  "14:21",
+        "hoursWorked":  8.18,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  18,
+        "date":  "2026-09-14",
+        "staffId":  19,
+        "employeeNo":  "22",
+        "name":  "Muthyalappa",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "14:24",
+        "punch2":  "20:12",
+        "shift1Hours":  5.8,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "14:24",
+        "punchOut":  "20:12",
+        "hoursWorked":  5.8,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  19,
+        "date":  "2026-09-14",
+        "staffId":  20,
+        "employeeNo":  "24",
+        "name":  "Sanjeeth",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "15:17",
+        "punch2":  "20:35",
+        "shift1Hours":  5.3,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "15:17",
+        "punchOut":  "20:35",
+        "hoursWorked":  5.3,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  20,
+        "date":  "2026-09-14",
+        "staffId":  21,
+        "employeeNo":  "25",
+        "name":  "Narasimha Murthy",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  21,
+        "date":  "2026-09-14",
+        "staffId":  22,
+        "employeeNo":  "26",
+        "name":  "Sandeep M",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "06:18",
+        "punch2":  "14:22",
+        "shift1Hours":  8.07,
+        "punch3":  "14:22",
+        "punch4":  "19:55",
+        "shift2Hours":  5.55,
+        "punchIn":  "06:18",
+        "punchOut":  "19:55",
+        "hoursWorked":  13.62,
+        "shiftsCount":  2,
+        "dutyMode":  "2 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  22,
+        "date":  "2026-09-14",
+        "staffId":  23,
+        "employeeNo":  "28",
+        "name":  "Nagesh Babu S",
+        "designation":  "Supervisor",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Operations"
+    },
+    {
+        "id":  23,
+        "date":  "2026-09-14",
+        "staffId":  24,
+        "employeeNo":  "29",
+        "name":  "Venkatesha C",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  24,
+        "date":  "2026-09-14",
+        "staffId":  25,
+        "employeeNo":  "30",
+        "name":  "Srinivasa k v",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  25,
+        "date":  "2026-09-14",
+        "staffId":  26,
+        "employeeNo":  "33",
+        "name":  "Ramesh Chand",
+        "designation":  "Air Boy",
+        "shift":  "12H Day Shift (06:00 - 18:00)",
+        "shiftCode":  "D12",
+        "punch1":  "09:04",
+        "punch2":  "17:52",
+        "shift1Hours":  8.81,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "09:04",
+        "punchOut":  "17:52",
+        "hoursWorked":  8.81,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (12H Support)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Services"
+    },
+    {
+        "id":  26,
+        "date":  "2026-09-14",
+        "staffId":  27,
+        "employeeNo":  "35",
+        "name":  "Prashanth K",
+        "designation":  "Supervisor",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "14:06",
+        "punch2":  "19:51",
+        "shift1Hours":  5.75,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "14:06",
+        "punchOut":  "19:51",
+        "hoursWorked":  5.75,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Operations"
+    },
+    {
+        "id":  27,
+        "date":  "2026-09-14",
+        "staffId":  28,
+        "employeeNo":  "36",
+        "name":  "Abhijeet Kumar",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "06:06",
+        "punch2":  "14:00",
+        "shift1Hours":  7.9,
+        "punch3":  "14:00",
+        "punch4":  "20:18",
+        "shift2Hours":  6.31,
+        "punchIn":  "06:06",
+        "punchOut":  "20:18",
+        "hoursWorked":  14.21,
+        "shiftsCount":  2,
+        "dutyMode":  "2 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  28,
+        "date":  "2026-09-14",
+        "staffId":  29,
+        "employeeNo":  "38",
+        "name":  "Ranju kumar",
+        "designation":  "Air Boy",
+        "shift":  "12H Night Shift (18:00 - 06:00)",
+        "shiftCode":  "N12",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Services"
+    },
+    {
+        "id":  29,
+        "date":  "2026-09-14",
+        "staffId":  30,
+        "employeeNo":  "39",
+        "name":  "Gangadharappa",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "09:04",
+        "punch2":  "14:05",
+        "shift1Hours":  5.02,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "09:04",
+        "punchOut":  "14:05",
+        "hoursWorked":  5.02,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  30,
+        "date":  "2026-09-14",
+        "staffId":  31,
+        "employeeNo":  "40",
+        "name":  "Arvind",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  31,
+        "date":  "2026-09-14",
+        "staffId":  32,
+        "employeeNo":  "41",
+        "name":  "Ravi Kumar",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  32,
+        "date":  "2026-09-14",
+        "staffId":  33,
+        "employeeNo":  "42",
+        "name":  "Lav kumar",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  33,
+        "date":  "2026-09-14",
+        "staffId":  34,
+        "employeeNo":  "43",
+        "name":  "Santhosh g",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  34,
+        "date":  "2026-09-14",
+        "staffId":  2,
+        "employeeNo":  "SBRRFS0012",
+        "name":  "Sudhakar V",
+        "designation":  "Station In-Charge",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "18:00",
+        "shift1Hours":  8,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  8,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (General)",
+        "status":  "On-Duty",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration"
+    },
+    {
+        "id":  35,
+        "date":  "2026-09-15",
+        "staffId":  1,
+        "employeeNo":  "1",
+        "name":  "Admin",
+        "designation":  "System Administrator",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "18:00",
+        "shift1Hours":  8,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  8,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (General)",
+        "status":  "On-Duty",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration"
+    },
+    {
+        "id":  36,
+        "date":  "2026-09-15",
+        "staffId":  3,
+        "employeeNo":  "3",
+        "name":  "Lavanya N",
+        "designation":  "Accountant",
+        "shift":  "General Shift (09:30 - 17:30)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:30",
+        "punch2":  "17:30",
+        "shift1Hours":  7,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  7,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (General)",
+        "status":  "On-Duty",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration"
+    },
+    {
+        "id":  37,
+        "date":  "2026-09-15",
+        "staffId":  4,
+        "employeeNo":  "4",
+        "name":  "Chandan SR",
+        "designation":  "Supervisor",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "06:56",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:56",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed Out)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Operations"
+    },
+    {
+        "id":  38,
+        "date":  "2026-09-15",
+        "staffId":  5,
+        "employeeNo":  "6",
+        "name":  "Ananda",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "--:--",
+        "punch2":  "20:04",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "20:04",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed In)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  39,
+        "date":  "2026-09-15",
+        "staffId":  6,
+        "employeeNo":  "7",
+        "name":  "Rajanna G M",
+        "designation":  "Office Admin",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "08:20",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "08:20",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed Out)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Administration \u0026 Station Staff"
+    },
+    {
+        "id":  40,
+        "date":  "2026-09-15",
+        "staffId":  7,
+        "employeeNo":  "9",
+        "name":  "Goramma",
+        "designation":  "Housekeeper",
+        "shift":  "Day Shift (07:00 - 16:00)",
+        "shiftCode":  "D12",
+        "punch1":  "08:58",
+        "punch2":  "17:50",
+        "shift1Hours":  8.87,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "08:58",
+        "punchOut":  "17:50",
+        "hoursWorked":  8.87,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (12H Support)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Station Maintenance"
+    },
+    {
+        "id":  42,
+        "date":  "2026-09-15",
+        "staffId":  9,
+        "employeeNo":  "11",
+        "name":  "Ambarish",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  43,
+        "date":  "2026-09-15",
+        "staffId":  10,
+        "employeeNo":  "12",
+        "name":  "Kiran J",
+        "designation":  "Cashier",
+        "shift":  "3rd Shift (20:00 - 06:00)",
+        "shiftCode":  "S3",
+        "punch1":  "20:02",
+        "punch2":  "06:25 (+1)",
+        "shift1Hours":  10.39,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "20:02",
+        "punchOut":  "06:25",
+        "hoursWorked":  10.39,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Night)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  44,
+        "date":  "2026-09-15",
+        "staffId":  11,
+        "employeeNo":  "13",
+        "name":  "Gayathri",
+        "designation":  "Housekeeper",
+        "shift":  "Day Shift (07:00 - 16:00)",
+        "shiftCode":  "D12",
+        "punch1":  "06:28",
+        "punch2":  "15:00",
+        "shift1Hours":  8.52,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:28",
+        "punchOut":  "15:00",
+        "hoursWorked":  8.52,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (12H Support)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Station Maintenance"
+    },
+    {
+        "id":  45,
+        "date":  "2026-09-15",
+        "staffId":  12,
+        "employeeNo":  "14",
+        "name":  "Basgeet",
+        "designation":  "Air Boy",
+        "shift":  "12H Day Shift (06:00 - 18:00)",
+        "shiftCode":  "D12",
+        "punch1":  "06:16",
+        "punch2":  "17:49",
+        "shift1Hours":  11.55,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:16",
+        "punchOut":  "17:49",
+        "hoursWorked":  11.55,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (12H Support)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Services"
+    },
+    {
+        "id":  46,
+        "date":  "2026-09-15",
+        "staffId":  13,
+        "employeeNo":  "15",
+        "name":  "Nagaraj k G",
+        "designation":  "Manager",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "18:00",
+        "shift1Hours":  8,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  8,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (General)",
+        "status":  "On-Duty",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration"
+    },
+    {
+        "id":  47,
+        "date":  "2026-09-15",
+        "staffId":  14,
+        "employeeNo":  "16",
+        "name":  "Nikhil Kumar S",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "06:15",
+        "punch2":  "15:03",
+        "shift1Hours":  8.81,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:15",
+        "punchOut":  "15:03",
+        "hoursWorked":  8.81,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  48,
+        "date":  "2026-09-15",
+        "staffId":  15,
+        "employeeNo":  "17",
+        "name":  "Sridhar S",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "06:11",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:11",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed Out)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  49,
+        "date":  "2026-09-15",
+        "staffId":  16,
+        "employeeNo":  "18",
+        "name":  "Sandeepa K",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "06:56",
+        "punch2":  "14:00",
+        "shift1Hours":  7.06,
+        "punch3":  "14:00",
+        "punch4":  "19:59",
+        "shift2Hours":  5.98,
+        "punchIn":  "06:56",
+        "punchOut":  "19:59",
+        "hoursWorked":  13.04,
+        "shiftsCount":  2,
+        "dutyMode":  "2 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  50,
+        "date":  "2026-09-15",
+        "staffId":  17,
+        "employeeNo":  "19",
+        "name":  "Abhishek",
+        "designation":  "Manager",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "09:00",
+        "punch2":  "18:00",
+        "shift1Hours":  8,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  8,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (General)",
+        "status":  "On-Duty",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration"
+    },
+    {
+        "id":  51,
+        "date":  "2026-09-15",
+        "staffId":  18,
+        "employeeNo":  "20",
+        "name":  "Ganagaraju P",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "13:57",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "13:57",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed Out)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  52,
+        "date":  "2026-09-15",
+        "staffId":  19,
+        "employeeNo":  "22",
+        "name":  "Muthyalappa",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "13:58",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "13:58",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed Out)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  53,
+        "date":  "2026-09-15",
+        "staffId":  20,
+        "employeeNo":  "24",
+        "name":  "Sanjeeth",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "13:57",
+        "punch2":  "20:13",
+        "shift1Hours":  6.27,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "13:57",
+        "punchOut":  "20:13",
+        "hoursWorked":  6.27,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  54,
+        "date":  "2026-09-15",
+        "staffId":  21,
+        "employeeNo":  "25",
+        "name":  "Narasimha Murthy",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  55,
+        "date":  "2026-09-15",
+        "staffId":  22,
+        "employeeNo":  "26",
+        "name":  "Sandeep M",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "06:25",
+        "punch2":  "14:08",
+        "shift1Hours":  7.71,
+        "punch3":  "14:08",
+        "punch4":  "20:13",
+        "shift2Hours":  6.1,
+        "punchIn":  "06:25",
+        "punchOut":  "20:13",
+        "hoursWorked":  13.81,
+        "shiftsCount":  2,
+        "dutyMode":  "2 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  56,
+        "date":  "2026-09-15",
+        "staffId":  23,
+        "employeeNo":  "28",
+        "name":  "Nagesh Babu S",
+        "designation":  "Supervisor",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "19:59",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "19:59",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed In)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Operations"
+    },
+    {
+        "id":  57,
+        "date":  "2026-09-15",
+        "staffId":  24,
+        "employeeNo":  "29",
+        "name":  "Venkatesha C",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "19:59",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "19:59",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed In)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  58,
+        "date":  "2026-09-15",
+        "staffId":  25,
+        "employeeNo":  "30",
+        "name":  "Srinivasa k v",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  59,
+        "date":  "2026-09-15",
+        "staffId":  26,
+        "employeeNo":  "33",
+        "name":  "Ramesh Chand",
+        "designation":  "Air Boy",
+        "shift":  "12H Day Shift (06:00 - 18:00)",
+        "shiftCode":  "D12",
+        "punch1":  "06:16",
+        "punch2":  "17:49",
+        "shift1Hours":  11.55,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:16",
+        "punchOut":  "17:49",
+        "hoursWorked":  11.55,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (12H Support)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Services"
+    },
+    {
+        "id":  60,
+        "date":  "2026-09-15",
+        "staffId":  27,
+        "employeeNo":  "35",
+        "name":  "Prashanth K",
+        "designation":  "Supervisor",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "05:53",
+        "punch2":  "14:14",
+        "shift1Hours":  8.35,
+        "punch3":  "14:14",
+        "punch4":  "20:04",
+        "shift2Hours":  5.85,
+        "punchIn":  "05:53",
+        "punchOut":  "20:04",
+        "hoursWorked":  14.2,
+        "shiftsCount":  2,
+        "dutyMode":  "2 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Operations"
+    },
+    {
+        "id":  61,
+        "date":  "2026-09-15",
+        "staffId":  28,
+        "employeeNo":  "36",
+        "name":  "Abhijeet Kumar",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "06:56",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "06:56",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed Out)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  62,
+        "date":  "2026-09-15",
+        "staffId":  29,
+        "employeeNo":  "38",
+        "name":  "Ranju kumar",
+        "designation":  "Air Boy",
+        "shift":  "12H Night Shift (18:00 - 06:00)",
+        "shiftCode":  "N12",
+        "punch1":  "18:04",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "18:04",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed Out)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Forecourt Services"
+    },
+    {
+        "id":  63,
+        "date":  "2026-09-15",
+        "staffId":  30,
+        "employeeNo":  "39",
+        "name":  "Gangadharappa",
+        "designation":  "Cashier",
+        "shift":  "2nd Shift (14:00 - 20:00)",
+        "shiftCode":  "S2",
+        "punch1":  "10:53",
+        "punch2":  "14:14",
+        "shift1Hours":  3.34,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "10:53",
+        "punchOut":  "14:14",
+        "hoursWorked":  3.34,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift(s)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  64,
+        "date":  "2026-09-15",
+        "staffId":  31,
+        "employeeNo":  "40",
+        "name":  "Arvind",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  65,
+        "date":  "2026-09-15",
+        "staffId":  32,
+        "employeeNo":  "41",
+        "name":  "Ravi Kumar",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "16:27",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "16:27",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed Out)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  66,
+        "date":  "2026-09-15",
+        "staffId":  33,
+        "employeeNo":  "42",
+        "name":  "Lav kumar",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "16:29",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "16:29",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Missed Out)",
+        "status":  "Present",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  67,
+        "date":  "2026-09-15",
+        "staffId":  34,
+        "employeeNo":  "43",
+        "name":  "Santhosh g",
+        "designation":  "Cashier",
+        "shift":  "1st Shift (06:00 - 14:00)",
+        "shiftCode":  "S1",
+        "punch1":  "--:--",
+        "punch2":  "--:--",
+        "shift1Hours":  0,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "--:--",
+        "punchOut":  "--:--",
+        "hoursWorked":  0,
+        "shiftsCount":  0,
+        "dutyMode":  "0 Shift(s)",
+        "shiftDetail":  "0 Shift(s)",
+        "status":  "Absent",
+        "deviceId":  "DEV-02",
+        "terminal":  "Staff (192.168.1.100)",
+        "deviceIp":  "192.168.1.100",
+        "category":  "Staff",
+        "department":  "Cash \u0026 Fuel Sales"
+    },
+    {
+        "id":  68,
+        "date":  "2026-09-15",
+        "staffId":  2,
+        "employeeNo":  "SBRRFS0012",
+        "name":  "Sudhakar V",
+        "designation":  "Station In-Charge",
+        "shift":  "General Shift (09:00 - 18:00)",
+        "shiftCode":  "GEN",
+        "punch1":  "10:44",
+        "punch2":  "18:00",
+        "shift1Hours":  7.27,
+        "punch3":  "--:--",
+        "punch4":  "--:--",
+        "shift2Hours":  0,
+        "punchIn":  "10:44",
+        "punchOut":  "--:--",
+        "hoursWorked":  7.27,
+        "shiftsCount":  1,
+        "dutyMode":  "1 Shift (Office In-Charge)",
+        "status":  "Present",
+        "deviceId":  "DEV-01",
+        "terminal":  "Management (192.168.1.174)",
+        "deviceIp":  "192.168.1.174",
+        "category":  "Management",
+        "department":  "Management \u0026 Administration"
+    }
+]
+;
+
+    let currentShift = 'ALL';
+    let currentCategory = 'Staff';
+    let searchQ = '';
+    let fromDate = '2026-09-14';
+    let toDate = '2026-09-16';
+
+    function formatDisplayDate(dStr) {
+      if (!dStr) return '--';
+      if (dStr.includes('-') && dStr.split('-')[0].length === 4) {
+        const parts = dStr.split('-');
+        return parts[2] + '-' + parts[1] + '-' + parts[0];
+      }
+      return dStr;
+    }
+
+    function filterCategory(cat, btn) {
+      currentCategory = cat;
+      document.querySelectorAll('#btnCatStaff, #btnCatMgmt').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('attendanceRows');
+      
+      const mgmtIds = ['1', 'SBRRFS0012', '3', '15', '19'];
+      let filtered = attendanceList.filter(r => {
+        // Date range filter
+        const matchDate = (!fromDate || r.date >= fromDate) && (!toDate || r.date <= toDate);
+        
+        // Shift filter
+        let matchShift = currentShift === 'ALL';
+        if (!matchShift) {
+          if (currentShift === 'SUPP') {
+            matchShift = r.shiftCode === 'D12' || r.shiftCode === 'N12' || (r.shift && r.shift.includes('12H'));
+          } else {
+            matchShift = r.shiftCode === currentShift;
+          }
+        }
+
+        // Category filter - Strictly Separated (Never Mixed)
+        const isMgmt = (r.category === 'Management' || mgmtIds.includes(String(r.employeeNo)));
+        const matchCat = (currentCategory === 'Management') ? isMgmt : !isMgmt;
+
+        // Search query
+        const q = searchQ.toLowerCase();
+        const matchQ = !q || 
+          (r.name && r.name.toLowerCase().includes(q)) || 
+          (r.designation && r.designation.toLowerCase().includes(q)) || 
+          (r.shift && r.shift.toLowerCase().includes(q)) ||
+          (r.dutyMode && r.dutyMode.toLowerCase().includes(q));
+
+        return matchDate && matchShift && matchCat && matchQ;
+      });
+
+      document.getElementById('cntTotal').textContent = staffList.length;
+      document.getElementById('cntS1').textContent = staffList.filter(s => s.shiftCode === 'S1' || (s.shift && s.shift.includes('1st'))).length;
+      document.getElementById('cntS2').textContent = staffList.filter(s => s.shiftCode === 'S2' || (s.shift && s.shift.includes('2nd'))).length;
+      document.getElementById('cntS3').textContent = staffList.filter(s => s.shiftCode === 'S3' || (s.shift && s.shift.includes('3rd'))).length;
+      document.getElementById('cntSupp').textContent = staffList.filter(s => s.shiftCode === 'D12' || s.shiftCode === 'N12' || (s.shift && s.shift.includes('12H'))).length;
+      
+      const countEl = document.getElementById('filteredRecordCount');
+      if (countEl) countEl.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="18" style="text-align:center; padding: 2rem; color: #94a3b8;">No attendance records match the selected filters.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((r, idx) => {
+        let chipClass = 'chip-s1';
+        if (r.shiftCode === 'S2') chipClass = 'chip-s2';
+        else if (r.shiftCode === 'S3') chipClass = 'chip-s3';
+        else if (r.shiftCode === 'D12' || r.shiftCode === 'N12' || (r.shift && r.shift.includes('12H'))) chipClass = 'chip-supp';
+
+        let stClass = 'status-present';
+        if (r.status === 'On-Duty') stClass = 'status-onduty';
+        else if (r.status === 'Scheduled') stClass = 'status-scheduled';
+        else if (r.status === 'Absent') stClass = 'status-absent';
+
+        const p1 = (r.punch1 && r.punch1 !== '--:--') ? r.punch1 : (r.punchIn && r.punchIn !== '--:--' ? r.punchIn : '--:--');
+        const p2 = (r.punch2 && r.punch2 !== '--:--') ? r.punch2 : '--:--';
+        const isInProgress = (p1 !== '--:--' && p2 === '--:--');
+        const s1Hrs = (r.shift1Hours && r.shift1Hours > 0 && !isInProgress) ? (typeof r.shift1Hours === 'number' ? r.shift1Hours.toFixed(2) + 'h' : r.shift1Hours) : '--';
+        const p3 = r.punch3 || '--:--';
+        const p4 = r.punch4 || '--:--';
+        const s2Hrs = (r.shift2Hours && r.shift2Hours > 0) ? (typeof r.shift2Hours === 'number' ? r.shift2Hours.toFixed(2) + 'h' : r.shift2Hours) : '--';
+        const p5 = r.punch5 || '--:--';
+        const p6 = r.punch6 || '--:--';
+        const s3Hrs = (r.shift3Hours && r.shift3Hours > 0) ? (typeof r.shift3Hours === 'number' ? r.shift3Hours.toFixed(2) + 'h' : r.shift3Hours) : '--';
+
+        const isTripleShift = (r.shiftsCount >= 3 || (r.dutyMode && r.dutyMode.includes('3 Shift')));
+        const isDoubleShift = (!isTripleShift && (r.shiftsCount === 2 || (r.dutyMode && r.dutyMode.includes('2 Shift'))));
+
+        let totalWork = (r.hoursWorked && r.hoursWorked > 0 && !isInProgress)
+          ? (typeof r.hoursWorked === 'number' ? r.hoursWorked.toFixed(2) + ' hrs' : r.hoursWorked)
+          : (isInProgress ? '<span style="color: #38bdf8; font-weight:600;">In Progress</span>' : '--');
+
+        let modeBadge = '';
+        if (isTripleShift) {
+          modeBadge = '<span class="badge-triple">3 Shifts</span>';
+        } else if (isDoubleShift) {
+          modeBadge = '<span class="badge-double">2 Shifts</span>';
+        } else if (isInProgress) {
+          modeBadge = '<span style="background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); font-size: 0.72rem; padding: 0.15rem 0.45rem; border-radius: 9999px;">In Progress</span>';
+        } else if (r.dutyMode) {
+          modeBadge = '<span style="color: #94a3b8; font-size: 0.75rem;">' + r.dutyMode + '</span>';
+        }
+
+        const cat = r.category || (r.deviceId === 'DEV-01' ? 'Management' : 'Staff');
+        const catBadge = cat === 'Management' ?
+          '<span class="badge-mgmt"><i data-lucide="briefcase"></i> Mgmt</span>' :
+          '<span class="badge-staff"><i data-lucide="fuel"></i> Staff</span>';
+
+        return `
+          <tr class="${isTripleShift ? 'row-triple-shift' : (isDoubleShift ? 'row-double-shift' : '')}">
+            <td style="color:#94a3b8; font-weight:600;">${idx + 1}</td>
+            <td style="font-family:monospace; font-weight:600; color:#cbd5e1;">${r.employeeNo}</td>
+            <td style="font-weight:700; color:#fff;">${r.name}</td>
+            <td style="color:#94a3b8;">${r.designation}</td>
+            <td>${catBadge}</td>
+            <td><span class="shift-chip ${chipClass}">${r.shift || '1st Shift'}</span></td>
+            <td style="font-family:monospace; font-weight:600; color:#34d399;">${p1}</td>
+            <td style="font-family:monospace; font-weight:600; color:#fbbf24;">${p2}</td>
+            <td style="font-family:monospace; color:#94a3b8;">${s1Hrs}</td>
+            <td style="font-family:monospace; font-weight:600; color:#34d399;">${p3}</td>
+            <td style="font-family:monospace; font-weight:600; color:#fbbf24;">${p4}</td>
+            <td style="font-family:monospace; color:#94a3b8;">${s2Hrs}</td>
+            <td style="font-family:monospace; font-weight:600; color:#a78bfa;">${p5}</td>
+            <td style="font-family:monospace; font-weight:600; color:#f472b6;">${p6}</td>
+            <td style="font-family:monospace; color:#94a3b8;">${s3Hrs}</td>
+            <td style="font-weight:700; color:#60a5fa;">${totalWork}</td>
+            <td>${modeBadge}</td>
+            <td><span class="status-chip ${stClass}">${r.status || 'Present'}</span></td>
+          </tr>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function filterShift(code, btn) {
+      currentShift = code;
+      btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTable();
+    }
+
+    function filterCategory(cat, btn) {
+      currentCategory = cat;
+      btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTable();
+    }
+
+    function searchEmployee(val) {
+      searchQ = val;
+      renderTable();
+    }
+
+    function applyCustomDate() {
+      fromDate = document.getElementById('dateFrom').value;
+      toDate = document.getElementById('dateTo').value;
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      renderTable();
+    }
+
+    function applyPreset(type) {
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      if (type === '14_to_today') {
+        fromDate = '2026-09-14';
+        toDate = '2026-09-16';
+        document.getElementById('btnPreset14').classList.add('active');
+      } else if (type === 'today') {
+        fromDate = '2026-09-16';
+        toDate = '2026-09-16';
+        document.getElementById('btnPresetToday').classList.add('active');
+      } else if (type === 'yesterday') {
+        fromDate = '2026-09-15';
+        toDate = '2026-09-15';
+        document.getElementById('btnPreset15').classList.add('active');
+      } else if (type === '14th') {
+        fromDate = '2026-09-14';
+        toDate = '2026-09-14';
+        document.getElementById('btnPreset14Only').classList.add('active');
+      }
+      document.getElementById('dateFrom').value = fromDate;
+      document.getElementById('dateTo').value = toDate;
+      renderTable();
+    }
+
+    function downloadCsvReport() {
+      let filtered = attendanceList.filter(r => (!fromDate || r.date >= fromDate) && (!toDate || r.date <= toDate));
+      
+      const formatCsvRow = (r, idx) => {
+        const d = formatDisplayDate(r.date);
+        const p1 = r.punch1 || r.punchIn || '--:--';
+        const p2 = r.punch2 || r.punchOut || '--:--';
+        const s1 = r.shift1Hours ? (typeof r.shift1Hours === 'number' ? r.shift1Hours.toFixed(2) : r.shift1Hours) : '0';
+        const p3 = r.punch3 || '--:--';
+        const p4 = r.punch4 || '--:--';
+        const s2 = r.shift2Hours ? (typeof r.shift2Hours === 'number' ? r.shift2Hours.toFixed(2) : r.shift2Hours) : '0';
+        const p5 = r.punch5 || '--:--';
+        const p6 = r.punch6 || '--:--';
+        const s3 = r.shift3Hours ? (typeof r.shift3Hours === 'number' ? r.shift3Hours.toFixed(2) : r.shift3Hours) : '0';
+        const tot = typeof r.hoursWorked === 'number' ? r.hoursWorked.toFixed(2) : (r.hoursWorked || '0');
+        const mode = (r.shiftsCount >= 3 || (r.dutyMode && r.dutyMode.includes('3 Shift'))) ? '3 Shift(s)' : ((r.shiftsCount === 2 || (r.dutyMode && r.dutyMode.includes('2 Shift'))) ? '2 Shift(s)' : (r.dutyMode || '1 Shift(s)'));
+        const cat = r.category || (r.deviceId === 'DEV-01' ? 'Management' : 'Staff');
+        return `${idx + 1},${d},"${r.name}","${r.designation}","${cat}","${r.shift || ''}",${p1},${p2},${s1},${p3},${p4},${s2},${p5},${p6},${s3},${tot},"${mode}","${r.status || 'Present'}"\n`;
+      };
+
+      const header = "Sl,Date,Employee Name,Designation,Category,Assigned Shift,Punch 1 (In 1),Punch 2 (Out 1),Shift 1 Hrs,Punch 3 (In 2),Punch 4 (Out 2),Shift 2 Hrs,Punch 5 (In 3),Punch 6 (Out 3),Shift 3 Hrs,Total Work Hours,Duty Mode,Status\n";
+      let csv = "BABU RAJU RAM FUEL STATION - MULTI-SHIFT ATTENDANCE REPORT\n";
+      csv += `Period: ${fromDate} to ${toDate} | Category: ${currentCategory} (Separated)\n\n`;
+
+      if (currentCategory === 'Management') {
+        const mgmt = filtered.filter(r => r.category === 'Management' || r.deviceId === 'DEV-01');
+        csv += "=== MANAGEMENT TEAM (5 LEADERS) ===\n" + header;
+        mgmt.forEach((r, idx) => { csv += formatCsvRow(r, idx); });
+      } else if (currentCategory === 'Staff') {
+        const staff = filtered.filter(r => r.category !== 'Management' && r.deviceId !== 'DEV-01');
+        csv += "=== STATION OPERATIONAL STAFF (29 STAFF) ===\n" + header;
+        staff.forEach((r, idx) => { csv += formatCsvRow(r, idx); });
+      } else {
+        const mgmt = filtered.filter(r => r.category === 'Management' || r.deviceId === 'DEV-01');
+        const staff = filtered.filter(r => r.category !== 'Management' && r.deviceId !== 'DEV-01');
+        csv += "=== SECTION 1: MANAGEMENT TEAM (5 LEADERS) ===\n" + header;
+        mgmt.forEach((r, idx) => { csv += formatCsvRow(r, idx); });
+        csv += "\n=== SECTION 2: STATION OPERATIONAL STAFF (29 STAFF) ===\n" + header;
+        staff.forEach((r, idx) => { csv += formatCsvRow(r, idx); });
+      }
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Petrol_Bunk_MultiShift_Report_${fromDate}_to_${toDate}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadExcelReport() {
+      // Excel XML 2003 format with dedicated sheets for Staff and Management
+      let filtered = attendanceList.filter(r => (!fromDate || r.date >= fromDate) && (!toDate || r.date <= toDate));
+      let xml = '<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?>\n<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n';
+      xml += '<Styles>\n<Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Center"/><Font ss:FontName="Segoe UI" ss:Size="10"/></Style>\n';
+      xml += '<Style ss:ID="Header"><Font ss:FontName="Segoe UI" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#1E3A8A" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center"/></Style>\n';
+      xml += '<Style ss:ID="HeaderMgmt"><Font ss:FontName="Segoe UI" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#B45309" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center"/></Style>\n';
+      xml += '<Style ss:ID="TextCell"><NumberFormat ss:Format="@"/><Alignment ss:Horizontal="Center"/></Style>\n';
+      xml += '<Style ss:ID="NumCell"><NumberFormat ss:Format="0.00"/><Alignment ss:Horizontal="Center"/></Style>\n';
+      xml += '<Style ss:ID="TripleShift"><Interior ss:Color="#F3E8FF" ss:Pattern="Solid"/><Font ss:FontName="Segoe UI" ss:Size="10" ss:Color="#6B21A8" ss:Bold="1"/><Alignment ss:Horizontal="Center"/></Style>\n';
+      xml += '<Style ss:ID="DoubleShift"><Interior ss:Color="#FEF3C7" ss:Pattern="Solid"/><Font ss:FontName="Segoe UI" ss:Size="10" ss:Color="#92400E" ss:Bold="1"/><Alignment ss:Horizontal="Center"/></Style>\n';
+      xml += '</Styles>\n';
+
+      const buildWorksheet = (sheetName, title, items, isMgmt = false) => {
+        let ws = `<Worksheet ss:Name="${sheetName}"><Table>\n`;
+        const hStyle = isMgmt ? "HeaderMgmt" : "Header";
+        ws += `<Row ss:StyleID="${hStyle}"><Cell><Data ss:Type="String">Sl.</Data></Cell><Cell><Data ss:Type="String">Date</Data></Cell><Cell><Data ss:Type="String">Emp ID</Data></Cell><Cell><Data ss:Type="String">Employee Name</Data></Cell><Cell><Data ss:Type="String">Designation</Data></Cell><Cell><Data ss:Type="String">Category</Data></Cell><Cell><Data ss:Type="String">Assigned Shift</Data></Cell><Cell><Data ss:Type="String">Punch 1 (In 1)</Data></Cell><Cell><Data ss:Type="String">Punch 2 (Out 1)</Data></Cell><Cell><Data ss:Type="String">Shift 1 Hrs</Data></Cell><Cell><Data ss:Type="String">Punch 3 (In 2)</Data></Cell><Cell><Data ss:Type="String">Punch 4 (Out 2)</Data></Cell><Cell><Data ss:Type="String">Shift 2 Hrs</Data></Cell><Cell><Data ss:Type="String">Punch 5 (In 3)</Data></Cell><Cell><Data ss:Type="String">Punch 6 (Out 3)</Data></Cell><Cell><Data ss:Type="String">Shift 3 Hrs</Data></Cell><Cell><Data ss:Type="String">Total Work Hours</Data></Cell><Cell><Data ss:Type="String">Duty Mode</Data></Cell><Cell><Data ss:Type="String">Status</Data></Cell></Row>\n`;
+        items.forEach((r, idx) => {
+          const d = formatDisplayDate(r.date);
+          const p1 = r.punch1 || r.punchIn || '--:--';
+          const p2 = r.punch2 || r.punchOut || '--:--';
+          const s1 = typeof r.shift1Hours === 'number' ? r.shift1Hours : (r.shift1Hours || 0);
+          const p3 = r.punch3 || '--:--';
+          const p4 = r.punch4 || '--:--';
+          const s2 = typeof r.shift2Hours === 'number' ? r.shift2Hours : (r.shift2Hours || 0);
+          const p5 = r.punch5 || '--:--';
+          const p6 = r.punch6 || '--:--';
+          const s3 = typeof r.shift3Hours === 'number' ? r.shift3Hours : (r.shift3Hours || 0);
+          const tot = typeof r.hoursWorked === 'number' ? r.hoursWorked : (r.hoursWorked || 0);
+          const isTriple = (r.shiftsCount >= 3 || (r.dutyMode && r.dutyMode.includes('3 Shift')));
+          const isDouble = (!isTriple && (r.shiftsCount === 2 || (r.dutyMode && r.dutyMode.includes('2 Shift'))));
+          const mode = isTriple ? '3 Shift(s)' : (isDouble ? '2 Shift(s)' : (r.dutyMode || '1 Shift(s)'));
+          const dutyStyle = isTriple ? ' ss:StyleID="TripleShift"' : (isDouble ? ' ss:StyleID="DoubleShift"' : ' ss:StyleID="TextCell"');
+          const cat = r.category || (r.deviceId === 'DEV-01' ? 'Management' : 'Staff');
+          ws += `<Row><Cell ss:StyleID="TextCell"><Data ss:Type="Number">${idx + 1}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${d}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${r.employeeNo || ''}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${r.name}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${r.designation}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${cat}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${r.shift || ''}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${p1}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${p2}</Data></Cell><Cell ss:StyleID="NumCell"><Data ss:Type="Number">${s1}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${p3}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${p4}</Data></Cell><Cell ss:StyleID="NumCell"><Data ss:Type="Number">${s2}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${p5}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${p6}</Data></Cell><Cell ss:StyleID="NumCell"><Data ss:Type="Number">${s3}</Data></Cell><Cell ss:StyleID="NumCell"><Data ss:Type="Number">${tot}</Data></Cell><Cell${dutyStyle}><Data ss:Type="String">${mode}</Data></Cell><Cell ss:StyleID="TextCell"><Data ss:Type="String">${r.status || 'Present'}</Data></Cell></Row>\n`;
+        });
+        ws += `</Table></Worksheet>\n`;
+        return ws;
+      };
+
+      const staffItems = filtered.filter(r => r.category !== 'Management' && r.deviceId !== 'DEV-01');
+      const mgmtItems  = filtered.filter(r => r.category === 'Management' || r.deviceId === 'DEV-01');
+
+      if (currentCategory === 'Management') {
+        xml += buildWorksheet('Management (5 Leaders)', 'Management Report', mgmtItems, true);
+      } else if (currentCategory === 'Staff') {
+        xml += buildWorksheet('Station Staff (29 Staff)', 'Station Staff Report', staffItems, false);
+      } else {
+        // ALL: 2 Distinct Sheets
+        xml += buildWorksheet('Station Staff (29 Staff)', 'Station Staff Report', staffItems, false);
+        xml += buildWorksheet('Management (5 Leaders)', 'Management Report', mgmtItems, true);
+      }
+
+      xml += '</Workbook>';
+      const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Petrol_Bunk_MultiShift_Report_${fromDate}_to_${toDate}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadMonthlyReport() {
+      // Direct download of September 2026 Monthly 4-Punch Detailed Report
+      downloadExcelReport();
+    }
+
+    function rotateShifts() {
+      staffList.forEach(s => {
+        if (s.shiftCode === 'S1') { s.shiftCode = 'S3'; s.shift = '3rd Shift (Night)'; }
+        else if (s.shiftCode === 'S2') { s.shiftCode = 'S1'; s.shift = '1st Shift (Morning)'; }
+        else if (s.shiftCode === 'S3') { s.shiftCode = 'S2'; s.shift = '2nd Shift (Afternoon)'; }
+        else if (s.shiftCode === 'D12') { s.shiftCode = 'N12'; s.shift = '12H Night Shift'; }
+        else if (s.shiftCode === 'N12') { s.shiftCode = 'D12'; s.shift = '12H Day Shift'; }
+      });
+      renderTable();
+      fetch('http://127.0.0.1:8765/api/rotate-shifts', { method: 'POST' }).catch(() => {});
+    }
+
+    function openAddModal() { document.getElementById('addEmpModal').classList.add('active'); }
+    function closeAddModal() { document.getElementById('addEmpModal').classList.remove('active'); }
+
+    function saveStaff(e) {
+      e.preventDefault();
+      const name = document.getElementById('newName').value.trim();
+      const cat = document.getElementById('newCat').value;
+      const role = document.getElementById('newRole').value;
+      const shiftCode = document.getElementById('newShift').value;
+      let shiftName = "1st Shift (Morning)";
+      if (shiftCode === "S2") shiftName = "2nd Shift (Afternoon)";
+      else if (shiftCode === "S3") shiftName = "3rd Shift (Night)";
+      else if (shiftCode === "D12") shiftName = "12H Day Shift";
+      else if (shiftCode === "N12") shiftName = "12H Night Shift";
+      else if (shiftCode === "GEN") shiftName = "General Shift (09:00 - 18:00)";
+
+      const newId = staffList.length > 0 ? Math.max(...staffList.map(x => x.id)) + 1 : 1;
+      const devId = cat === 'Management' ? 'DEV-01' : 'DEV-02';
+      const term = cat === 'Management' ? 'Management (192.168.1.174)' : 'Staff (192.168.1.100)';
+      const ip = cat === 'Management' ? '192.168.1.174' : '192.168.1.100';
+
+      staffList.push({ id: newId, name, designation: role, category: cat, shiftCode, shift: shiftName, deviceId: devId, terminal: term, deviceIp: ip });
+      closeAddModal();
+      renderTable();
+      fetch('http://127.0.0.1:8765/api/staff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, designation: role, category: cat, assignedShift: shiftName, shiftCode, deviceId: devId, terminal: term, deviceIp: ip })
+      }).catch(() => {});
+    }
+
+    // Try fetching live data if local attendance daemon is active
+    fetch('http://127.0.0.1:8765/api/attendance?fromDate=2026-09-14&toDate=2026-09-16')
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          attendanceList = data;
+          renderTable();
+        }
+      })
+      .catch(() => {});
+
+    fetch('http://127.0.0.1:8765/api/staff')
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          staffList = data;
+          renderTable();
+        }
+      })
+      .catch(() => {});
+
+    renderTable();
+    if (window.lucide) lucide.createIcons();
+  </script>
+</body>
+</html>

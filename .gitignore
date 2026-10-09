@@ -1,0 +1,30 @@
+# Temporary and scratch files
+scratch/
+*.tmp
+*.log
+
+# Large temp reports (keep only latest)
+UTF8/
+
+# Scripts no longer needed
+get_mingit.ps1
+inspect_lnk.ps1
+list_windows.ps1
+probe_token.ps1
+check_chrome.ps1
+check_vercel.ps1
+test_activate.ps1
+test_assets.ps1
+test_pdf.ps1
+test_rotation.ps1
+audit_app.ps1
+prepare_body.ps1
+
+# Push helper scripts (local use only)
+push_lavanya_to_staff.ps1
+migrate_lavanya.ps1
+
+# Test files
+test.html
+test.pdf
+bunk_body.json
