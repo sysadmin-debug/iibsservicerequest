@@ -404,6 +404,7 @@ const mobileRegisterSchema = new mongoose.Schema({
   imei1: { type: String, required: true },
   imei2: { type: String, default: '' },
   phone: { type: String, required: true },
+  with_charger: { type: Boolean, default: false },
   created_at: { type: Date, default: Date.now }
 });
 const MobileRegister = mongoose.models.MobileRegister || mongoose.model('MobileRegister', mobileRegisterSchema);

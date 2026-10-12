@@ -2526,7 +2526,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           imei1: document.getElementById('mobileImei1').value,
           imei2: document.getElementById('mobileImei2').value,
           date_issue: document.getElementById('mobileDateIssue').value,
-          date_return: document.getElementById('mobileDateReturn').value
+          date_return: document.getElementById('mobileDateReturn').value,
+          with_charger: document.getElementById('mobileWithCharger') ? document.getElementById('mobileWithCharger').checked : false
       };
 
       try {
@@ -2582,16 +2583,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isReturned = item.date_return && item.date_return.trim() !== '';
         const statusColor = isReturned ? '#94a3b8' : '#10b981';
         const statusText = isReturned ? 'Returned' : 'Active';
+        const hasCharger = item.with_charger === true || item.with_charger === 'true';
 
         html += `
             <tr style="border-bottom: 1px solid var(--border-color);">
                 <td style="padding: 12px;">
                     <div style="font-weight: 600; color: var(--text-primary);">${item.name}</div>
                     <div style="font-size: 0.85rem; color: var(--text-secondary);">${item.designation}</div>
-                    <span class="badge" style="background-color: ${statusColor}20; color: ${statusColor}; font-size: 0.75rem;">${statusText}</span>
+                    <span class="badge" style="background-color: ${statusColor}20; color: ${statusColor} !important; font-size: 0.75rem;">${statusText}</span>
                 </td>
                 <td style="padding: 12px; font-weight: 500;">
-                    ${item.mobile_model}
+                    <div>${item.mobile_model}</div>
+                    ${hasCharger ? `
+                    <span style="display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 0.75rem; background: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 4px; font-weight: 600;">
+                      <i data-lucide="zap" style="width: 12px; height: 12px;"></i> With Charger
+                    </span>
+                    ` : `
+                    <span style="display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 0.75rem; background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 4px;">
+                      No Charger
+                    </span>
+                    `}
                 </td>
                 <td style="padding: 12px;">
                     <div style="font-size: 0.9rem;"><i data-lucide="phone" style="width:14px; height:14px;"></i> ${item.phone}</div>
@@ -2632,6 +2643,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('mobileImei2').value = item.imei2 || '';
     document.getElementById('mobileDateIssue').value = item.date_issue;
     document.getElementById('mobileDateReturn').value = item.date_return || '';
+    if (document.getElementById('mobileWithCharger')) {
+      document.getElementById('mobileWithCharger').checked = (item.with_charger === true || item.with_charger === 'true');
+    }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
     document.getElementById('mobileSubmitBtn').innerHTML = 'Update Record';
@@ -2658,6 +2672,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('editMobileId').value = '';
       if(document.getElementById('mobileDateIssue')) {
          document.getElementById('mobileDateIssue').valueAsDate = new Date();
+      }
+      if (document.getElementById('mobileWithCharger')) {
+         document.getElementById('mobileWithCharger').checked = false;
       }
       document.getElementById('mobileSubmitBtn').innerHTML = 'Save Record';
     }
