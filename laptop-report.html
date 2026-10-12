@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="style.css" />
 
   <style>
@@ -61,6 +62,11 @@
     }
 
     .btn-print:hover { background: #4338ca; }
+    .btn-excel {
+      background: #10b981;
+      color: white;
+    }
+    .btn-excel:hover { background: #059669; }
 
     /* Printable Area Styles */
     .printable-area {
@@ -310,6 +316,7 @@
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <button class="btn-print btn-excel" onclick="exportToExcel()"><i data-lucide="file-spreadsheet"></i> Export to Excel</button>
         <a href="/laptop/Laptop Eligibility 2026-2028.pdf" target="_blank" class="btn-print" style="background: #0284c7; text-decoration: none;"><i data-lucide="file-text"></i> Official PDF</a>
         <button class="btn-print" onclick="window.print()"><i data-lucide="printer"></i> Print Report</button>
         <a href="laptop-lists.html" style="color: #4f46e5; text-decoration: none; font-weight: 600; font-size: 0.95rem;">PDF Lists</a>
@@ -3158,6 +3165,127 @@
       } catch (err) {
         showToast('Error deleting record', true);
       }
+    }
+
+    function exportToExcel() {
+      if (typeof XLSX === 'undefined') {
+        alert('Excel export library is loading. Please try again in a moment.');
+        return;
+      }
+
+      const statusFilter = document.getElementById('statusFilter')?.value || 'All';
+      const batchFilter = document.getElementById('batchFilter')?.value || 'Active-2026-2028';
+      const nameFilter = (document.getElementById('nameFilter')?.value || '').trim().toLowerCase();
+
+      // Filter data matching current report view
+      let filtered = allData.filter(item => {
+        if (!item.name) return true;
+        const lowerName = item.name.trim().toLowerCase();
+        return lowerName !== 'student name' && lowerName !== 'student name ';
+      });
+
+      if (batchFilter === 'Active-2026-2028') {
+        filtered = filtered.filter(item => activeBatches.includes(item.course));
+      } else if (batchFilter !== 'All') {
+        filtered = filtered.filter(item => item.course === batchFilter);
+      }
+
+      if (statusFilter !== 'All') {
+        filtered = filtered.filter(item => item.status === statusFilter);
+      }
+
+      if (nameFilter) {
+        filtered = filtered.filter(item => item.name && item.name.toLowerCase().includes(nameFilter));
+      }
+
+      if (!filtered.length) {
+        alert('No records found to export for the current filter.');
+        return;
+      }
+
+      // Group by course and sort matching the report
+      const grouped = {};
+      filtered.forEach(item => {
+        if (!grouped[item.course]) grouped[item.course] = [];
+        grouped[item.course].push(item);
+      });
+
+      const order = [
+        'MBA (2026-2028)',
+        'PGDM - NextGen Flagship (2026-2028)',
+        'PGDM - Prime (2026-2028)',
+        'PGDM', 'MBA', 'UG', 
+        'PGDM 2024-2026', 'MBA 2024-2026', 'UG 2024-2027',
+        'PGDM 2023-2025', 'AIMA PGDM 2023-2025', 'MBA 2023-2025', 'UG 2023-2026',
+        'Letter (PGDM 2025)', 'Letter (MBA 2025)', 'Letter (UG 2025)',
+        'Letter (PGDM 2024)', 'Letter (MBA 2024)',
+        'Student taken Laptop with Letter'
+      ];
+
+      const exportRows = [];
+
+      const keysToProcess = [...order.filter(k => grouped[k]), ...Object.keys(grouped).filter(k => !order.includes(k))];
+
+      keysToProcess.forEach(courseKey => {
+        const students = grouped[courseKey];
+        if (!students || students.length === 0) return;
+
+        students.sort((a, b) => (Number(a.slNo) || 0) - (Number(b.slNo) || 0));
+
+        const batchTitle = courseLabels[courseKey] || courseKey;
+
+        students.forEach((s, idx) => {
+          let statusText = s.status || 'Pending';
+          if (s.status === 'Received') statusText = 'Avail / Received';
+          else if (s.status === 'Cancel') statusText = 'Cancelled';
+
+          let signText = '';
+          if (s.status === 'Received') {
+            signText = s.signature ? 'Signed' : 'Verified';
+          }
+
+          exportRows.push({
+            'Batch / Course': batchTitle,
+            'SL No': s.slNo || (idx + 1),
+            'Student Name': s.name || '',
+            'Status': statusText,
+            'Avail': s.status === 'Received' ? 'Yes' : 'No',
+            'Cancel': (s.status === 'Cancel' || s.status === 'Cancelled') ? 'Yes' : 'No',
+            'Signature': signText,
+            'Laptop Serial No': s.serialNo || '',
+            'Laptop Model': s.laptopModel || '',
+            'Has Due': s.hasDue ? 'Yes' : 'No',
+            'Given Date': s.givenDate || ''
+          });
+        });
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(exportRows);
+
+      // Set column widths for readability
+      worksheet['!cols'] = [
+        { wch: 35 }, // Batch / Course
+        { wch: 8 },  // SL No
+        { wch: 30 }, // Student Name
+        { wch: 18 }, // Status
+        { wch: 10 }, // Avail
+        { wch: 10 }, // Cancel
+        { wch: 14 }, // Signature
+        { wch: 20 }, // Serial No
+        { wch: 18 }, // Laptop Model
+        { wch: 10 }, // Has Due
+        { wch: 14 }  // Given Date
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Laptop Report');
+
+      // Generate filename based on filters and date
+      const dateStr = new Date().toISOString().split('T')[0];
+      let cleanBatchName = batchFilter.replace(/[^a-zA-Z0-9-_]/g, '_');
+      const filename = `Laptop_Report_${cleanBatchName}_${dateStr}.xlsx`;
+
+      XLSX.writeFile(workbook, filename);
     }
 
     const originalFetch = window.fetch;
