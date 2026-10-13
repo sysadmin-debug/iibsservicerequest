@@ -815,11 +815,22 @@ app.post('/api/laptop/update', requireAuth, async (req, res) => {
     if (laptopModel !== undefined) updateData.laptopModel = laptopModel;
     if (acceptanceLink !== undefined) updateData.acceptanceLink = acceptanceLink;
 
-    const student = await LaptopEligibility.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    );
+    let student = null;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      student = await LaptopEligibility.findByIdAndUpdate(
+        id,
+        updateData,
+        { new: true }
+      );
+    } else {
+      // For embedded local records (e.g. rec_ug_2026_*, rec_2026_*), find by name or upsert
+      const filter = req.body.name ? { name: req.body.name } : { _id: id };
+      student = await LaptopEligibility.findOneAndUpdate(
+        filter,
+        { ...req.body, ...updateData },
+        { new: true, upsert: true, setDefaultsOnInsert: true }
+      );
+    }
     
     if (!student) {
       return res.status(404).json({ error: 'Student not found' });

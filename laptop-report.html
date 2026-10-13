@@ -3467,12 +3467,10 @@
           const serverData = await response.json();
           if (serverData && serverData.length > 0) {
             // Filter or append
-            const has2026 = serverData.some(i => i.course && i.course.includes('2026'));
-            if (has2026) {
-              allData = serverData;
-            } else {
-              allData = [...default2026Data, ...serverData];
-            }
+            // Merge serverData with any default2026Data records not yet in serverData
+            const serverKeySet = new Set(serverData.map(d => (d.name || '').trim().toLowerCase() + '|' + (d.course || '').trim().toLowerCase()));
+            const missingDefaults = default2026Data.filter(d => !serverKeySet.has((d.name || '').trim().toLowerCase() + '|' + (d.course || '').trim().toLowerCase()));
+            allData = [...serverData, ...missingDefaults];
           }
         }
       } catch (err) {
@@ -3692,6 +3690,11 @@
       try {
         const student = allData.find(s => s._id === id);
         const payload = { id, [field]: value };
+        if (student) {
+          if (student.name) payload.name = student.name;
+          if (student.course) payload.course = student.course;
+          if (student.slNo) payload.slNo = student.slNo;
+        }
         
         // If serialNo is entered and non-empty, mark status as Received (Issued) if currently Pending or unset
         if (field === 'serialNo' && value.trim() !== '' && (!student || student.status === 'Pending')) {
@@ -3709,6 +3712,7 @@
         
         // Update local data cache
         if (student) {
+          if (data._id) student._id = data._id;
           student[field] = value;
           if (data.status) student.status = data.status;
           if (data.givenDate) student.givenDate = data.givenDate;
