@@ -287,9 +287,11 @@
           <label style="font-weight: 600;"><i data-lucide="layers"></i> Filter Batch:</label>
           <select id="batchFilter" onchange="renderReport()">
             <option value="Active-2026-2028" selected>All Batches (2026-2028)</option>
+            <option value="PGDM (2026-2028)">PGDM (2026-2028)</option>
             <option value="MBA (2026-2028)">MBA (2026-2028)</option>
-            <option value="PGDM - NextGen Flagship (2026-2028)">PGDM - NextGen Flagship (2026-2028)</option>
-            <option value="PGDM - Prime (2026-2028)">PGDM - Prime (2026-2028)</option>
+            <option value="UG (2026-2028)">UG (2026-2028)</option>
+            <option value="PGDM - NextGen Flagship (2026-2028)">── PGDM - NextGen Flagship (2026-2028)</option>
+            <option value="PGDM - Prime (2026-2028)">── PGDM - Prime (2026-2028)</option>
             <optgroup label="── Archived Batches (Older) ──">
               <option value="PGDM">PGDM 2025-2027</option>
               <option value="MBA">MBA 2025-2027</option>
@@ -316,6 +318,7 @@
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <button id="addLetterStudentBtn" class="btn-print" onclick="openAddLetterModal()" style="display: none; background: #059669; color: white;"><i data-lucide="user-plus"></i> Add Student with Letter</button>
         <button class="btn-print btn-excel" onclick="exportToExcel()"><i data-lucide="file-spreadsheet"></i> Export to Excel</button>
         <a href="/laptop/Laptop Eligibility 2026-2028.pdf" target="_blank" class="btn-print" style="background: #0284c7; text-decoration: none;"><i data-lucide="file-text"></i> Official PDF</a>
         <button class="btn-print" onclick="window.print()"><i data-lucide="printer"></i> Print Report</button>
@@ -361,12 +364,69 @@
     <span id="toastText">Action successful!</span>
   </div>
 
+  <!-- Add Student with Letter Modal -->
+  <div id="addLetterModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 12px; width: 100%; max-width: 480px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); border: 1px solid #e2e8f0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="margin: 0; font-family: 'Outfit', sans-serif; font-size: 1.25rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="file-signature" style="color: #059669;"></i> Add Student (With Letter)
+        </h3>
+        <button onclick="closeAddLetterModal()" style="background: none; border: none; cursor: pointer; color: #64748b; padding: 4px;">
+          <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+        </button>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; margin-bottom: 0.35rem; font-size: 0.85rem; font-weight: 600; color: #334155;">Student Name *</label>
+        <input type="text" id="addLetterName" style="width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; outline: none; font-family: inherit; font-size: 0.95rem;" placeholder="e.g. Rahul Sharma" />
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; margin-bottom: 0.35rem; font-size: 0.85rem; font-weight: 600; color: #334155;">Category / Batch *</label>
+        <select id="addLetterCourse" style="width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; outline: none; font-family: inherit; font-size: 0.95rem; background: white;">
+          <option value="Student taken Laptop with Letter" selected>Student taken Laptop with Letter (2025-2027)</option>
+          <option value="Letter (PGDM 2025)">Letter (PGDM 2025)</option>
+          <option value="Letter (MBA 2025)">Letter (MBA 2025)</option>
+          <option value="Letter (UG 2025)">Letter (UG 2025)</option>
+          <option value="Letter (PGDM 2024)">Letter (PGDM 2024)</option>
+          <option value="Letter (MBA 2024)">Letter (MBA 2024)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; margin-bottom: 0.35rem; font-size: 0.85rem; font-weight: 600; color: #334155;">Laptop Serial No. (Optional)</label>
+        <input type="text" id="addLetterSerial" style="width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; outline: none; font-family: monospace; font-size: 0.95rem;" placeholder="e.g. PF4XXXXX" />
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; margin-bottom: 0.35rem; font-size: 0.85rem; font-weight: 600; color: #334155;">Laptop Model (Optional)</label>
+        <input type="text" id="addLetterModel" style="width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; outline: none; font-family: inherit; font-size: 0.95rem;" placeholder="e.g. Lenovo V15 / Acer" />
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; margin-bottom: 0.35rem; font-size: 0.85rem; font-weight: 600; color: #334155;">Initial Status</label>
+        <select id="addLetterStatus" style="width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; outline: none; font-family: inherit; font-size: 0.95rem; background: white;">
+          <option value="Received" selected>Received / Issued (Collected with Letter)</option>
+          <option value="Pending">Pending</option>
+          <option value="Cancel">Cancelled</option>
+        </select>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" onclick="closeAddLetterModal()" style="padding: 0.65rem 1.25rem; border: 1px solid #cbd5e1; background: white; color: #475569; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel</button>
+        <button type="button" id="submitAddLetterBtn" onclick="submitAddLetterStudent()" style="padding: 0.65rem 1.25rem; border: none; background: #059669; color: white; border-radius: 6px; font-weight: 600; cursor: pointer;">Save Student</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     lucide.createIcons();
 
     // Map DB course names to nice display names matching official PDF
     const courseLabels = {
       'MBA (2026-2028)': 'LAPTOP ELIGIBILITY LIST - MBA (2026 - 2028 BATCH)',
+      'PGDM (2026-2028)': 'LAPTOP ELIGIBILITY LIST - PGDM (2026 - 2028 BATCH)',
+      'UG (2026-2028)': 'LAPTOP ELIGIBILITY LIST - UG (2026 - 2028 BATCH)',
       'PGDM - NextGen Flagship (2026-2028)': 'LAPTOP ELIGIBILITY - PGDM-NEXTGEN FLAGSHIP PROG-26',
       'PGDM - Prime (2026-2028)': 'LAPTOP ELIGIBILITY LIST - PGDM PRIME 2026-2028',
       'PGDM': 'PGDM 2025-2027',
@@ -377,6 +437,8 @@
 
     const activeBatches = [
       'MBA (2026-2028)',
+      'PGDM (2026-2028)',
+      'UG (2026-2028)',
       'PGDM - NextGen Flagship (2026-2028)',
       'PGDM - Prime (2026-2028)'
     ];
@@ -2953,6 +3015,12 @@
       let batchItems = filtered;
       if (batchFilter === 'Active-2026-2028') {
         batchItems = batchItems.filter(item => activeBatches.includes(item.course));
+      } else if (batchFilter === 'PGDM (2026-2028)') {
+        batchItems = batchItems.filter(item => item.course === 'PGDM (2026-2028)' || item.course === 'PGDM - NextGen Flagship (2026-2028)' || item.course === 'PGDM - Prime (2026-2028)');
+      } else if (batchFilter === 'MBA (2026-2028)') {
+        batchItems = batchItems.filter(item => item.course === 'MBA (2026-2028)');
+      } else if (batchFilter === 'UG (2026-2028)') {
+        batchItems = batchItems.filter(item => item.course === 'UG (2026-2028)');
       } else if (batchFilter !== 'All') {
         batchItems = batchItems.filter(item => item.course === batchFilter);
       }
@@ -2974,7 +3042,7 @@
 
       if (document.getElementById('statTotalEligibleTitle')) {
         if (batchFilter === 'Active-2026-2028' || batchFilter === 'All' || (batchFilter && batchFilter.includes('2026-2028'))) {
-          document.getElementById('statTotalEligibleTitle').textContent = 'TOTAL ELIGIBLE (2026-2028)';
+          document.getElementById('statTotalEligibleTitle').textContent = `TOTAL ELIGIBLE (${batchFilter === 'Active-2026-2028' || batchFilter === 'All' ? '2026-2028' : batchFilter.toUpperCase()})`;
         } else {
           document.getElementById('statTotalEligibleTitle').textContent = 'TOTAL ELIGIBLE';
         }
@@ -3000,8 +3068,10 @@
 
       const order = [
         'MBA (2026-2028)',
+        'PGDM (2026-2028)',
         'PGDM - NextGen Flagship (2026-2028)',
         'PGDM - Prime (2026-2028)',
+        'UG (2026-2028)',
         'PGDM', 'MBA', 'UG', 
         'PGDM 2024-2026', 'MBA 2024-2026', 'UG 2024-2027',
         'PGDM 2023-2025', 'AIMA PGDM 2023-2025', 'MBA 2023-2025', 'UG 2023-2026',
@@ -3009,10 +3079,12 @@
         'Letter (PGDM 2024)', 'Letter (MBA 2024)',
         'Student taken Laptop with Letter'
       ];
+
+      const keysToRender = [...order.filter(k => grouped[k]), ...Object.keys(grouped).filter(k => !order.includes(k))];
       
       let html = '';
 
-      order.forEach(courseKey => {
+      keysToRender.forEach(courseKey => {
         const students = grouped[courseKey];
         if (!students || students.length === 0) return;
 
@@ -3151,6 +3223,99 @@
       }
     }
 
+    function openAddLetterModal() {
+      document.getElementById('addLetterName').value = '';
+      document.getElementById('addLetterSerial').value = '';
+      document.getElementById('addLetterModel').value = '';
+      document.getElementById('addLetterStatus').value = 'Received';
+      document.getElementById('addLetterCourse').value = 'Student taken Laptop with Letter';
+      document.getElementById('addLetterModal').style.display = 'flex';
+      document.getElementById('addLetterName').focus();
+    }
+
+    function closeAddLetterModal() {
+      document.getElementById('addLetterModal').style.display = 'none';
+    }
+
+    async function submitAddLetterStudent() {
+      const name = document.getElementById('addLetterName').value.trim();
+      const course = document.getElementById('addLetterCourse').value;
+      const serialNo = document.getElementById('addLetterSerial').value.trim();
+      const laptopModel = document.getElementById('addLetterModel').value.trim();
+      const status = document.getElementById('addLetterStatus').value;
+
+      if (!name) {
+        alert('Please enter the student name.');
+        document.getElementById('addLetterName').focus();
+        return;
+      }
+
+      const saveBtn = document.getElementById('submitAddLetterBtn');
+      const originalText = saveBtn.textContent;
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const payload = {
+          name,
+          course,
+          status,
+          serialNo,
+          laptopModel,
+          givenDate: (status === 'Received') ? new Date().toLocaleDateString('en-GB') : ''
+        };
+
+        const res = await fetch('/api/laptop/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          // Add to local data array
+          const newStudent = data.data || {
+            _id: 'rec_' + Date.now(),
+            slNo: allData.filter(s => s.course === course).length + 1,
+            name,
+            course,
+            status,
+            serialNo,
+            laptopModel,
+            givenDate: payload.givenDate
+          };
+          allData.push(newStudent);
+          closeAddLetterModal();
+          showToast('Student added successfully!');
+          renderReport();
+          lucide.createIcons();
+        } else {
+          alert(data.error || 'Failed to save student record.');
+        }
+      } catch (err) {
+        console.error('Save student error:', err);
+        // Fallback for offline/local simulation
+        const newStudent = {
+          _id: 'rec_local_' + Date.now(),
+          slNo: allData.filter(s => s.course === course).length + 1,
+          name,
+          course,
+          status,
+          serialNo,
+          laptopModel,
+          givenDate: (status === 'Received') ? new Date().toLocaleDateString('en-GB') : ''
+        };
+        allData.push(newStudent);
+        closeAddLetterModal();
+        showToast('Student added successfully (local session)!');
+        renderReport();
+        lucide.createIcons();
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = originalText;
+      }
+    }
+
     async function deleteStudent(id, name) {
       if (!confirm(`Are you sure you want to permanently delete the record for ${name}?`)) return;
       
@@ -3186,6 +3351,12 @@
 
       if (batchFilter === 'Active-2026-2028') {
         filtered = filtered.filter(item => activeBatches.includes(item.course));
+      } else if (batchFilter === 'PGDM (2026-2028)') {
+        filtered = filtered.filter(item => item.course === 'PGDM (2026-2028)' || item.course === 'PGDM - NextGen Flagship (2026-2028)' || item.course === 'PGDM - Prime (2026-2028)');
+      } else if (batchFilter === 'MBA (2026-2028)') {
+        filtered = filtered.filter(item => item.course === 'MBA (2026-2028)');
+      } else if (batchFilter === 'UG (2026-2028)') {
+        filtered = filtered.filter(item => item.course === 'UG (2026-2028)');
       } else if (batchFilter !== 'All') {
         filtered = filtered.filter(item => item.course === batchFilter);
       }
@@ -3212,8 +3383,10 @@
 
       const order = [
         'MBA (2026-2028)',
+        'PGDM (2026-2028)',
         'PGDM - NextGen Flagship (2026-2028)',
         'PGDM - Prime (2026-2028)',
+        'UG (2026-2028)',
         'PGDM', 'MBA', 'UG', 
         'PGDM 2024-2026', 'MBA 2024-2026', 'UG 2024-2027',
         'PGDM 2023-2025', 'AIMA PGDM 2023-2025', 'MBA 2023-2025', 'UG 2023-2026',
@@ -3327,6 +3500,8 @@
           isReadOnly = (data.role === 'staff');
           document.getElementById('authOverlay').style.display = 'none';
           document.body.style.overflow = 'visible';
+          const addBtn = document.getElementById('addLetterStudentBtn');
+          if (addBtn && !isReadOnly) addBtn.style.display = 'inline-flex';
           fetchLaptops();
         } else {
           if (errBox) {
@@ -3355,6 +3530,8 @@
             isReadOnly = (data.role === 'staff');
             document.getElementById('authOverlay').style.display = 'none';
             document.body.style.overflow = 'visible';
+            const addBtn = document.getElementById('addLetterStudentBtn');
+            if (addBtn && !isReadOnly) addBtn.style.display = 'inline-flex';
             fetchLaptops();
           }
         } catch (e) {}
