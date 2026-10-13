@@ -290,6 +290,8 @@
             <option value="PGDM (2026-2028)">PGDM (2026-2028)</option>
             <option value="MBA (2026-2028)">MBA (2026-2028)</option>
             <option value="UG (2026-2028)">UG (ALL UG PROG-26-29 BATCH)</option>
+            <option value="Letter (2026-2029)">Letter (2026-2029)</option>
+            <option value="Letter (2026-2028)">Letter (2026-2028)</option>
             <option value="PGDM - NextGen Flagship (2026-2028)">── PGDM - NextGen Flagship (2026-2028)</option>
             <option value="PGDM - Prime (2026-2028)">── PGDM - Prime (2026-2028)</option>
             <optgroup label="── Archived Batches (Older) ──">
@@ -384,13 +386,28 @@
       <div style="margin-bottom: 1rem;">
         <label style="display: block; margin-bottom: 0.35rem; font-size: 0.85rem; font-weight: 600; color: #334155;">Category / Batch *</label>
         <select id="addLetterCourse" style="width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; outline: none; font-family: inherit; font-size: 0.95rem; background: white;">
-          <option value="Student taken Laptop with Letter" selected>Student taken Laptop with Letter (2025-2027)</option>
-          <option value="Letter (PGDM 2025)">Letter (PGDM 2025)</option>
-          <option value="Letter (MBA 2025)">Letter (MBA 2025)</option>
-          <option value="Letter (UG 2025)">Letter (UG 2025)</option>
-          <option value="Letter (PGDM 2024)">Letter (PGDM 2024)</option>
-          <option value="Letter (MBA 2024)">Letter (MBA 2024)</option>
+          <optgroup label="Current Batches (2026-2029 / 2026-2028)">
+            <option value="Letter (2026-2029)" selected>Letter (2026-2029) - UG</option>
+            <option value="Letter (2026-2028)">Letter (2026-2028) - PGDM / MBA</option>
+            <option value="UG (2026-2028)">UG (2026-2029) - Regular List</option>
+            <option value="MBA (2026-2028)">MBA (2026-2028) - Regular List</option>
+            <option value="PGDM (2026-2028)">PGDM (2026-2028) - Regular List</option>
+          </optgroup>
+          <optgroup label="Older Batches with Letter">
+            <option value="Student taken Laptop with Letter">Student taken Laptop with Letter (2025-2027)</option>
+            <option value="Letter (PGDM 2025)">Letter (PGDM 2025)</option>
+            <option value="Letter (MBA 2025)">Letter (MBA 2025)</option>
+            <option value="Letter (UG 2025)">Letter (UG 2025)</option>
+            <option value="Letter (PGDM 2024)">Letter (PGDM 2024)</option>
+            <option value="Letter (MBA 2024)">Letter (MBA 2024)</option>
+          </optgroup>
         </select>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; margin-bottom: 0.35rem; font-size: 0.85rem; font-weight: 600; color: #334155;">Upload Letter / Undertaking Document (PDF / Image)</label>
+        <input type="file" id="addLetterFile" accept=".pdf,image/*" style="width: 100%; padding: 0.5rem; border: 1px dashed #94a3b8; border-radius: 6px; box-sizing: border-box; outline: none; background: #f8fafc; font-size: 0.85rem;" />
+        <span id="addLetterFileStatus" style="font-size: 0.75rem; color: #64748b; margin-top: 2px; display: block;">Attach signed student letter, indemnity or undertaking</span>
       </div>
 
       <div style="margin-bottom: 1rem;">
@@ -432,6 +449,8 @@
       'PGDM': 'PGDM 2025-2027',
       'MBA': 'MBA 2025-2027',
       'UG': 'UG 2025-2028',
+      'Letter (2026-2029)': 'Student taken Laptop with Letter (2026-2029)',
+      'Letter (2026-2028)': 'Student taken Laptop with Letter (2026-2028)',
       'Student taken Laptop with Letter': 'Student taken Laptop with Letter'
     };
 
@@ -439,6 +458,8 @@
       'MBA (2026-2028)',
       'PGDM (2026-2028)',
       'UG (2026-2028)',
+      'Letter (2026-2029)',
+      'Letter (2026-2028)',
       'PGDM - NextGen Flagship (2026-2028)',
       'PGDM - Prime (2026-2028)'
     ];
@@ -3616,7 +3637,8 @@
                   <th style="width: 80px; text-align: center;">AVAIL</th>
                   <th style="width: 80px; text-align: center;">CANCEL</th>
                   <th style="width: 90px; text-align: center;">SIGN</th>
-                  <th style="width: 150px; text-align: center;">SERIAL NO.</th>
+                  <th style="width: 140px; text-align: center;">SERIAL NO.</th>
+                  <th style="width: 110px; text-align: center;">LETTER / FILE</th>
                   <th style="width: 40px;" class="report-controls-cell"></th>
                 </tr>
               </thead>
@@ -3634,7 +3656,23 @@
             <input type="checkbox" style="cursor: pointer; width: 18px; height: 18px; accent-color: #dc2626;" ${student.status === 'Cancel' ? 'checked' : ''} onchange="updateStudentField('${student._id}', 'status', this.checked ? 'Cancel' : 'Pending')" title="Mark Cancel" />
           `;
 
-          let signField = `<span style="font-size: 0.85rem; color: #64748b;">${student.status === 'Received' ? (student.signature ? 'Signed' : 'Verified') : ''}</span>`;
+          let signField = '';
+          if (student.signature) {
+            signField = student.signature.startsWith('data:image') || student.signature.startsWith('http') ?
+              `<a href="${student.signature}" target="_blank" title="View Signature"><img src="${student.signature}" style="max-height: 24px; max-width: 60px; object-fit: contain; vertical-align: middle;" /></a>` :
+              `<span style="font-size: 0.85rem; color: #059669; font-weight: 600;">Signed</span>`;
+          } else if (student.status === 'Received') {
+            signField = `<span style="font-size: 0.85rem; color: #64748b;">Verified</span>`;
+          }
+
+          if (!isReadOnly) {
+            signField += `
+              <label style="cursor: pointer; margin-left: 4px; display: inline-flex; align-items: center;" title="Upload Student Signature">
+                <i data-lucide="pen-tool" style="width: 13px; height: 13px; color: #6366f1;"></i>
+                <input type="file" style="display: none;" accept="image/*" onchange="uploadStudentSignature('${student._id}', this.files[0])" />
+              </label>
+            `;
+          }
 
           let serialField = isReadOnly ? `<span style="font-family: monospace; font-size: 0.9rem; font-weight: 600;">${student.serialNo || '-'}</span>` : `<input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" style="text-align: center; font-family: monospace;" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" />`;
 
@@ -3652,6 +3690,20 @@
                   <td style="text-align: center;">${cancelField}</td>
                   <td style="text-align: center;">${signField}</td>
                   <td style="text-align: center;">${serialField}</td>
+                  <td style="text-align: center;">
+                    ${student.letter_file_url ? 
+                      `<a href="${student.letter_file_url}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; color: #0284c7; text-decoration: none; font-weight: 600; font-size: 0.82rem; background: #e0f2fe; padding: 3px 8px; border-radius: 4px; border: 1px solid #bae6fd;" title="View Uploaded Letter">
+                        <i data-lucide="file-text" style="width: 13px; height: 13px;"></i> View
+                       </a>` : 
+                      (isReadOnly ? `<span style="color: #94a3b8; font-size: 0.8rem;">-</span>` : `
+                        <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; color: #64748b; background: #f1f5f9; padding: 3px 6px; border-radius: 4px; border: 1px dashed #cbd5e1;" title="Upload Letter / File">
+                          <i data-lucide="upload" style="width: 12px; height: 12px;"></i>
+                          <span>Upload</span>
+                          <input type="file" style="display: none;" accept=".pdf,image/*" onchange="uploadStudentLetterFile('${student._id}', this.files[0])" />
+                        </label>
+                      `)
+                    }
+                  </td>
                   <td class="report-controls-cell">${deleteBtn}</td>
                 </tr>
           `;
@@ -3726,6 +3778,45 @@
       }
     }
 
+    async function uploadStudentSignature(id, file) {
+      if (!file) return;
+      showToast('Uploading signature...');
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok || !uploadData.publicUrl) throw new Error(uploadData.error || 'Upload failed');
+        await updateStudentField(id, 'signature', uploadData.publicUrl);
+        showToast('Signature uploaded & saved successfully!');
+      } catch (err) {
+        showToast('Error uploading signature: ' + err.message, true);
+      }
+    }
+
+    async function uploadStudentLetterFile(id, file) {
+      if (!file) return;
+      const student = allData.find(s => s._id === id);
+      showToast('Uploading letter file...');
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok || !uploadData.publicUrl) throw new Error(uploadData.error || 'Upload failed');
+        await updateStudentField(id, 'letter_file_url', uploadData.publicUrl);
+        showToast('Letter file uploaded & saved successfully!');
+      } catch (err) {
+        showToast('Error uploading file: ' + err.message, true);
+      }
+    }
+
     function copyStudentLink(url) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(() => {
@@ -3743,7 +3834,11 @@
       document.getElementById('addLetterSerial').value = '';
       document.getElementById('addLetterModel').value = '';
       document.getElementById('addLetterStatus').value = 'Received';
-      document.getElementById('addLetterCourse').value = 'Student taken Laptop with Letter';
+      document.getElementById('addLetterCourse').value = 'Letter (2026-2029)';
+      const fileInput = document.getElementById('addLetterFile');
+      if (fileInput) fileInput.value = '';
+      const statusText = document.getElementById('addLetterFileStatus');
+      if (statusText) statusText.textContent = 'Attach signed student letter, indemnity or undertaking';
       document.getElementById('addLetterModal').style.display = 'flex';
       document.getElementById('addLetterName').focus();
     }
@@ -3771,12 +3866,29 @@
       saveBtn.textContent = 'Saving...';
 
       try {
+        let letterFileUrl = '';
+        const fileInput = document.getElementById('addLetterFile');
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+          saveBtn.textContent = 'Uploading file...';
+          const formData = new FormData();
+          formData.append('file', fileInput.files[0]);
+          const upRes = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          });
+          const upData = await upRes.json();
+          if (upRes.ok && upData.publicUrl) {
+            letterFileUrl = upData.publicUrl;
+          }
+        }
+
         const payload = {
           name,
           course,
           status,
           serialNo,
           laptopModel,
+          letter_file_url: letterFileUrl,
           givenDate: (status === 'Received') ? new Date().toLocaleDateString('en-GB') : ''
         };
 

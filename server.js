@@ -270,6 +270,7 @@ const ticketSchema = new mongoose.Schema({
   attended_by: String,
   cctv_approver_email: String,
   approval_mail_sent: { type: Boolean, default: false },
+  attachment_url: String,
   created_at: { type: Date, default: Date.now }
 });
 const Ticket = mongoose.model('Ticket', ticketSchema);
@@ -378,6 +379,7 @@ const laptopEligibilitySchema = new mongoose.Schema({
   returnDate: { type: String, default: '' },
   acceptanceLink: { type: String, default: '' },
   signature: { type: String, default: '' },
+  letter_file_url: { type: String, default: '' },
   updatedAt: { type: Date, default: Date.now }
 });
 const LaptopEligibility = mongoose.models.LaptopEligibility || mongoose.model('LaptopEligibility', laptopEligibilitySchema);
@@ -720,7 +722,7 @@ app.get('/api/stock_log', requireAuth, async (req, res) => {
 
 // --- FILE UPLOAD ---
 
-app.post(['/api/upload', '/upload'], requireAuth, upload.single('file'), (req, res) => {
+app.post(['/api/upload', '/upload'], upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
@@ -776,7 +778,8 @@ app.post('/api/laptop/add', requireAuth, async (req, res) => {
       if (!finalGivenDate) finalGivenDate = new Date().toLocaleDateString('en-GB');
     }
     const newRecord = new LaptopEligibility({
-      slNo: slNo || 0, name, course, status: finalStatus, serialNo, laptopModel, givenDate: finalGivenDate, returnDate
+      slNo: slNo || 0, name, course, status: finalStatus, serialNo, laptopModel, givenDate: finalGivenDate, returnDate,
+      letter_file_url: req.body.letter_file_url || ''
     });
     await newRecord.save();
     res.json({ success: true, message: 'Record added successfully', data: newRecord });
@@ -787,7 +790,7 @@ app.post('/api/laptop/add', requireAuth, async (req, res) => {
 
 app.post('/api/laptop/update', requireAuth, async (req, res) => {
   try {
-    const { id, status, name, serialNo, givenDate, returnDate, laptopModel, acceptanceLink } = req.body;
+    const { id, status, name, serialNo, givenDate, returnDate, laptopModel, acceptanceLink, letter_file_url, signature } = req.body;
     if (!id) return res.status(400).json({ error: 'ID is required' });
     
     const updateData = { updatedAt: new Date() };
@@ -813,6 +816,8 @@ app.post('/api/laptop/update', requireAuth, async (req, res) => {
     if (givenDate !== undefined) updateData.givenDate = givenDate;
     if (returnDate !== undefined) updateData.returnDate = returnDate;
     if (laptopModel !== undefined) updateData.laptopModel = laptopModel;
+    if (letter_file_url !== undefined) updateData.letter_file_url = letter_file_url;
+    if (signature !== undefined) updateData.signature = signature;
     if (acceptanceLink !== undefined) updateData.acceptanceLink = acceptanceLink;
 
     let student = null;
