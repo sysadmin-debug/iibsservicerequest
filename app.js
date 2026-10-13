@@ -51,13 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
             <div class="ticket-subject">${data.other_request || data.ticket_type}</div>
-            ${data.attachment_url ? `
-              <div style="margin-top: 0.75rem;">
-                <a href="${data.attachment_url}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(99, 102, 241, 0.1); color: var(--primary-color); border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500;">
-                  <i data-lucide="paperclip" style="width: 14px; height: 14px;"></i> View Attached File
-                </a>
-              </div>
-            ` : ''}
             
             <div class="ticket-meta" style="margin-top: 1rem;">
               <span><i data-lucide="user"></i> ${data.name}</span>
@@ -233,27 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ? '' 
         : (roleValue === 'Staff' ? document.getElementById('userDepartmentSelect').value : document.getElementById('userDepartment').value.trim());
 
-      // Optional file upload
-      let attachmentUrl = '';
-      const attachmentInput = document.getElementById('ticketAttachment');
-      if (attachmentInput && attachmentInput.files && attachmentInput.files[0]) {
-        try {
-          if (submitBtn) submitBtn.textContent = 'Uploading file...';
-          const fileData = new FormData();
-          fileData.append('file', attachmentInput.files[0]);
-          const upRes = await fetch('/api/upload', {
-            method: 'POST',
-            body: fileData
-          });
-          const upJson = await upRes.json();
-          if (upRes.ok && upJson.publicUrl) {
-            attachmentUrl = upJson.publicUrl;
-          }
-        } catch (upErr) {
-          console.warn('File upload failed:', upErr);
-        }
-      }
-
       const newTicket = {
         ticket_id: tempId,
         name: document.getElementById('userName').value.trim(),
@@ -267,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ticket_type: document.getElementById('ticketType').value,
         other_request: otherReqText,
         cctvApprover: cctvApproverEmail, // Added for backend to use
-        attachment_url: attachmentUrl,
         status: 'open',
         resolution: ''
       };
