@@ -377,6 +377,7 @@ const laptopEligibilitySchema = new mongoose.Schema({
   laptopModel: { type: String, default: '' },
   givenDate: { type: String, default: '' },
   returnDate: { type: String, default: '' },
+  mobile: { type: String, default: '' },
   acceptanceLink: { type: String, default: '' },
   signature: { type: String, default: '' },
   letter_file_url: { type: String, default: '' },
@@ -767,7 +768,7 @@ app.get('/api/laptop/list', requireAuth, async (req, res) => {
 // Add new laptop record manually
 app.post('/api/laptop/add', requireAuth, async (req, res) => {
   try {
-    const { slNo, name, course, status, serialNo, laptopModel, givenDate, returnDate } = req.body;
+    const { slNo, name, course, status, serialNo, laptopModel, mobile, givenDate, returnDate } = req.body;
     if (!name || !course) {
       return res.status(400).json({ error: 'Name and Course are required' });
     }
@@ -778,7 +779,7 @@ app.post('/api/laptop/add', requireAuth, async (req, res) => {
       if (!finalGivenDate) finalGivenDate = new Date().toLocaleDateString('en-GB');
     }
     const newRecord = new LaptopEligibility({
-      slNo: slNo || 0, name, course, status: finalStatus, serialNo, laptopModel, givenDate: finalGivenDate, returnDate,
+      slNo: slNo || 0, name, course, status: finalStatus, serialNo, laptopModel, mobile: mobile || '', givenDate: finalGivenDate, returnDate,
       letter_file_url: req.body.letter_file_url || ''
     });
     await newRecord.save();
@@ -790,7 +791,7 @@ app.post('/api/laptop/add', requireAuth, async (req, res) => {
 
 app.post('/api/laptop/update', requireAuth, async (req, res) => {
   try {
-    const { id, status, name, serialNo, givenDate, returnDate, laptopModel, acceptanceLink, letter_file_url, signature } = req.body;
+    const { id, status, name, serialNo, mobile, givenDate, returnDate, laptopModel, acceptanceLink, letter_file_url, signature } = req.body;
     if (!id) return res.status(400).json({ error: 'ID is required' });
     
     const updateData = { updatedAt: new Date() };
@@ -813,6 +814,7 @@ app.post('/api/laptop/update', requireAuth, async (req, res) => {
         }
       }
     }
+    if (mobile !== undefined) updateData.mobile = mobile;
     if (givenDate !== undefined) updateData.givenDate = givenDate;
     if (returnDate !== undefined) updateData.returnDate = returnDate;
     if (laptopModel !== undefined) updateData.laptopModel = laptopModel;
@@ -891,13 +893,16 @@ app.post('/api/laptop/accept/:id', async (req, res) => {
     const laptop = await LaptopEligibility.findById(req.params.id);
     if (!laptop) return res.status(404).json({ error: 'Not found' });
     
-    const { serialNo, signature } = req.body;
+    const { serialNo, signature, mobile } = req.body;
     
     if (serialNo && serialNo.trim()) {
       laptop.serialNo = serialNo.trim();
     }
     if (signature) {
       laptop.signature = signature;
+    }
+    if (mobile !== undefined) {
+      laptop.mobile = mobile.trim();
     }
     
     laptop.status = 'Received';

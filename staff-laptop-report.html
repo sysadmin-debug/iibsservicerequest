@@ -310,6 +310,10 @@
         <input type="text" id="addName" style="width:100%; padding:0.75rem; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; outline:none;" placeholder="Enter name">
       </div>
       <div style="margin-bottom:1rem;">
+        <label style="display:block; margin-bottom:0.5rem; font-size:0.9rem; color:#475569;">Staff Mobile No.</label>
+        <input type="text" id="addMobile" style="width:100%; padding:0.75rem; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; outline:none;" placeholder="Enter mobile number">
+      </div>
+      <div style="margin-bottom:1rem;">
         <label style="display:block; margin-bottom:0.5rem; font-size:0.9rem; color:#475569;">Laptop Model No.</label>
         <input type="text" id="addModel" style="width:100%; padding:0.75rem; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; outline:none;" placeholder="Enter model">
       </div>
@@ -399,6 +403,7 @@
                 <tr>
                   <th style="min-width: 50px;">Sl.No</th>
                   <th style="min-width: 150px;">${courseKey === 'Faculty' ? 'Staff Name' : 'Student Name'}</th>
+                  ${courseKey === 'Faculty' ? `<th style="min-width: 130px;">Mobile No.</th>` : ''}
                   <th style="min-width: 120px;">Status</th>
                   ${courseKey === 'Faculty' ? `<th style="min-width: 300px;">Laptop Model No.</th>` : ''}
                   <th style="min-width: 150px;">Serial No.</th>
@@ -427,6 +432,11 @@
                       <option value="Cancel" ${student.status === 'Cancel' ? 'selected' : ''}>Cancelled</option>
                     </select>
           `;
+
+          let mobileField = '';
+          if (courseKey === 'Faculty') {
+             mobileField = isReadOnly ? `<td><span>${student.mobile || '-'}</span></td>` : `<td><input type="text" class="editable-input" value="${student.mobile || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'mobile', this.value)" /></td>`;
+          }
 
           let serialField = isReadOnly ? `<span>${student.serialNo || '-'}</span>` : `<input type="text" class="editable-input" value="${student.serialNo || ''}" placeholder="-" onchange="updateStudentField('${student._id}', 'serialNo', this.value)" />`;
 
@@ -463,6 +473,7 @@
                 <tr>
                   <td>${index + 1}</td>
                   <td>${nameField}</td>
+                  ${mobileField}
                   <td>${statusField}</td>
                   ${laptopModelField}
                   <td>${serialField}</td>
@@ -527,6 +538,7 @@
     function openAddModal() {
       document.getElementById('addModal').style.display = 'flex';
       document.getElementById('addName').value = '';
+      document.getElementById('addMobile').value = '';
       document.getElementById('addModel').value = '';
       document.getElementById('addSerial').value = '';
     }
@@ -537,6 +549,7 @@
 
     async function submitNewStaff() {
       const name = document.getElementById('addName').value.trim();
+      const mobile = document.getElementById('addMobile').value.trim();
       const laptopModel = document.getElementById('addModel').value.trim();
       const serialNo = document.getElementById('addSerial').value.trim();
 
@@ -551,6 +564,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             name, 
+            mobile,
             laptopModel, 
             serialNo, 
             course: 'Faculty' 
