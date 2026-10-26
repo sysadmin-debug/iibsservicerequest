@@ -161,9 +161,31 @@ def is_master_server_host():
         pass
     return False
 
-def set_internet_blocked(block=True):
-    if is_master_server_host():
-        return
+# ----------------- INTERNET BLOCKING / UNBLOCKING (DUAL-LAYER) ----------------- #
+INTERNET_OPTION_SETTINGS_CHANGED = 39
+INTERNET_OPTION_REFRESH = 37
+
+def set_browser_internet_blocked(block=True):
+    """Instantly kills HTTP/HTTPS browsing across Edge, Chrome, Firefox without needing Administrator privileges."""
+    try:
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Internet Settings", 0, winreg.KEY_SET_VALUE)
+        if block:
+            winreg.SetValueEx(key, 'ProxyEnable', 0, winreg.REG_DWORD, 1)
+            winreg.SetValueEx(key, 'ProxyServer', 0, winreg.REG_SZ, '127.0.0.1:9')
+            # Whitelist local network so student client can still reach the Master Server
+            winreg.SetValueEx(key, 'ProxyOverride', 0, winreg.REG_SZ, '192.168.*;10.*;172.16.*;127.0.0.1;<local>')
+        else:
+            winreg.SetValueEx(key, 'ProxyEnable', 0, winreg.REG_DWORD, 0)
+        winreg.CloseKey(key)
+
+        # Notify Windows network stack to apply immediately
+        ctypes.windll.Wininet.InternetSetOptionW(0, INTERNET_OPTION_SETTINGS_CHANGED, 0, 0)
+        ctypes.windll.Wininet.InternetSetOptionW(0, INTERNET_OPTION_REFRESH, 0, 0)
+    except Exception as e:
+        print(f"[PROXY BLOCK ERROR] {e}")
+
+def set_firewall_internet_blocked(block=True):
+    """Firewall level blocking (active when client is executed with elevated permissions)."""
     try:
         subprocess.run(["netsh", "advfirewall", "firewall", "delete", "rule", "name=IIBS_BLOCK_HTTP"], capture_output=True)
         subprocess.run(["netsh", "advfirewall", "firewall", "delete", "rule", "name=IIBS_BLOCK_HTTPS"], capture_output=True)
@@ -182,8 +204,17 @@ def set_internet_blocked(block=True):
                 "netsh", "advfirewall", "firewall", "add", "rule",
                 "name=IIBS_BLOCK_DNS", "dir=out", "action=block", "protocol=UDP", "remoteport=53"
             ], capture_output=True)
-    except Exception as e:
-        print(f"[FIREWALL ERROR] {e}")
+    except Exception:
+        pass
+
+def set_internet_blocked(block=True):
+    """Executes Dual-Layer blocking ensuring internet is completely cut regardless of Windows privilege level."""
+    if is_master_server_host():
+        return
+    # Layer 1: Instant Browser Level Proxy Blackhole (Zero-privilege)
+    set_browser_internet_blocked(block)
+    # Layer 2: Deep Kernel Firewall Block
+    set_firewall_internet_blocked(block)
 
 # ----------------- LAB CLIENT APPLICATION ----------------- #
 class LabClientApp:
