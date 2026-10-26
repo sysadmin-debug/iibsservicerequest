@@ -16,19 +16,47 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 # ----------------- CONFIGURATION ----------------- #
-CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "client_config.json")
+# Check config next to exe or py file
+EXE_DIR = os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.join(EXE_DIR, "client_config.json")
 
-def load_server_url():
+PRIMARY_SERVER = "http://192.168.14.250:5000"
+FALLBACK_SERVER = "http://192.168.6.189:5000"
+
+def test_reachability(url):
+    try:
+        req = urllib.request.Request(f"{url}/api/exam_status")
+        with urllib.request.urlopen(req, timeout=1.5) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
+def determine_server_url():
+    # 1. Custom config if present
     if os.path.exists(CONFIG_FILE):
         try:
             with open(CONFIG_FILE, 'r') as f:
                 data = json.load(f)
-                return data.get("server_url", "http://192.168.6.189:5000")
+                custom = data.get("server_url")
+                if custom and test_reachability(custom):
+                    return custom
+                elif custom:
+                    return custom
         except Exception:
             pass
-    return "http://192.168.6.189:5000"
 
-SERVER_URL = load_server_url()
+    # 2. Auto-detect Wi-Fi server (192.168.14.250)
+    if test_reachability(PRIMARY_SERVER):
+        return PRIMARY_SERVER
+
+    # 3. Auto-detect Ethernet server (192.168.6.189)
+    if test_reachability(FALLBACK_SERVER):
+        return FALLBACK_SERVER
+
+    # 4. Default to Wi-Fi server
+    return PRIMARY_SERVER
+
+SERVER_URL = determine_server_url()
 HOSTNAME = socket.gethostname()
 
 def get_server_host():
