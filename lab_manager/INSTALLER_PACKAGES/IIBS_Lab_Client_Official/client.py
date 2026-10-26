@@ -340,6 +340,43 @@ def set_internet_blocked(block=True):
     # Layer 2: Deep Kernel Firewall Block
     set_firewall_internet_blocked(block)
 
+# ----------------- INSTALLED SOFTWARE DISCOVERY ----------------- #
+def discover_installed_softwares():
+    """Discovers all legitimate installed applications available on the system for students to launch."""
+    search_dirs = [
+        os.path.join(os.environ.get('ProgramData', 'C:\\ProgramData'), r'Microsoft\Windows\Start Menu\Programs'),
+        os.path.join(os.environ.get('AppData', ''), r'Microsoft\Windows\Start Menu\Programs'),
+        os.path.join(os.environ.get('PUBLIC', 'C:\\Users\\Public'), 'Desktop'),
+    ]
+
+    blacklisted_terms = [
+        'command prompt', 'powershell', 'cmd', 'registry editor', 'regedit',
+        'event viewer', 'disk cleanup', 'computer management', 'device manager',
+        'services', 'system configuration', 'task manager', 'control panel',
+        'component services', 'odbc', 'performance monitor',
+        'resource monitor', 'memory diagnostic', 'defragment',
+        'iscsi', 'recovery', 'system information', 'wsl settings',
+        'uninstall', 'setup', 'iibs lab client', 'remove', 'configuration',
+        'administrative tools', 'security configuration', 'print management',
+        'task scheduler', 'firewall', 'dfrgui', 'manual', 'help', 'docs',
+        'release notes', 'license', 'readme', 'wsl', 'run', 'activation', 'install additional tools'
+    ]
+
+    apps = {}
+    for base in search_dirs:
+        if not os.path.exists(base):
+            continue
+        for root, dirs, files in os.walk(base):
+            for file in files:
+                if file.lower().endswith('.lnk'):
+                    app_name = file[:-4].strip()
+                    lower_name = app_name.lower()
+                    if any(term in lower_name for term in blacklisted_terms):
+                        continue
+                    if app_name not in apps:
+                        apps[app_name] = os.path.join(root, file)
+    return apps
+
 # ----------------- LAB CLIENT APPLICATION ----------------- #
 class LabClientApp:
     def __init__(self, root):
@@ -652,11 +689,122 @@ class LabClientApp:
         else:
             self.login_status.config(text="Invalid credentials (or user not registered)", fg="#ef4444")
 
+    def open_apps_menu(self):
+        """Displays a dedicated dialog listing all installed softwares on this PC with instant launch and search."""
+        top = tk.Toplevel(self.root)
+        top.title("Installed Software & Applications")
+        top.geometry("540x520")
+        top.configure(bg="#0f172a")
+        top.attributes("-topmost", True)
+        top.resizable(False, False)
+
+        header = tk.Frame(top, bg="#0f172a", padx=16, pady=12)
+        header.pack(fill=tk.X)
+        tk.Label(header, text="INSTALLED LAB SOFTWARES", font=("Segoe UI", 13, "bold"), fg="#38bdf8", bg="#0f172a").pack(anchor=tk.W)
+        tk.Label(header, text="Double-click an application or select and click 'Launch Software'", font=("Segoe UI", 9), fg="#94a3b8", bg="#0f172a").pack(anchor=tk.W)
+
+        # Search Bar
+        search_box = tk.Frame(top, bg="#1e293b", padx=10, pady=6)
+        search_box.pack(fill=tk.X, padx=16, pady=(0, 10))
+        tk.Label(search_box, text="Filter:", font=("Segoe UI", 9, "bold"), fg="#94a3b8", bg="#1e293b").pack(side=tk.LEFT, padx=(0, 8))
+        search_var = tk.StringVar()
+        search_entry = tk.Entry(search_box, textvariable=search_var, font=("Segoe UI", 10), bg="#0f172a", fg="#ffffff", insertbackground="#ffffff", bd=1, relief=tk.SOLID)
+        search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        search_entry.focus_set()
+
+        # List frame
+        list_frame = tk.Frame(top, bg="#0f172a", padx=16)
+        list_frame.pack(fill=tk.BOTH, expand=True)
+
+        scrollbar = tk.Scrollbar(list_frame)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        app_listbox = tk.Listbox(
+            list_frame,
+            font=("Segoe UI", 10),
+            bg="#1e293b",
+            fg="#f8fafc",
+            selectbackground="#0284c7",
+            selectforeground="#ffffff",
+            bd=0,
+            highlightthickness=1,
+            highlightbackground="#334155",
+            yscrollcommand=scrollbar.set
+        )
+        app_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.config(command=app_listbox.yview)
+
+        installed_map = discover_installed_softwares()
+        sorted_names = sorted(installed_map.keys(), key=lambda s: s.lower())
+
+        def populate_list(filter_text=""):
+            app_listbox.delete(0, tk.END)
+            f = filter_text.strip().lower()
+            for name in sorted_names:
+                if not f or f in name.lower():
+                    app_listbox.insert(tk.END, f"  💻  {name}")
+
+        populate_list()
+        search_var.trace_add("write", lambda *args: populate_list(search_var.get()))
+
+        def launch_selected():
+            sel = app_listbox.curselection()
+            if not sel:
+                messagebox.showwarning("Select Software", "Please click on a software from the list to launch.", parent=top)
+                return
+            display_text = app_listbox.get(sel[0]).strip()
+            # Remove emoji prefix
+            clean_app = display_text.replace("💻", "").strip()
+            lnk_path = installed_map.get(clean_app)
+            if lnk_path and os.path.exists(lnk_path):
+                try:
+                    os.startfile(lnk_path)
+                    top.destroy()
+                except Exception as e:
+                    messagebox.showerror("Error", f"Failed to launch {clean_app}:\n{e}", parent=top)
+            else:
+                messagebox.showerror("Error", f"Could not find application shortcut for {clean_app}", parent=top)
+
+        app_listbox.bind("<Double-Button-1>", lambda e: launch_selected())
+        search_entry.bind("<Return>", lambda e: launch_selected())
+
+        # Action Buttons
+        btn_frame = tk.Frame(top, bg="#0f172a", padx=16, pady=12)
+        btn_frame.pack(fill=tk.X)
+
+        btn_close = tk.Button(
+            btn_frame,
+            text="Close",
+            font=("Segoe UI", 9),
+            bg="#334155",
+            fg="#ffffff",
+            bd=0,
+            padx=12,
+            pady=5,
+            cursor="hand2",
+            command=top.destroy
+        )
+        btn_close.pack(side=tk.RIGHT, padx=(8, 0))
+
+        btn_launch = tk.Button(
+            btn_frame,
+            text="LAUNCH SOFTWARE",
+            font=("Segoe UI", 9, "bold"),
+            bg="#0284c7",
+            fg="#ffffff",
+            bd=0,
+            padx=14,
+            pady=5,
+            cursor="hand2",
+            command=launch_selected
+        )
+        btn_launch.pack(side=tk.RIGHT)
+
     def unlock_system(self):
         """Unlocks kiosk window so student can use desktop with hardened restrictions."""
         self.root.attributes("-fullscreen", False)
         self.root.attributes("-topmost", False)
-        self.root.geometry("480x85+20+20")
+        self.root.geometry("640x85+20+20")
         self.root.resizable(False, False)
 
         for widget in self.root.winfo_children():
@@ -706,6 +854,20 @@ class LabClientApp:
         )
         info.pack(side=tk.LEFT, padx=6)
 
+        btn_logout = tk.Button(
+            banner,
+            text="SIGN OUT",
+            font=("Segoe UI", 8, "bold"),
+            bg="#ef4444" if not self.exam_mode_active else "#ffffff",
+            fg="#ffffff" if not self.exam_mode_active else "#b91c1c",
+            bd=0,
+            padx=8,
+            pady=4,
+            cursor="hand2",
+            command=self.handle_logout
+        )
+        btn_logout.pack(side=tk.RIGHT, padx=4)
+
         btn_folder = tk.Button(
             banner,
             text="OPEN MY FOLDER",
@@ -720,19 +882,19 @@ class LabClientApp:
         )
         btn_folder.pack(side=tk.RIGHT, padx=4)
 
-        btn_logout = tk.Button(
+        btn_apps = tk.Button(
             banner,
-            text="SIGN OUT",
+            text="SOFTWARES",
             font=("Segoe UI", 8, "bold"),
-            bg="#ef4444" if not self.exam_mode_active else "#ffffff",
-            fg="#ffffff" if not self.exam_mode_active else "#b91c1c",
+            bg="#059669",
+            fg="#ffffff",
             bd=0,
             padx=8,
             pady=4,
             cursor="hand2",
-            command=self.handle_logout
+            command=self.open_apps_menu
         )
-        btn_logout.pack(side=tk.RIGHT, padx=4)
+        btn_apps.pack(side=tk.RIGHT, padx=4)
 
     def handle_logout(self, status="logout"):
         # Instantly unmount and erase the folder from Desktop so no other student or faculty can see it
