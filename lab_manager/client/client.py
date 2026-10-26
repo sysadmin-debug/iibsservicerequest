@@ -218,7 +218,7 @@ class LabClientApp:
     def admin_exit_prompt(self):
         import tkinter.simpledialog as sd
         pwd = sd.askstring("Administrator Bypass", "Enter Admin Password to close client software:", show="*", parent=self.root)
-        if pwd == "admin@123" or pwd == "iibsadmin":
+        if pwd in ["admin123", "admin@123", "iibsadmin"]:
             self.running = False
             self.root.destroy()
             sys.exit(0)
@@ -294,11 +294,21 @@ class LabClientApp:
         self.notebook = ttk.Notebook(self.main_frame)
         self.notebook.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        # TAB 1: LOGIN
+        # TAB 1: LOGIN (Student / Faculty / Admin)
         login_tab = tk.Frame(self.notebook, bg="#1e293b", padx=30, pady=25)
-        self.notebook.add(login_tab, text=" Student Login ")
+        self.notebook.add(login_tab, text=" User Login ")
 
-        tk.Label(login_tab, text="User ID / Username", font=("Segoe UI", 11, "bold"), bg="#1e293b", fg="#e2e8f0").pack(anchor=tk.W, pady=(10, 3))
+        # Account Type radio selector
+        role_frame = tk.Frame(login_tab, bg="#1e293b")
+        role_frame.pack(fill=tk.X, pady=(0, 10))
+        tk.Label(role_frame, text="Login As:", font=("Segoe UI", 9, "bold"), bg="#1e293b", fg="#94a3b8").pack(side=tk.LEFT, padx=(0, 10))
+        
+        self.login_role = tk.StringVar(value="student")
+        tk.Radiobutton(role_frame, text="Student", variable=self.login_role, value="student", bg="#1e293b", fg="#38bdf8", selectcolor="#0f172a", activebackground="#1e293b", font=("Segoe UI", 9)).pack(side=tk.LEFT, padx=5)
+        tk.Radiobutton(role_frame, text="Faculty", variable=self.login_role, value="faculty", bg="#1e293b", fg="#4ade80", selectcolor="#0f172a", activebackground="#1e293b", font=("Segoe UI", 9)).pack(side=tk.LEFT, padx=5)
+        tk.Radiobutton(role_frame, text="Admin", variable=self.login_role, value="admin", bg="#1e293b", fg="#fbbf24", selectcolor="#0f172a", activebackground="#1e293b", font=("Segoe UI", 9)).pack(side=tk.LEFT, padx=5)
+
+        tk.Label(login_tab, text="User ID / Username", font=("Segoe UI", 11, "bold"), bg="#1e293b", fg="#e2e8f0").pack(anchor=tk.W, pady=(5, 3))
         self.login_user = tk.Entry(login_tab, font=("Segoe UI", 12), bd=1, relief=tk.SOLID, bg="#0f172a", fg="#ffffff", insertbackground="#ffffff")
         self.login_user.pack(fill=tk.X, pady=(0, 15), ipady=5)
 
@@ -310,7 +320,7 @@ class LabClientApp:
         btn_login.pack(fill=tk.X, ipady=8, pady=(10, 8))
 
         # Notice for password change
-        notice_lbl = tk.Label(login_tab, text="* Forgot or need to reset password? Please meet the Lab Administrator in person.", font=("Segoe UI", 8, "italic"), bg="#1e293b", fg="#94a3b8")
+        notice_lbl = tk.Label(login_tab, text="* Admin: admin / admin123  |  Faculty: faculty / faculty123\n* Students: Self-register in tab 2. Password resets done by Admin.", font=("Segoe UI", 8, "italic"), bg="#1e293b", fg="#94a3b8")
         notice_lbl.pack(pady=(0, 5))
 
         self.login_status = tk.Label(login_tab, text="", font=("Segoe UI", 10), bg="#1e293b", fg="#ef4444")
