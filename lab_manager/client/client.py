@@ -5,6 +5,8 @@ import socket
 import json
 import threading
 import ctypes
+import hashlib
+import sqlite3
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -19,11 +21,71 @@ from tkinter import ttk, messagebox
 # Check config next to exe or py file
 EXE_DIR = os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.join(EXE_DIR, "client_config.json")
+LOCAL_DB_FILE = os.path.join(EXE_DIR, "local_users.db")
 
 PRIMARY_SERVER_5050 = "http://192.168.14.250:5050"
 FALLBACK_SERVER_5050 = "http://192.168.6.189:5050"
 PRIMARY_SERVER = "http://192.168.14.250:5050"
 FALLBACK_SERVER = "http://192.168.6.189:5050"
+
+def get_hash(text):
+    return hashlib.sha256(text.encode('utf-8')).hexdigest()
+
+def init_local_db():
+    try:
+        conn = sqlite3.connect(LOCAL_DB_FILE)
+        conn.execute('''CREATE TABLE IF NOT EXISTS local_users (
+            username TEXT PRIMARY KEY,
+            full_name TEXT,
+            roll_no TEXT,
+            password_hash TEXT,
+            user_type TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )''')
+        # Ensure default admin and test accounts always exist offline
+        conn.execute('''INSERT OR IGNORE INTO local_users (username, full_name, roll_no, password_hash, user_type)
+            VALUES (?, ?, ?, ?, ?)''', ('admin', 'Lab Administrator', 'ADMIN-01', get_hash('admin123'), 'admin'))
+        conn.execute('''INSERT OR IGNORE INTO local_users (username, full_name, roll_no, password_hash, user_type)
+            VALUES (?, ?, ?, ?, ?)''', ('faculty', 'Faculty Member', 'FACULTY-01', get_hash('faculty123'), 'faculty'))
+        conn.execute('''INSERT OR IGNORE INTO local_users (username, full_name, roll_no, password_hash, user_type)
+            VALUES (?, ?, ?, ?, ?)''', ('test', 'Test Account', 'TEST-001', get_hash('test123'), 'student'))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[LOCAL DB INIT ERROR] {e}")
+
+init_local_db()
+
+def save_local_user(username, full_name, roll_no, password, user_type):
+    try:
+        conn = sqlite3.connect(LOCAL_DB_FILE)
+        conn.execute('''INSERT OR REPLACE INTO local_users (username, full_name, roll_no, password_hash, user_type)
+            VALUES (?, ?, ?, ?, ?)''', (username, full_name, roll_no, get_hash(password), user_type))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception:
+        return False
+
+def verify_local_user(username, password):
+    try:
+        conn = sqlite3.connect(LOCAL_DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute("SELECT username, full_name, roll_no, password_hash, user_type FROM local_users WHERE username = ?", (username,))
+        row = cursor.fetchone()
+        conn.close()
+        if row and row[3] == get_hash(password):
+            return {
+                "success": True,
+                "username": row[0],
+                "full_name": row[1],
+                "roll_no": row[2],
+                "user_type": row[4],
+                "is_offline": True
+            }
+    except Exception:
+        pass
+    return None
 
 def test_reachability(url):
     try:
@@ -369,6 +431,21 @@ class LabClientApp:
         notice_lbl = tk.Label(login_tab, text="* Admin: admin / admin123  |  Faculty: faculty / faculty123\n* Students: Self-register in tab 2. Password resets done by Admin.", font=("Segoe UI", 8, "italic"), bg="#1e293b", fg="#94a3b8")
         notice_lbl.pack(pady=(0, 5))
 
+        # Direct link to IIBS Service Request Portal
+        btn_portal = tk.Button(
+            login_tab,
+            text="Service Request Portal (Click to Open)",
+            font=("Segoe UI", 8, "underline"),
+            bg="#1e293b",
+            fg="#38bdf8",
+            bd=0,
+            cursor="hand2",
+            activebackground="#1e293b",
+            activeforeground="#7dd3fc",
+            command=lambda: os.startfile("https://iibsservicerequest.vercel.app/admin.html")
+        )
+        btn_portal.pack(pady=(0, 5))
+
         self.login_status = tk.Label(login_tab, text="", font=("Segoe UI", 10), bg="#1e293b", fg="#ef4444")
         self.login_status.pack(pady=5)
 
@@ -428,27 +505,42 @@ class LabClientApp:
             return
 
         payload = json.dumps({"roll_no": roll, "full_name": name, "username": user, "password": pwd, "user_type": u_type}).encode('utf-8')
+        registered_on_server = False
+
+        # Try server registration first
         try:
             req = urllib.request.Request(f"{SERVER_URL}/api/register", data=payload, headers={'Content-Type': 'application/json'})
-            with urllib.request.urlopen(req, timeout=5) as response:
+            with urllib.request.urlopen(req, timeout=3) as response:
                 res_data = json.loads(response.read().decode())
                 if res_data.get("success"):
-                    messagebox.showinfo("Success", f"{u_type.title()} account created successfully! You can now log in.")
-                    self.reg_roll.delete(0, tk.END)
-                    self.reg_name.delete(0, tk.END)
-                    self.reg_user.delete(0, tk.END)
-                    self.reg_pass.delete(0, tk.END)
-                    self.notebook.select(0)
-                else:
-                    self.reg_status.config(text=res_data.get("message", "Registration failed"), fg="#ef4444")
+                    registered_on_server = True
         except urllib.error.HTTPError as e:
             try:
                 err = json.loads(e.read().decode()).get("message", "Error")
             except:
-                err = "Roll number or User ID already taken"
+                err = "Roll number or User ID already taken on server"
             self.reg_status.config(text=err, fg="#ef4444")
+            return
         except Exception:
-            self.reg_status.config(text="Cannot reach Master Server. Verify LAN cable or IP.", fg="#ef4444")
+            pass # Server is offline, will save locally
+
+        # Save to local database (ensures works even without internet or network)
+        save_local_user(user, name, roll, pwd, u_type)
+
+        # Create user's dedicated folder immediately on Desktop
+        desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+        clean_name = "".join([c for c in name if c.isalnum() or c in (' ', '_')]).strip()
+        clean_user = "".join([c for c in user if c.isalnum() or c in (' ', '_')]).strip()
+        user_folder = os.path.join(desktop, f"Student_Work_{clean_user}_{clean_name}")
+        os.makedirs(user_folder, exist_ok=True)
+
+        mode_msg = "Account created & synced with Server!" if registered_on_server else "Account created locally (Standalone / Offline Mode)!"
+        messagebox.showinfo("Success", f"{mode_msg}\n\nYour personal workspace folder has been prepared on Desktop:\n{os.path.basename(user_folder)}")
+        self.reg_roll.delete(0, tk.END)
+        self.reg_name.delete(0, tk.END)
+        self.reg_user.delete(0, tk.END)
+        self.reg_pass.delete(0, tk.END)
+        self.notebook.select(0)
 
     def handle_login(self):
         user = self.login_user.get().strip()
@@ -459,9 +551,12 @@ class LabClientApp:
             return
 
         payload = json.dumps({"username": user, "password": pwd, "pc_name": HOSTNAME}).encode('utf-8')
+        logged_in = False
+
+        # 1. Try server login
         try:
             req = urllib.request.Request(f"{SERVER_URL}/api/login", data=payload, headers={'Content-Type': 'application/json'})
-            with urllib.request.urlopen(req, timeout=5) as response:
+            with urllib.request.urlopen(req, timeout=3) as response:
                 res = json.loads(response.read().decode())
                 if res.get("success"):
                     self.current_session_id = res.get("session_id")
@@ -469,17 +564,36 @@ class LabClientApp:
                     self.current_fullname = res.get("full_name")
                     self.current_roll = res.get("roll_no")
                     self.is_logged_in = True
+                    logged_in = True
+                    # Cache successful credentials locally for offline use
+                    save_local_user(user, res.get("full_name"), res.get("roll_no"), pwd, "student")
                     self.unlock_system()
+                    return
                 else:
                     self.login_status.config(text=res.get("message", "Invalid login"), fg="#ef4444")
+                    return
         except urllib.error.HTTPError as e:
             try:
                 err = json.loads(e.read().decode()).get("message", "Invalid User ID or Password")
             except:
                 err = "Invalid credentials"
             self.login_status.config(text=err, fg="#ef4444")
+            return
         except Exception:
-            self.login_status.config(text="Master Server unreachable. Check network connection.", fg="#ef4444")
+            # Server unreachable - fallback to offline authentication!
+            pass
+
+        # 2. Standalone / Offline Authentication
+        local_auth = verify_local_user(user, pwd)
+        if local_auth:
+            self.current_session_id = "OFFLINE"
+            self.current_user = local_auth["username"]
+            self.current_fullname = local_auth["full_name"]
+            self.current_roll = local_auth["roll_no"]
+            self.is_logged_in = True
+            self.unlock_system()
+        else:
+            self.login_status.config(text="Invalid credentials (or user not registered)", fg="#ef4444")
 
     def unlock_system(self):
         """Unlocks kiosk window so student can use desktop."""
@@ -491,33 +605,69 @@ class LabClientApp:
         for widget in self.root.winfo_children():
             widget.destroy()
 
+        # Automatically ensure personal student work folder exists and open it
+        desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+        clean_name = "".join([c for c in (self.current_fullname or "User") if c.isalnum() or c in (' ', '_')]).strip()
+        clean_user = "".join([c for c in (self.current_user or "Student") if c.isalnum() or c in (' ', '_')]).strip()
+        user_folder = os.path.join(desktop, f"Student_Work_{clean_user}_{clean_name}")
+        os.makedirs(user_folder, exist_ok=True)
+
         bg_color = "#b91c1c" if self.exam_mode_active else "#0f172a"
-        banner = tk.Frame(self.root, bg=bg_color, padx=15, pady=10)
+        banner = tk.Frame(self.root, bg=bg_color, padx=12, pady=8)
         banner.pack(fill=tk.BOTH, expand=True)
 
-        mode_text = "[EXAM IN PROGRESS - NO INTERNET]" if self.exam_mode_active else "Idle shutdown limit: 1 hr"
+        mode_text = "[EXAM MODE - NO INTERNET]" if self.exam_mode_active else "Storage: Desktop\\Student_Work"
         info = tk.Label(
             banner,
-            text=f"Student: {self.current_fullname} ({self.current_roll})\n{mode_text}",
+            text=f"User: {self.current_fullname} ({self.current_roll})\n{mode_text}",
             font=("Segoe UI", 9, "bold"),
             fg="#ffffff",
             bg=bg_color,
             justify=tk.LEFT
         )
-        info.pack(side=tk.LEFT, padx=10)
+        info.pack(side=tk.LEFT, padx=6)
+
+        btn_portal = tk.Button(
+            banner,
+            text="PORTAL",
+            font=("Segoe UI", 8, "bold"),
+            bg="#0284c7",
+            fg="#ffffff",
+            bd=0,
+            padx=8,
+            pady=4,
+            cursor="hand2",
+            command=lambda: os.startfile("https://iibsservicerequest.vercel.app/admin.html")
+        )
+        btn_portal.pack(side=tk.RIGHT, padx=4)
+
+        btn_folder = tk.Button(
+            banner,
+            text="MY FOLDER",
+            font=("Segoe UI", 8, "bold"),
+            bg="#2563eb",
+            fg="#ffffff",
+            bd=0,
+            padx=8,
+            pady=4,
+            cursor="hand2",
+            command=lambda: os.startfile(user_folder)
+        )
+        btn_folder.pack(side=tk.RIGHT, padx=4)
 
         btn_logout = tk.Button(
             banner,
             text="SIGN OUT",
-            font=("Segoe UI", 10, "bold"),
+            font=("Segoe UI", 8, "bold"),
             bg="#ef4444" if not self.exam_mode_active else "#ffffff",
             fg="#ffffff" if not self.exam_mode_active else "#b91c1c",
             bd=0,
-            padx=10,
-            pady=5,
+            padx=8,
+            pady=4,
             cursor="hand2",
             command=self.handle_logout
         )
+        btn_logout.pack(side=tk.RIGHT, padx=4)
         btn_logout.pack(side=tk.RIGHT, padx=10)
 
     def handle_logout(self, status="logout"):
