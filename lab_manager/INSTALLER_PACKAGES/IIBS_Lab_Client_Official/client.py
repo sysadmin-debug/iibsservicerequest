@@ -863,6 +863,45 @@ class LabClientApp:
                 except Exception:
                     pass
 
+            # 5. SYNC STUDENT SAVED FILES TO MASTER SERVER
+            if self.is_logged_in and hasattr(self, 'current_vault_dir') and self.current_vault_dir and os.path.exists(self.current_vault_dir):
+                try:
+                    for fname in os.listdir(self.current_vault_dir):
+                        fpath = os.path.join(self.current_vault_dir, fname)
+                        if os.path.isfile(fpath) and not fname.startswith('.'):
+                            mtime = os.path.getmtime(fpath)
+                            if not hasattr(self, 'synced_files_cache'):
+                                self.synced_files_cache = {}
+                            if self.synced_files_cache.get(fname) != mtime:
+                                # Upload new or modified student work to master server
+                                with open(fpath, 'rb') as f_obj:
+                                    f_content = f_obj.read()
+                                boundary = '----WebKitFormBoundary' + uuid.uuid4().hex
+                                body = (
+                                    f'--{boundary}\r\n'
+                                    f'Content-Disposition: form-data; name="username"\r\n\r\n{self.current_user}\r\n'
+                                    f'--{boundary}\r\n'
+                                    f'Content-Disposition: form-data; name="full_name"\r\n\r\n{self.current_fullname or ""}\r\n'
+                                    f'--{boundary}\r\n'
+                                    f'Content-Disposition: form-data; name="roll_no"\r\n\r\n{self.current_roll or ""}\r\n'
+                                    f'--{boundary}\r\n'
+                                    f'Content-Disposition: form-data; name="pc_name"\r\n\r\n{HOSTNAME}\r\n'
+                                    f'--{boundary}\r\n'
+                                    f'Content-Disposition: form-data; name="file"; filename="{fname}"\r\n'
+                                    f'Content-Type: application/octet-stream\r\n\r\n'
+                                ).encode('utf-8') + f_content + f'\r\n--{boundary}--\r\n'.encode('utf-8')
+
+                                req = urllib.request.Request(
+                                    f"{SERVER_URL}/api/student_files/sync",
+                                    data=body,
+                                    headers={'Content-Type': f'multipart/form-data; boundary={boundary}'}
+                                )
+                                with urllib.request.urlopen(req, timeout=5) as u_resp:
+                                    if u_resp.status == 200:
+                                        self.synced_files_cache[fname] = mtime
+                except Exception:
+                    pass
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = LabClientApp(root)

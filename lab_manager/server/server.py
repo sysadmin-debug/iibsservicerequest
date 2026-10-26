@@ -20,7 +20,9 @@ else:
 
 DB_PATH = os.path.join(BASE_DIR, "lab_database.db")
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "shared_files")
+STUDENT_VAULTS_FOLDER = os.path.join(BASE_DIR, "student_cloud_vaults")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(STUDENT_VAULTS_FOLDER, exist_ok=True)
 
 # ----------------- DATABASE SETUP ----------------- #
 def get_db():
@@ -94,6 +96,19 @@ def init_db():
             ip_address TEXT,
             details TEXT,
             timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS student_files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            full_name TEXT,
+            roll_no TEXT,
+            pc_name TEXT,
+            file_name TEXT NOT NULL,
+            file_path TEXT NOT NULL,
+            file_size INTEGER,
+            synced_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     # Key-value settings table
@@ -308,6 +323,54 @@ def client_log_event():
     )
     return jsonify({"success": True})
 
+@app.route('/api/student_files/sync', methods=['POST'])
+def sync_student_file():
+    """Receives and stores saved student work directly onto the central master server."""
+    if 'file' not in request.files:
+        return jsonify({"success": False, "message": "No file uploaded"}), 400
+
+    file = request.files['file']
+    username = request.form.get('username', 'unknown').strip()
+    full_name = request.form.get('full_name', '').strip()
+    roll_no = request.form.get('roll_no', '').strip()
+    pc_name = request.form.get('pc_name', 'PC').strip()
+
+    if not file or not file.filename:
+        return jsonify({"success": False, "message": "Empty filename"}), 400
+
+    filename = secure_filename(file.filename)
+    user_vault = os.path.join(STUDENT_VAULTS_FOLDER, f"{username}_{roll_no}")
+    os.makedirs(user_vault, exist_ok=True)
+
+    dest_path = os.path.join(user_vault, filename)
+    file.save(dest_path)
+    file_size = os.path.getsize(dest_path)
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO student_files (username, full_name, roll_no, pc_name, file_name, file_path, file_size, synced_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ''', (username, full_name, roll_no, pc_name, filename, dest_path, file_size))
+    conn.commit()
+    conn.close()
+
+    log_event("STUDENT_FILE_SYNC", username=username, pc_name=pc_name, details=f"Synced student file: {filename} ({round(file_size/1024, 1)} KB)")
+    return jsonify({"success": True, "message": f"File '{filename}' successfully synced to Master Server!"})
+
+@app.route('/api/student_files/download/<int:file_id>', methods=['GET'])
+def download_student_synced_file(file_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM student_files WHERE id = ?", (file_id,))
+    rec = cursor.fetchone()
+    conn.close()
+
+    if not rec or not os.path.exists(rec['file_path']):
+        return jsonify({"error": "File not found"}), 404
+
+    return send_from_directory(os.path.dirname(rec['file_path']), rec['file_name'], as_attachment=True)
+
 @app.route('/api/shared_files/latest', methods=['GET'])
 def get_latest_files():
     conn = get_db()
@@ -402,6 +465,11 @@ ADMIN_HTML = """
                 <li class="nav-item">
                     <a href="#students-mgmt" class="nav-link" onclick="showTab('students-mgmt')">
                         <i class="fa-solid fa-id-card me-2"></i> Student Logins
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#student-vaults" class="nav-link text-success" onclick="showTab('student-vaults')">
+                        <i class="fa-solid fa-folder-tree me-2"></i> Student Synced Work
                     </a>
                 </li>
                 <li class="nav-item">
@@ -564,6 +632,37 @@ ADMIN_HTML = """
                             </thead>
                             <tbody id="studentsTable">
                                 <tr><td colspan="7" class="text-center text-secondary">Loading students...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: STUDENT SYNCED WORK -->
+            <div id="tab-student-vaults" class="tab-content" style="display: none;">
+                <div class="card-custom p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div>
+                            <h5 class="fw-bold mb-0"><i class="fa-solid fa-cloud-arrow-down text-success me-2"></i>Synced Student Files & Assignments</h5>
+                            <small class="text-secondary">All work saved by students in their private personal folders is automatically synced and backed up here on the Master Server.</small>
+                        </div>
+                        <input type="text" id="searchSyncedFilesInput" class="form-control form-control-sm w-25 bg-dark text-white border-secondary" placeholder="Search by student, roll no or file..." onkeyup="filterSyncedFiles()">
+                    </div>
+                    <div class="table-responsive" style="max-height: 550px; overflow-y: auto;">
+                        <table class="table table-hover align-middle">
+                            <thead class="sticky-top">
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Roll / ID No</th>
+                                    <th>File Name</th>
+                                    <th>Size</th>
+                                    <th>Origin PC</th>
+                                    <th>Synced Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="syncedFilesTable">
+                                <tr><td colspan="7" class="text-center text-secondary py-3">Loading synced files...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -841,9 +940,42 @@ async function loadData() {
         renderHistory(data.history);
         renderAuditLogs(data.system_logs);
         renderBroadcastFiles(data.shared_files);
+        renderSyncedStudentFiles(data.student_files || []);
     } catch(e) {
         console.error("Data load error:", e);
     }
+}
+
+function renderSyncedStudentFiles(files) {
+    const tbody = document.getElementById('syncedFilesTable');
+    if (!files || files.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-secondary py-3">No student files synced to server yet.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = files.map(f => `
+        <tr>
+            <td><strong class="text-white">${f.full_name || f.username}</strong></td>
+            <td><span class="badge bg-secondary">${f.roll_no || 'N/A'}</span></td>
+            <td><strong class="text-info"><i class="fa-solid fa-file-lines me-2 text-warning"></i>${f.file_name}</strong></td>
+            <td>${Math.round((f.file_size || 0) / 1024)} KB</td>
+            <td><span class="badge bg-dark border border-secondary">${f.pc_name || 'Lab PC'}</span></td>
+            <td class="text-secondary small">${f.synced_at}</td>
+            <td>
+                <a href="/api/student_files/download/${f.id}" class="btn btn-sm btn-outline-success">
+                    <i class="fa-solid fa-download me-1"></i> Download
+                </a>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function filterSyncedFiles() {
+    const q = document.getElementById('searchSyncedFilesInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#syncedFilesTable tr');
+    rows.forEach(r => {
+        const txt = r.innerText.toLowerCase();
+        r.style.display = txt.includes(q) ? '' : 'none';
+    });
 }
 
 function renderBroadcastFiles(files) {
@@ -1275,6 +1407,10 @@ def full_overview():
     cursor.execute("SELECT id, file_name, file_size, uploaded_at FROM shared_files ORDER BY id DESC LIMIT 20")
     shared_files = [dict(row) for row in cursor.fetchall()]
 
+    # Student Synced Files
+    cursor.execute("SELECT * FROM student_files ORDER BY id DESC LIMIT 200")
+    student_files = [dict(row) for row in cursor.fetchall()]
+
     # Exam Mode
     cursor.execute("SELECT value FROM system_settings WHERE key = 'exam_mode'")
     row = cursor.fetchone()
@@ -1289,6 +1425,7 @@ def full_overview():
         "history": history,
         "system_logs": system_logs,
         "shared_files": shared_files,
+        "student_files": student_files,
         "exam_mode": exam_mode
     })
 
