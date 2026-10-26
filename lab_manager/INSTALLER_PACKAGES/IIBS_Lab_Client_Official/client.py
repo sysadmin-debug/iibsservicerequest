@@ -20,13 +20,15 @@ from tkinter import ttk, messagebox
 EXE_DIR = os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.join(EXE_DIR, "client_config.json")
 
+PRIMARY_SERVER_5050 = "http://192.168.14.250:5050"
+FALLBACK_SERVER_5050 = "http://192.168.6.189:5050"
 PRIMARY_SERVER = "http://192.168.14.250:5000"
 FALLBACK_SERVER = "http://192.168.6.189:5000"
 
 def test_reachability(url):
     try:
         req = urllib.request.Request(f"{url}/api/exam_status")
-        with urllib.request.urlopen(req, timeout=1.5) as resp:
+        with urllib.request.urlopen(req, timeout=1.2) as resp:
             return resp.status == 200
     except Exception:
         return False
@@ -45,13 +47,22 @@ def determine_server_url():
         except Exception:
             pass
 
-    # 2. Auto-detect Wi-Fi server (192.168.14.250)
+    # 2. Check Port 5050 (New Active Server)
+    if test_reachability(PRIMARY_SERVER_5050):
+        return PRIMARY_SERVER_5050
+    if test_reachability(FALLBACK_SERVER_5050):
+        return FALLBACK_SERVER_5050
+
+    # 3. Auto-detect Wi-Fi server (192.168.14.250:5000)
     if test_reachability(PRIMARY_SERVER):
         return PRIMARY_SERVER
 
-    # 3. Auto-detect Ethernet server (192.168.6.189)
+    # 4. Auto-detect Ethernet server (192.168.6.189:5000)
     if test_reachability(FALLBACK_SERVER):
         return FALLBACK_SERVER
+
+    # 5. Default
+    return PRIMARY_SERVER_5050
 
     # 4. Default to Wi-Fi server
     return PRIMARY_SERVER
