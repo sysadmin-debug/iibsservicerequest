@@ -431,21 +431,6 @@ class LabClientApp:
         notice_lbl = tk.Label(login_tab, text="* Admin: admin / admin123  |  Faculty: faculty / faculty123\n* Students: Self-register in tab 2. Password resets done by Admin.", font=("Segoe UI", 8, "italic"), bg="#1e293b", fg="#94a3b8")
         notice_lbl.pack(pady=(0, 5))
 
-        # Direct link to IIBS Service Request Portal
-        btn_portal = tk.Button(
-            login_tab,
-            text="Service Request Portal (Click to Open)",
-            font=("Segoe UI", 8, "underline"),
-            bg="#1e293b",
-            fg="#38bdf8",
-            bd=0,
-            cursor="hand2",
-            activebackground="#1e293b",
-            activeforeground="#7dd3fc",
-            command=lambda: os.startfile("https://iibsservicerequest.vercel.app/admin.html")
-        )
-        btn_portal.pack(pady=(0, 5))
-
         self.login_status = tk.Label(login_tab, text="", font=("Segoe UI", 10), bg="#1e293b", fg="#ef4444")
         self.login_status.pack(pady=5)
 
@@ -626,20 +611,6 @@ class LabClientApp:
             justify=tk.LEFT
         )
         info.pack(side=tk.LEFT, padx=6)
-
-        btn_portal = tk.Button(
-            banner,
-            text="PORTAL",
-            font=("Segoe UI", 8, "bold"),
-            bg="#0284c7",
-            fg="#ffffff",
-            bd=0,
-            padx=8,
-            pady=4,
-            cursor="hand2",
-            command=lambda: os.startfile("https://iibsservicerequest.vercel.app/admin.html")
-        )
-        btn_portal.pack(side=tk.RIGHT, padx=4)
 
         btn_folder = tk.Button(
             banner,
