@@ -540,24 +540,30 @@ ADMIN_HTML = """
                     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                         <div>
                             <h5 class="fw-bold mb-0"><i class="fa-solid fa-users-gear text-primary me-2"></i>Student Accounts & Password Reset</h5>
-                            <small class="text-secondary">Students cannot change passwords themselves. Passwords are reset exclusively by you here.</small>
+                            <small class="text-secondary">Manage existing accounts, reset passwords, or register new students directly from here.</small>
                         </div>
-                        <input type="text" id="searchStudentInput" class="form-control form-control-sm w-25 bg-dark text-white border-secondary" placeholder="Search Roll No / Name..." onkeyup="filterStudents()">
+                        <div class="d-flex gap-2">
+                            <input type="text" id="searchStudentInput" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Search Roll No / Name..." onkeyup="filterStudents()">
+                            <button class="btn btn-sm btn-primary px-3 fw-bold text-nowrap" onclick="openNewStudentModal()">
+                                <i class="fa-solid fa-user-plus me-1"></i> Register New Student
+                            </button>
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead>
                                 <tr>
-                                    <th>Roll No</th>
+                                    <th>Roll / ID No</th>
                                     <th>Full Name</th>
                                     <th>User ID</th>
+                                    <th>Role</th>
                                     <th>Registered Date</th>
                                     <th>Total Sessions</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="studentsTable">
-                                <tr><td colspan="6" class="text-center text-secondary">Loading students...</td></tr>
+                                <tr><td colspan="7" class="text-center text-secondary">Loading students...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -715,6 +721,51 @@ ADMIN_HTML = """
                     <button class="btn btn-sm btn-outline-info" onclick="sendPcCommand('reboot')"><i class="fa-solid fa-rotate-right me-1"></i>Reboot</button>
                 </div>
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Register New Student / User -->
+<div class="modal fade" id="newStudentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-user-plus text-primary me-2"></i>Register New Lab Account</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">ACCOUNT TYPE</label>
+                    <select id="newStudentType" class="form-select bg-dark text-white border-secondary">
+                        <option value="student" selected>Student</option>
+                        <option value="faculty">Faculty Member</option>
+                        <option value="admin">Lab Administrator</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">FULL NAME</label>
+                    <input type="text" id="newStudentFullName" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Ramesh Kumar">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">ROLL NUMBER / EMPLOYEE ID</label>
+                    <input type="text" id="newStudentRollNo" class="form-control bg-dark text-white border-secondary" placeholder="e.g. 24MBA019">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">DESIRED USERNAME / USER ID</label>
+                    <input type="text" id="newStudentUsername" class="form-control bg-dark text-white border-secondary" placeholder="e.g. ramesh24">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">PASSWORD</label>
+                    <input type="password" id="newStudentPassword" class="form-control bg-dark text-white border-secondary" placeholder="Create account password">
+                </div>
+                <div id="newStudentMsg" class="small text-danger"></div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm px-3 fw-bold" onclick="submitRegisterStudent()">
+                    <i class="fa-solid fa-check me-1"></i> Register Student
+                </button>
             </div>
         </div>
     </div>
@@ -985,14 +1036,20 @@ async function forceLogoutUser(username, pcName) {
 function renderStudents(students) {
     const tbody = document.getElementById('studentsTable');
     if (!students || students.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-secondary py-3">No registered students yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-secondary py-3">No registered students yet</td></tr>';
         return;
     }
-    tbody.innerHTML = students.map(st => `
+    tbody.innerHTML = students.map(st => {
+        let roleBadge = '<span class="badge bg-secondary">Student</span>';
+        if (st.user_type === 'faculty') roleBadge = '<span class="badge bg-info">Faculty</span>';
+        if (st.user_type === 'admin') roleBadge = '<span class="badge bg-danger">Admin</span>';
+        
+        return `
         <tr>
             <td><strong class="text-info">${st.roll_no}</strong></td>
             <td>${st.full_name}</td>
             <td><code>${st.username}</code></td>
+            <td>${roleBadge}</td>
             <td>${st.created_at}</td>
             <td>${st.total_sessions || 0}</td>
             <td>
@@ -1001,7 +1058,58 @@ function renderStudents(students) {
                 </button>
             </td>
         </tr>
-    `).join('');
+    `}).join('');
+}
+
+function openNewStudentModal() {
+    document.getElementById('newStudentFullName').value = '';
+    document.getElementById('newStudentRollNo').value = '';
+    document.getElementById('newStudentUsername').value = '';
+    document.getElementById('newStudentPassword').value = '';
+    document.getElementById('newStudentMsg').innerText = '';
+    const modal = new bootstrap.Modal(document.getElementById('newStudentModal'));
+    modal.show();
+}
+
+async function submitRegisterStudent() {
+    const fullName = document.getElementById('newStudentFullName').value.trim();
+    const rollNo = document.getElementById('newStudentRollNo').value.trim();
+    const username = document.getElementById('newStudentUsername').value.trim();
+    const password = document.getElementById('newStudentPassword').value.trim();
+    const userType = document.getElementById('newStudentType').value;
+    const msg = document.getElementById('newStudentMsg');
+
+    if (!fullName || !rollNo || !username || !password) {
+        msg.className = 'small text-danger';
+        msg.innerText = 'All fields are required!';
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                full_name: fullName,
+                roll_no: rollNo,
+                username: username,
+                password: password,
+                user_type: userType
+            })
+        });
+        const result = await res.json();
+        if (result.success) {
+            alert(result.message || 'Student registered successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('newStudentModal')).hide();
+            loadData();
+        } else {
+            msg.className = 'small text-danger';
+            msg.innerText = result.message || 'Registration failed.';
+        }
+    } catch(err) {
+        msg.className = 'small text-danger';
+        msg.innerText = 'Network error: ' + err;
+    }
 }
 
 function openResetModal(username, rollNo) {
