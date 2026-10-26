@@ -8,8 +8,10 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-echo Adding Windows Firewall Rule for Port 5000 (IIBS Lab Server)...
+echo Adding Windows Firewall Rules for Ports 5050 and 5000 (IIBS Lab Server)...
 netsh advfirewall firewall delete rule name="IIBS_Lab_Server_5000" >nul 2>&1
+netsh advfirewall firewall delete rule name="IIBS_Lab_Server_5050" >nul 2>&1
+netsh advfirewall firewall add rule name="IIBS_Lab_Server_5050" dir=in action=allow protocol=TCP localport=5050 profile=any
 netsh advfirewall firewall add rule name="IIBS_Lab_Server_5000" dir=in action=allow protocol=TCP localport=5000 profile=any
 
 echo ==========================================================
