@@ -666,34 +666,36 @@ class LabClientApp:
         if self.current_role != "admin":
             enforce_student_explorer_lockdown(True)
 
-        # Ensure student's dedicated workspace folder exists on Desktop and make it visible
-        desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+        # Ensure student's dedicated private vault folder exists
+        vault_base = os.path.join(os.path.expanduser("~"), "AppData", "Local", "IIBS_Student_Vaults")
+        os.makedirs(vault_base, exist_ok=True)
+
         clean_name = "".join([c for c in (self.current_fullname or "User") if c.isalnum() or c in (' ', '_')]).strip()
         clean_user = "".join([c for c in (self.current_user or "Student") if c.isalnum() or c in (' ', '_')]).strip()
-        user_folder = os.path.join(desktop, f"Student_Work_{clean_user}_{clean_name}")
-        os.makedirs(user_folder, exist_ok=True)
-        self.current_user_folder = user_folder
+        
+        # Real storage folder in hidden user vault
+        private_vault_dir = os.path.join(vault_base, f"{clean_user}_{clean_name}")
+        os.makedirs(private_vault_dir, exist_ok=True)
 
-        # Make student folder visible (remove hidden/system flags)
-        try:
-            ctypes.windll.kernel32.SetFileAttributesW(user_folder, 128) # FILE_ATTRIBUTE_NORMAL
-        except Exception:
-            pass
+        # Temporary mount on Desktop while logged in
+        desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+        desktop_mount = os.path.join(desktop, f"My_Saved_Files_{clean_name}")
+        
+        # Remove any stale junction link
+        if os.path.exists(desktop_mount):
+            try: os.rmdir(desktop_mount)
+            except: pass
 
-        # Hide any other old student folders on Desktop so they only see their own folder
-        try:
-            for item in os.listdir(desktop):
-                item_path = os.path.join(desktop, item)
-                if os.path.isdir(item_path) and item.startswith("Student_Work_") and item_path != user_folder:
-                    ctypes.windll.kernel32.SetFileAttributesW(item_path, 2) # FILE_ATTRIBUTE_HIDDEN
-        except Exception:
-            pass
+        # Create live junction mount on Desktop pointing to student's private vault
+        subprocess.run(f'cmd /c mklink /J "{desktop_mount}" "{private_vault_dir}"', capture_output=True, shell=True)
+        self.current_desktop_mount = desktop_mount
+        self.current_vault_dir = private_vault_dir
 
         bg_color = "#b91c1c" if self.exam_mode_active else "#0f172a"
         banner = tk.Frame(self.root, bg=bg_color, padx=12, pady=8)
         banner.pack(fill=tk.BOTH, expand=True)
 
-        mode_text = "[EXAM MODE - NO INTERNET]" if self.exam_mode_active else "Hardened Lab Environment"
+        mode_text = "[EXAM MODE - NO INTERNET]" if self.exam_mode_active else f"Active Storage: Desktop\\{os.path.basename(desktop_mount)}"
         info = tk.Label(
             banner,
             text=f"User: {self.current_fullname} ({self.current_roll})\n{mode_text}",
@@ -706,7 +708,7 @@ class LabClientApp:
 
         btn_folder = tk.Button(
             banner,
-            text="MY FOLDER",
+            text="OPEN MY FOLDER",
             font=("Segoe UI", 8, "bold"),
             bg="#2563eb",
             fg="#ffffff",
@@ -714,7 +716,7 @@ class LabClientApp:
             padx=8,
             pady=4,
             cursor="hand2",
-            command=lambda: os.startfile(user_folder)
+            command=lambda: os.startfile(desktop_mount)
         )
         btn_folder.pack(side=tk.RIGHT, padx=4)
 
@@ -733,12 +735,24 @@ class LabClientApp:
         btn_logout.pack(side=tk.RIGHT, padx=4)
 
     def handle_logout(self, status="logout"):
-        # Hide the student's personal folder upon logout so next user cannot see it
-        if hasattr(self, 'current_user_folder') and self.current_user_folder and os.path.exists(self.current_user_folder):
+        # Instantly unmount and erase the folder from Desktop so no other student or faculty can see it
+        if hasattr(self, 'current_desktop_mount') and self.current_desktop_mount:
             try:
-                ctypes.windll.kernel32.SetFileAttributesW(self.current_user_folder, 2) # FILE_ATTRIBUTE_HIDDEN
-            except Exception:
-                pass
+                if os.path.exists(self.current_desktop_mount):
+                    os.rmdir(self.current_desktop_mount)
+            except Exception as e:
+                print(f"[UNMOUNT ERROR] {e}")
+
+        # Clean up any leftover student work links on Desktop
+        try:
+            desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+            for item in os.listdir(desktop):
+                if item.startswith("My_Saved_Files_") or item.startswith("Student_Work_"):
+                    item_path = os.path.join(desktop, item)
+                    try: os.rmdir(item_path)
+                    except: pass
+        except Exception:
+            pass
 
         if self.current_session_id:
             try:
