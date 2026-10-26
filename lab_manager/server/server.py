@@ -408,6 +408,11 @@ ADMIN_HTML = """
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="#file-broadcast" class="nav-link text-warning" onclick="showTab('file-broadcast')">
+                        <i class="fa-solid fa-cloud-arrow-up me-2"></i> File Broadcast
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="#service-requests" class="nav-link text-info" onclick="showTab('service-requests')">
                         <i class="fa-solid fa-headset me-2"></i> IIBS Service Portal
                     </a>
@@ -618,6 +623,50 @@ ADMIN_HTML = """
                 </div>
             </div>
 
+            <!-- TAB 6: FILE BROADCAST TO ALL STUDENT PCS -->
+            <div id="tab-file-broadcast" class="tab-content" style="display: none;">
+                <div class="card-custom p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="fw-bold mb-0"><i class="fa-solid fa-cloud-arrow-up text-warning me-2"></i>One-Click File Broadcast to All Student PCs</h5>
+                            <small class="text-secondary">Upload any file (question paper, code template, software setup) and it automatically downloads to every connected student's Desktop.</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 align-items-center p-3 mb-4 rounded bg-dark border border-secondary">
+                        <div class="col-md-8">
+                            <label class="form-label text-secondary small">CHOOSE FILE TO COPY TO ALL PCS</label>
+                            <input type="file" class="form-control bg-dark text-white border-secondary" id="broadcastFileInput" required>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" class="btn btn-warning w-100 fw-bold py-2 mt-4" onclick="uploadAndBroadcastFile()">
+                                <i class="fa-solid fa-paper-plane me-2"></i> Broadcast File to All PCs
+                            </button>
+                        </div>
+                        <div class="col-12">
+                            <div id="broadcastStatusText" class="small fw-bold text-info"></div>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold text-white mb-2"><i class="fa-solid fa-clock-rotate-left me-2"></i>Recently Broadcasted Files</h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Size</th>
+                                    <th>Uploaded At</th>
+                                    <th>Destination on Student PCs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="broadcastFilesTable">
+                                <tr><td colspan="4" class="text-center text-secondary">No files shared yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- TAB 6: IIBS SERVICE REQUEST PORTAL EMBED -->
             <div id="tab-service-requests" class="tab-content" style="display: none;">
                 <div class="card-custom p-3 mb-4">
@@ -733,8 +782,57 @@ async function loadData() {
         renderStudents(data.students);
         renderHistory(data.history);
         renderAuditLogs(data.system_logs);
+        renderBroadcastFiles(data.shared_files);
     } catch(e) {
         console.error("Data load error:", e);
+    }
+}
+
+function renderBroadcastFiles(files) {
+    const tbody = document.getElementById('broadcastFilesTable');
+    if (!files || files.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-3">No files broadcasted yet</td></tr>';
+        return;
+    }
+    tbody.innerHTML = files.map(f => `
+        <tr>
+            <td><strong class="text-white"><i class="fa-solid fa-file me-2 text-warning"></i>${f.file_name}</strong></td>
+            <td>${Math.round(f.file_size / 1024)} KB</td>
+            <td class="text-secondary small">${f.uploaded_at}</td>
+            <td><code class="text-info">Desktop\\Lab_Shared_Files\\${f.file_name}</code></td>
+        </tr>
+    `).join('');
+}
+
+async function uploadAndBroadcastFile() {
+    const fileInput = document.getElementById('broadcastFileInput');
+    const statusText = document.getElementById('broadcastStatusText');
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Please select a file to broadcast");
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    statusText.innerText = `Broadcasting "${file.name}" to all student systems...`;
+
+    try {
+        const res = await fetch('/admin/api/upload_file', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await res.json();
+        if (result.success) {
+            statusText.innerText = `SUCCESS: "${file.name}" uploaded and queued for all student PCs!`;
+            fileInput.value = '';
+            loadData();
+        } else {
+            statusText.innerText = "Error: " + (result.message || "Failed to broadcast");
+        }
+    } catch(err) {
+        statusText.innerText = "Error uploading file: " + err;
     }
 }
 
@@ -1058,6 +1156,10 @@ def full_overview():
     cursor.execute("SELECT * FROM system_logs ORDER BY id DESC LIMIT 150")
     system_logs = [dict(row) for row in cursor.fetchall()]
 
+    # Shared Files
+    cursor.execute("SELECT id, file_name, file_size, uploaded_at FROM shared_files ORDER BY id DESC LIMIT 20")
+    shared_files = [dict(row) for row in cursor.fetchall()]
+
     # Exam Mode
     cursor.execute("SELECT value FROM system_settings WHERE key = 'exam_mode'")
     row = cursor.fetchone()
@@ -1071,6 +1173,7 @@ def full_overview():
         "students": students,
         "history": history,
         "system_logs": system_logs,
+        "shared_files": shared_files,
         "exam_mode": exam_mode
     })
 
@@ -1145,6 +1248,32 @@ def admin_toggle_exam():
 
     return jsonify({"success": True, "exam_mode": enable})
 
+@app.route('/admin/api/upload_file', methods=['POST'])
+def admin_upload_file():
+    if 'file' not in request.files:
+        return jsonify({"success": False, "message": "No file attached"}), 400
+
+    file = request.files['file']
+    if not file or not file.filename:
+        return jsonify({"success": False, "message": "Empty filename"}), 400
+
+    filename = secure_filename(file.filename)
+    dest_path = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(dest_path)
+    file_size = os.path.getsize(dest_path)
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO shared_files (file_name, file_path, file_size) VALUES (?, ?, ?)",
+        (filename, dest_path, file_size)
+    )
+    conn.commit()
+    conn.close()
+
+    log_event("FILE_BROADCAST", details=f"Broadcasted file: {filename} ({round(file_size/1024, 1)} KB)")
+    return jsonify({"success": True, "message": f"File '{filename}' broadcasted to all lab PCs!"})
+
 @app.route('/admin/api/export_history')
 def export_history():
     conn = get_db()
@@ -1186,9 +1315,18 @@ def export_logs():
     )
 
 if __name__ == '__main__':
+    import webbrowser
+    import threading
+
+    def _open_browser():
+        time.sleep(1.5)
+        webbrowser.open("http://127.0.0.1:5000/admin")
+
+    threading.Thread(target=_open_browser, daemon=True).start()
+
     print("=" * 60)
     print(" IIBS Computer Lab Master Server is running!")
     print(" Access Admin Portal locally at: http://127.0.0.1:5000/admin")
-    print(" Access from other LAN PCs at: http://192.168.6.189:5000/admin")
+    print(" Access from other LAN PCs at: http://192.168.14.250:5000/admin")
     print("=" * 60)
     app.run(host='0.0.0.0', port=5000, debug=False)
