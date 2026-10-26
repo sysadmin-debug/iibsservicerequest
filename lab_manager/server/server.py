@@ -8,9 +8,16 @@ from datetime import datetime
 from flask import Flask, request, jsonify, render_template_string, send_from_directory, Response
 from werkzeug.utils import secure_filename
 
+import sys
+
 app = Flask(__name__)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Ensure persistent database location even if packaged as .exe
+if getattr(sys, 'frozen', False):
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 DB_PATH = os.path.join(BASE_DIR, "lab_database.db")
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "shared_files")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -1320,13 +1327,13 @@ if __name__ == '__main__':
 
     def _open_browser():
         time.sleep(1.5)
-        webbrowser.open("http://127.0.0.1:5000/admin")
+        webbrowser.open("http://127.0.0.1:5050/admin")
 
     threading.Thread(target=_open_browser, daemon=True).start()
 
     print("=" * 60)
     print(" IIBS Computer Lab Master Server is running!")
-    print(" Access Admin Portal locally at: http://127.0.0.1:5000/admin")
-    print(" Access from other LAN PCs at: http://192.168.14.250:5000/admin")
+    print(" Access Admin Portal locally at: http://127.0.0.1:5050/admin")
+    print(" Access from other LAN PCs at: http://192.168.14.250:5050/admin")
     print("=" * 60)
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5050, debug=False)
