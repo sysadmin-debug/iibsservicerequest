@@ -326,11 +326,20 @@ class LabClientApp:
         self.login_status = tk.Label(login_tab, text="", font=("Segoe UI", 10), bg="#1e293b", fg="#ef4444")
         self.login_status.pack(pady=5)
 
-        # TAB 2: REGISTER
+        # TAB 2: REGISTER (Student or Faculty)
         reg_tab = tk.Frame(self.notebook, bg="#1e293b", padx=30, pady=15)
-        self.notebook.add(reg_tab, text=" New Student Registration ")
+        self.notebook.add(reg_tab, text=" New Registration ")
 
-        tk.Label(reg_tab, text="Roll Number", font=("Segoe UI", 10, "bold"), bg="#1e293b", fg="#e2e8f0").pack(anchor=tk.W, pady=(5, 2))
+        # Register Role Selector
+        reg_role_frame = tk.Frame(reg_tab, bg="#1e293b")
+        reg_role_frame.pack(fill=tk.X, pady=(0, 6))
+        tk.Label(reg_role_frame, text="Register As:", font=("Segoe UI", 9, "bold"), bg="#1e293b", fg="#94a3b8").pack(side=tk.LEFT, padx=(0, 10))
+        self.reg_user_type = tk.StringVar(value="student")
+        tk.Radiobutton(reg_role_frame, text="Student", variable=self.reg_user_type, value="student", command=self.update_reg_labels, bg="#1e293b", fg="#38bdf8", selectcolor="#0f172a", activebackground="#1e293b", font=("Segoe UI", 9)).pack(side=tk.LEFT, padx=8)
+        tk.Radiobutton(reg_role_frame, text="Faculty Member", variable=self.reg_user_type, value="faculty", command=self.update_reg_labels, bg="#1e293b", fg="#4ade80", selectcolor="#0f172a", activebackground="#1e293b", font=("Segoe UI", 9)).pack(side=tk.LEFT, padx=8)
+
+        self.reg_id_label = tk.Label(reg_tab, text="Roll Number", font=("Segoe UI", 10, "bold"), bg="#1e293b", fg="#e2e8f0")
+        self.reg_id_label.pack(anchor=tk.W, pady=(3, 2))
         self.reg_roll = tk.Entry(reg_tab, font=("Segoe UI", 11), bd=1, relief=tk.SOLID, bg="#0f172a", fg="#ffffff", insertbackground="#ffffff")
         self.reg_roll.pack(fill=tk.X, pady=(0, 8), ipady=3)
 
@@ -344,13 +353,19 @@ class LabClientApp:
 
         tk.Label(reg_tab, text="Set Password", font=("Segoe UI", 10, "bold"), bg="#1e293b", fg="#e2e8f0").pack(anchor=tk.W, pady=(3, 2))
         self.reg_pass = tk.Entry(reg_tab, font=("Segoe UI", 11), bd=1, relief=tk.SOLID, show="*", bg="#0f172a", fg="#ffffff", insertbackground="#ffffff")
-        self.reg_pass.pack(fill=tk.X, pady=(0, 12), ipady=3)
+        self.reg_pass.pack(fill=tk.X, pady=(0, 10), ipady=3)
 
         btn_reg = tk.Button(reg_tab, text="CREATE ACCOUNT", font=("Segoe UI", 11, "bold"), bg="#16a34a", fg="#ffffff", bd=0, cursor="hand2", command=self.handle_register)
         btn_reg.pack(fill=tk.X, ipady=6)
 
         self.reg_status = tk.Label(reg_tab, text="", font=("Segoe UI", 10), bg="#1e293b", fg="#ef4444")
         self.reg_status.pack(pady=3)
+
+    def update_reg_labels(self):
+        if self.reg_user_type.get() == "faculty":
+            self.reg_id_label.config(text="Faculty Employee ID")
+        else:
+            self.reg_id_label.config(text="Roll Number")
 
         footer = tk.Label(self.main_frame, text=f"Host: {HOSTNAME} | Server: {SERVER_URL}", font=("Segoe UI", 9), fg="#64748b", bg="#0b1120")
         footer.pack(side=tk.BOTTOM, pady=15)
@@ -360,18 +375,19 @@ class LabClientApp:
         name = self.reg_name.get().strip()
         user = self.reg_user.get().strip()
         pwd = self.reg_pass.get().strip()
+        u_type = self.reg_user_type.get()
 
         if not roll or not name or not user or not pwd:
             self.reg_status.config(text="Please fill in all details", fg="#ef4444")
             return
 
-        payload = json.dumps({"roll_no": roll, "full_name": name, "username": user, "password": pwd}).encode('utf-8')
+        payload = json.dumps({"roll_no": roll, "full_name": name, "username": user, "password": pwd, "user_type": u_type}).encode('utf-8')
         try:
             req = urllib.request.Request(f"{SERVER_URL}/api/register", data=payload, headers={'Content-Type': 'application/json'})
             with urllib.request.urlopen(req, timeout=5) as response:
                 res_data = json.loads(response.read().decode())
                 if res_data.get("success"):
-                    messagebox.showinfo("Success", "Account created successfully! You can now log in with your User ID.")
+                    messagebox.showinfo("Success", f"{u_type.title()} account created successfully! You can now log in.")
                     self.reg_roll.delete(0, tk.END)
                     self.reg_name.delete(0, tk.END)
                     self.reg_user.delete(0, tk.END)

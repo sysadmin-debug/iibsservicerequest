@@ -160,6 +160,7 @@ def register_student():
     full_name = data.get('full_name', '').strip()
     roll_no = data.get('roll_no', '').strip()
     password = data.get('password', '').strip()
+    user_type = data.get('user_type', 'student').strip().lower()
     ip_addr = request.remote_addr or '127.0.0.1'
 
     if not username or not full_name or not roll_no or not password:
@@ -169,14 +170,15 @@ def register_student():
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "INSERT INTO students (username, full_name, roll_no, password_hash) VALUES (?, ?, ?, ?)",
-            (username, full_name, roll_no, hash_password(password))
+            "INSERT INTO students (username, full_name, roll_no, password_hash, user_type) VALUES (?, ?, ?, ?, ?)",
+            (username, full_name, roll_no, hash_password(password), user_type)
         )
         conn.commit()
-        log_event("STUDENT_REGISTER", username=username, ip_address=ip_addr, details=f"Roll No: {roll_no}, Name: {full_name}")
-        return jsonify({"success": True, "message": "Registration successful! You can now log in."})
+        log_type = "FACULTY_REGISTER" if user_type == "faculty" else "STUDENT_REGISTER"
+        log_event(log_type, username=username, ip_address=ip_addr, details=f"ID/Roll: {roll_no}, Name: {full_name}, Role: {user_type.title()}")
+        return jsonify({"success": True, "message": f"{user_type.title()} registration successful! You can now log in."})
     except sqlite3.IntegrityError:
-        return jsonify({"success": False, "message": "Username or Roll Number already registered!"}), 409
+        return jsonify({"success": False, "message": "User ID or Roll/Employee Number already registered!"}), 409
     finally:
         conn.close()
 
@@ -1009,6 +1011,11 @@ loadData();
 </body>
 </html>
 """
+
+@app.route('/')
+def root_redirect():
+    from flask import redirect
+    return redirect('/admin')
 
 @app.route('/admin')
 def admin_portal():
