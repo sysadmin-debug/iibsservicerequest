@@ -235,6 +235,9 @@ class LabClientApp:
         # Report System Specs to Server
         self.register_system_telemetry()
 
+        # Check and enforce initial exam mode immediately upon launch
+        self.sync_initial_exam_mode()
+
         # Start background polling thread
         self.worker_thread = threading.Thread(target=self.background_worker, daemon=True)
         self.worker_thread.start()
@@ -245,6 +248,19 @@ class LabClientApp:
 
         # Build Kiosk UI
         self.lock_system()
+
+    def sync_initial_exam_mode(self):
+        def _check():
+            try:
+                req = urllib.request.Request(f"{SERVER_URL}/api/exam_status")
+                with urllib.request.urlopen(req, timeout=3) as resp:
+                    data = json.loads(resp.read().decode())
+                    if data.get("exam_mode", False):
+                        self.exam_mode_active = True
+                        set_internet_blocked(True)
+            except Exception:
+                pass
+        threading.Thread(target=_check, daemon=True).start()
 
     def admin_exit_prompt(self):
         import tkinter.simpledialog as sd
