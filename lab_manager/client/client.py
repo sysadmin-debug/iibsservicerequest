@@ -208,8 +208,22 @@ class LabClientApp:
         self.worker_thread = threading.Thread(target=self.background_worker, daemon=True)
         self.worker_thread.start()
 
+        # Keyboard Shortcut: Ctrl + Alt + Q to open Admin Exit
+        self.root.bind("<Control-Alt-q>", lambda e: self.admin_exit_prompt())
+        self.root.bind("<Control-Alt-Q>", lambda e: self.admin_exit_prompt())
+
         # Build Kiosk UI
         self.lock_system()
+
+    def admin_exit_prompt(self):
+        import tkinter.simpledialog as sd
+        pwd = sd.askstring("Administrator Bypass", "Enter Admin Password to close client software:", show="*", parent=self.root)
+        if pwd == "admin@123" or pwd == "iibsadmin":
+            self.running = False
+            self.root.destroy()
+            sys.exit(0)
+        elif pwd is not None:
+            messagebox.showerror("Access Denied", "Incorrect Admin Password!", parent=self.root)
 
     def register_system_telemetry(self):
         def _send():
@@ -246,6 +260,26 @@ class LabClientApp:
     def build_kiosk_ui(self):
         for widget in self.root.winfo_children():
             widget.destroy()
+
+        # Top-right Admin Exit button (Emergency Admin Bypass)
+        admin_bar = tk.Frame(self.root, bg="#0b1120")
+        admin_bar.pack(fill=tk.X, padx=15, pady=10)
+        
+        btn_exit = tk.Button(
+            admin_bar,
+            text="Admin Exit (Close)",
+            font=("Segoe UI", 9),
+            bg="#1e293b",
+            fg="#94a3b8",
+            activebackground="#ef4444",
+            activeforeground="#ffffff",
+            bd=0,
+            padx=10,
+            pady=4,
+            cursor="hand2",
+            command=self.admin_exit_prompt
+        )
+        btn_exit.pack(side=tk.RIGHT)
 
         self.main_frame = tk.Frame(self.root, bg="#0b1120")
         self.main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
