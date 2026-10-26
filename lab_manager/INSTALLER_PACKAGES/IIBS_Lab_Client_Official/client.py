@@ -222,9 +222,71 @@ def is_master_server_host():
         pass
     return False
 
-# ----------------- INTERNET BLOCKING / UNBLOCKING (DUAL-LAYER) ----------------- #
+# ----------------- SYSTEM HARDENING & WEBSITE RESTRICTION ----------------- #
 INTERNET_OPTION_SETTINGS_CHANGED = 39
 INTERNET_OPTION_REFRESH = 37
+
+def apply_social_media_block():
+    """Restricts YouTube, Facebook, and Instagram system-wide using automatic PAC blackholing."""
+    try:
+        pac_path = os.path.join(EXE_DIR, "iibs_block.pac")
+        pac_content = """function FindProxyForURL(url, host) {
+    var blocked = [
+        "youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be", "googlevideo.com", "ytimg.com",
+        "facebook.com", "www.facebook.com", "m.facebook.com", "fbcdn.net", "fb.com", "messenger.com",
+        "instagram.com", "www.instagram.com", "cdninstagram.com"
+    ];
+    for (var i = 0; i < blocked.length; i++) {
+        if (dnsDomainIs(host, blocked[i]) || host == blocked[i]) {
+            return "PROXY 127.0.0.1:9";
+        }
+    }
+    return "DIRECT";
+}"""
+        with open(pac_path, "w") as f:
+            f.write(pac_content)
+
+        pac_uri = "file:///" + pac_path.replace("\\", "/")
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Internet Settings", 0, winreg.KEY_SET_VALUE)
+        winreg.SetValueEx(key, 'AutoConfigURL', 0, winreg.REG_SZ, pac_uri)
+        winreg.CloseKey(key)
+
+        ctypes.windll.Wininet.InternetSetOptionW(0, INTERNET_OPTION_SETTINGS_CHANGED, 0, 0)
+        ctypes.windll.Wininet.InternetSetOptionW(0, INTERNET_OPTION_REFRESH, 0, 0)
+    except Exception as e:
+        print(f"[SOCIAL BLOCK ERROR] {e}")
+
+apply_social_media_block()
+
+def enforce_student_explorer_lockdown(active=True):
+    """Restricts access to This PC drives, Windows Run, and Command Prompt in real-time."""
+    try:
+        # 1. Explorer Policies in HKCU
+        key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer")
+        if active:
+            # 67108863 = 0x3FFFFFF (Restricts all 26 drive letters from A: to Z:)
+            winreg.SetValueEx(key, 'NoViewOnDrive', 0, winreg.REG_DWORD, 67108863)
+            winreg.SetValueEx(key, 'NoDrives', 0, winreg.REG_DWORD, 67108863)
+            winreg.SetValueEx(key, 'NoRun', 0, winreg.REG_DWORD, 1)
+        else:
+            try: winreg.DeleteValue(key, 'NoViewOnDrive')
+            except: pass
+            try: winreg.DeleteValue(key, 'NoDrives')
+            except: pass
+            try: winreg.DeleteValue(key, 'NoRun')
+            except: pass
+        winreg.CloseKey(key)
+
+        # 2. Disable CMD / PowerShell
+        sys_key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"Software\Policies\Microsoft\Windows\System")
+        if active:
+            winreg.SetValueEx(sys_key, 'DisableCMD', 0, winreg.REG_DWORD, 1)
+        else:
+            try: winreg.DeleteValue(sys_key, 'DisableCMD')
+            except: pass
+        winreg.CloseKey(sys_key)
+    except Exception as e:
+        print(f"[EXPLORER LOCKDOWN ERROR] {e}")
 
 def set_browser_internet_blocked(block=True):
     """Instantly kills HTTP/HTTPS browsing across Edge, Chrome, Firefox without needing Administrator privileges."""
@@ -237,6 +299,7 @@ def set_browser_internet_blocked(block=True):
             winreg.SetValueEx(key, 'ProxyOverride', 0, winreg.REG_SZ, '192.168.*;10.*;172.16.*;127.0.0.1;<local>')
         else:
             winreg.SetValueEx(key, 'ProxyEnable', 0, winreg.REG_DWORD, 0)
+            apply_social_media_block() # Re-apply social media block when general exam mode ends
         winreg.CloseKey(key)
 
         # Notify Windows network stack to apply immediately
@@ -288,6 +351,8 @@ class LabClientApp:
         self.current_user = None
         self.current_fullname = None
         self.current_roll = None
+        self.current_role = None
+        self.current_user_folder = None
         self.is_logged_in = False
         self.exam_mode_active = False
         self.running = True
@@ -328,6 +393,11 @@ class LabClientApp:
         pwd = sd.askstring("Administrator Bypass", "Enter Admin Password to close client software:", show="*", parent=self.root)
         if pwd in ["admin123", "admin@123", "iibsadmin"]:
             self.running = False
+            # Restore normal permissions upon admin exit
+            try:
+                enforce_student_explorer_lockdown(False)
+            except Exception:
+                pass
             self.root.destroy()
             sys.exit(0)
         elif pwd is not None:
@@ -548,10 +618,11 @@ class LabClientApp:
                     self.current_user = user
                     self.current_fullname = res.get("full_name")
                     self.current_roll = res.get("roll_no")
+                    self.current_role = res.get("role", self.login_role.get())
                     self.is_logged_in = True
                     logged_in = True
                     # Cache successful credentials locally for offline use
-                    save_local_user(user, res.get("full_name"), res.get("roll_no"), pwd, "student")
+                    save_local_user(user, res.get("full_name"), res.get("roll_no"), pwd, self.current_role)
                     self.unlock_system()
                     return
                 else:
@@ -575,13 +646,14 @@ class LabClientApp:
             self.current_user = local_auth["username"]
             self.current_fullname = local_auth["full_name"]
             self.current_roll = local_auth["roll_no"]
+            self.current_role = local_auth.get("user_type", "student")
             self.is_logged_in = True
             self.unlock_system()
         else:
             self.login_status.config(text="Invalid credentials (or user not registered)", fg="#ef4444")
 
     def unlock_system(self):
-        """Unlocks kiosk window so student can use desktop."""
+        """Unlocks kiosk window so student can use desktop with hardened restrictions."""
         self.root.attributes("-fullscreen", False)
         self.root.attributes("-topmost", False)
         self.root.geometry("480x85+20+20")
@@ -590,18 +662,38 @@ class LabClientApp:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        # Automatically ensure personal student work folder exists and open it
+        # Enforce file system lockdown for Student accounts
+        if self.current_role != "admin":
+            enforce_student_explorer_lockdown(True)
+
+        # Ensure student's dedicated workspace folder exists on Desktop and make it visible
         desktop = os.path.join(os.path.expanduser("~"), "Desktop")
         clean_name = "".join([c for c in (self.current_fullname or "User") if c.isalnum() or c in (' ', '_')]).strip()
         clean_user = "".join([c for c in (self.current_user or "Student") if c.isalnum() or c in (' ', '_')]).strip()
         user_folder = os.path.join(desktop, f"Student_Work_{clean_user}_{clean_name}")
         os.makedirs(user_folder, exist_ok=True)
+        self.current_user_folder = user_folder
+
+        # Make student folder visible (remove hidden/system flags)
+        try:
+            ctypes.windll.kernel32.SetFileAttributesW(user_folder, 128) # FILE_ATTRIBUTE_NORMAL
+        except Exception:
+            pass
+
+        # Hide any other old student folders on Desktop so they only see their own folder
+        try:
+            for item in os.listdir(desktop):
+                item_path = os.path.join(desktop, item)
+                if os.path.isdir(item_path) and item.startswith("Student_Work_") and item_path != user_folder:
+                    ctypes.windll.kernel32.SetFileAttributesW(item_path, 2) # FILE_ATTRIBUTE_HIDDEN
+        except Exception:
+            pass
 
         bg_color = "#b91c1c" if self.exam_mode_active else "#0f172a"
         banner = tk.Frame(self.root, bg=bg_color, padx=12, pady=8)
         banner.pack(fill=tk.BOTH, expand=True)
 
-        mode_text = "[EXAM MODE - NO INTERNET]" if self.exam_mode_active else "Storage: Desktop\\Student_Work"
+        mode_text = "[EXAM MODE - NO INTERNET]" if self.exam_mode_active else "Hardened Lab Environment"
         info = tk.Label(
             banner,
             text=f"User: {self.current_fullname} ({self.current_roll})\n{mode_text}",
@@ -639,9 +731,15 @@ class LabClientApp:
             command=self.handle_logout
         )
         btn_logout.pack(side=tk.RIGHT, padx=4)
-        btn_logout.pack(side=tk.RIGHT, padx=10)
 
     def handle_logout(self, status="logout"):
+        # Hide the student's personal folder upon logout so next user cannot see it
+        if hasattr(self, 'current_user_folder') and self.current_user_folder and os.path.exists(self.current_user_folder):
+            try:
+                ctypes.windll.kernel32.SetFileAttributesW(self.current_user_folder, 2) # FILE_ATTRIBUTE_HIDDEN
+            except Exception:
+                pass
+
         if self.current_session_id:
             try:
                 payload = json.dumps({
@@ -658,6 +756,7 @@ class LabClientApp:
         self.is_logged_in = False
         self.current_session_id = None
         self.current_user = None
+        self.current_role = None
 
         self.lock_system()
 
