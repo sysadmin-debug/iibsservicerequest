@@ -60,7 +60,15 @@ xcopy /Y /Q "%SOURCE_DIR%*" "!TARGET_DIR!\" >nul 2>&1
 echo [2/4] Extracting components...
 powershell -NoProfile -Command "Expand-Archive -Path '!TARGET_DIR!\runtime_libs.zip' -DestinationPath '!TARGET_DIR!' -Force; Remove-Item '!TARGET_DIR!\runtime_libs.zip' -Force -ErrorAction SilentlyContinue" >nul 2>&1
 
-echo [3/4] Creating Desktop and Windows Startup shortcuts...
+echo [3/5] Configuring Multi-Layer Windows Boot Auto-Start...
+:: Layer 1: HKLM Machine-Wide Run Key (Launches before user desktop loads)
+reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Run" /v "IIBS_Lab_Client" /t REG_SZ /d "\"!TARGET_DIR!\IIBS_Lab_Client.exe\" client.py" /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "IIBS_Lab_Client" /t REG_SZ /d "\"!TARGET_DIR!\IIBS_Lab_Client.exe\" client.py" /f >nul 2>&1
+
+:: Layer 2: Windows Task Scheduler (Launches with Highest Elevation on any user logon)
+schtasks /create /tn "IIBS_Lab_Client_Boot" /tr "\"!TARGET_DIR!\IIBS_Lab_Client.exe\" client.py" /sc onlogon /rl highest /f >nul 2>&1
+
+:: Layer 3: Common Startup & User Startup shortcuts
 powershell -NoProfile -Command "$WshShell = New-Object -ComObject WScript.Shell; $startup = [Environment]::GetFolderPath('CommonStartup'); if (-not (Test-Path $startup)) { $startup = [Environment]::GetFolderPath('Startup') }; $Shortcut = $WshShell.CreateShortcut($startup + '\\IIBS_Lab_Client.lnk'); $Shortcut.TargetPath = '!TARGET_DIR!\\IIBS_Lab_Client.exe'; $Shortcut.Arguments = 'client.py'; $Shortcut.WorkingDirectory = '!TARGET_DIR!'; $Shortcut.Save(); $d1 = [Environment]::GetFolderPath('CommonDesktopDirectory'); $d2 = [Environment]::GetFolderPath('Desktop'); foreach ($d in @($d1, $d2)) { if (Test-Path $d) { $sc = $WshShell.CreateShortcut($d + '\\IIBS Lab Client.lnk'); $sc.TargetPath = '!TARGET_DIR!\\IIBS_Lab_Client.exe'; $sc.Arguments = 'client.py'; $sc.WorkingDirectory = '!TARGET_DIR!'; $sc.IconLocation = '!TARGET_DIR!\\IIBS_Lab_Client.exe,0'; $sc.Save() } }" >nul 2>&1
 
 echo [4/4] Hardening student environment...
