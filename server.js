@@ -2105,10 +2105,13 @@ app.delete('/api/quotations/:id', async (req, res) => {
 });
 
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(port, () => {
-    console.log(`IIBS Backend running at http://localhost:${port}`);
-  });
-}
+
+// Serve static files (HTML, CSS, JS, images)
+app.use(express.static(__dirname));
+
+// Start server
+app.listen(port, () => {
+  console.log('IIBS Backend running on port ' + port);
+});
 
 module.exports = app;
