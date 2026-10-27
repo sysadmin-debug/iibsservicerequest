@@ -268,8 +268,105 @@ def apply_social_media_block():
 
 apply_social_media_block()
 
+# ----------------- WINDOWS START MENU & KEYBOARD LOCKDOWN ----------------- #
+WH_KEYBOARD_LL = 13
+VK_LWIN = 0x5B
+VK_RWIN = 0x5C
+VK_ESCAPE = 0x1B
+VK_CONTROL = 0x11
+VK_MENU = 0x12 # Alt
+VK_TAB = 0x09
+WM_CLOSE = 0x0010
+SW_HIDE = 0
+SW_SHOW = 5
+
+class KBDLLHOOKSTRUCT(ctypes.Structure):
+    _fields_ = [
+        ('vkCode', ctypes.wintypes.DWORD),
+        ('scanCode', ctypes.wintypes.DWORD),
+        ('flags', ctypes.wintypes.DWORD),
+        ('time', ctypes.wintypes.DWORD),
+        ('dwExtraInfo', ctypes.c_ulonglong)
+    ]
+
+HOOKPROC = ctypes.WINFUNCTYPE(ctypes.c_longlong, ctypes.c_int, ctypes.wintypes.WPARAM, ctypes.c_void_p)
+
+_keyboard_hook_id = None
+_keyboard_hook_proc = None
+_keyboard_lock_active = False
+
+def _low_level_keyboard_handler(nCode, wParam, lParam):
+    global _keyboard_lock_active
+    if nCode >= 0 and _keyboard_lock_active:
+        kb = KBDLLHOOKSTRUCT.from_address(lParam)
+        # Block Win key (Left 0x5B, Right 0x5C)
+        if kb.vkCode in (VK_LWIN, VK_RWIN):
+            return 1
+        # Block Ctrl + Esc (Start menu alternate hotkey)
+        if kb.vkCode == VK_ESCAPE and (ctypes.windll.user32.GetKeyState(VK_CONTROL) & 0x8000):
+            return 1
+    return ctypes.windll.user32.CallNextHookEx(None, nCode, wParam, lParam)
+
+def _hook_message_loop():
+    global _keyboard_hook_id, _keyboard_hook_proc
+    # Switch thread to default desktop so hook catches real user inputs
+    try:
+        h_desk = ctypes.windll.user32.OpenDesktopW("default", 0, False, 0x01FF)
+        if h_desk:
+            ctypes.windll.user32.SetThreadDesktop(h_desk)
+    except Exception:
+        pass
+
+    _keyboard_hook_proc = HOOKPROC(_low_level_keyboard_handler)
+    _keyboard_hook_id = ctypes.windll.user32.SetWindowsHookExW(WH_KEYBOARD_LL, _keyboard_hook_proc, None, 0)
+    msg = ctypes.wintypes.MSG()
+    while _keyboard_hook_id:
+        bRet = ctypes.windll.user32.GetMessageW(ctypes.byref(msg), None, 0, 0)
+        if bRet <= 0:
+            break
+        ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
+        ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+
+def set_start_menu_blocked(block=True):
+    """Completely blocks the Windows Start menu so students can only select from the software launcher list."""
+    global _keyboard_lock_active, _keyboard_hook_id
+    _keyboard_lock_active = block
+
+    # 1. Start background low-level keyboard hook if not already running
+    if block and not _keyboard_hook_id:
+        t = threading.Thread(target=_hook_message_loop, daemon=True)
+        t.start()
+
+    # 2. Hide and Disable the Start Button on Taskbar in real-time
+    try:
+        h_desk = ctypes.windll.user32.OpenDesktopW("default", 0, False, 0x01FF)
+        if h_desk:
+            ctypes.windll.user32.SetThreadDesktop(h_desk)
+        tray = ctypes.windll.user32.FindWindowW("Shell_TrayWnd", None)
+        if tray:
+            start_btn = ctypes.windll.user32.FindWindowExW(tray, 0, "Start", None)
+            if start_btn:
+                if block:
+                    ctypes.windll.user32.ShowWindow(start_btn, SW_HIDE)
+                    ctypes.windll.user32.EnableWindow(start_btn, 0)
+                else:
+                    ctypes.windll.user32.ShowWindow(start_btn, SW_SHOW)
+                    ctypes.windll.user32.EnableWindow(start_btn, 1)
+
+            # Suppress any open Start Menu window
+            if block:
+                for cls in ["Windows.UI.Core.CoreWindow", "Shell_Context"]:
+                    start_wnd = ctypes.windll.user32.FindWindowW(cls, "Start")
+                    if start_wnd:
+                        ctypes.windll.user32.PostMessageW(start_wnd, WM_CLOSE, 0, 0)
+    except Exception as e:
+        print(f"[START MENU LOCK ERROR] {e}")
+
 def enforce_student_explorer_lockdown(active=True):
-    """Restricts access to This PC drives, Windows Run, and Command Prompt in real-time."""
+    """Restricts access to Windows Start Menu, This PC drives, Windows Run, and Command Prompt in real-time."""
+    # Start menu & Win key lock
+    set_start_menu_blocked(active)
+
     try:
         # 1. Explorer Policies in HKCU
         key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer")
@@ -907,6 +1004,12 @@ class LabClientApp:
         btn_apps.pack(side=tk.RIGHT, padx=4)
 
     def handle_logout(self, status="logout"):
+        # Restore normal explorer/start menu for admin or next session
+        try:
+            enforce_student_explorer_lockdown(False)
+        except Exception:
+            pass
+
         # Instantly unmount and erase the folder from Desktop so no other student or faculty can see it
         if hasattr(self, 'current_desktop_mount') and self.current_desktop_mount:
             try:
