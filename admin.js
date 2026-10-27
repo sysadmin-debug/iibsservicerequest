@@ -561,7 +561,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                       `From: ${newTicket.name} (${newTicket.department})\n` +
                       `Type: ${newTicket.ticket_type}\n` +
                       `Contact: ${newTicket.contact}\n\n` +
-                      `View Portal: https://iibsservicerequest.vercel.app/admin.html`;
+                      `View Portal: https://iibsservicerequest.onrender.com/admin.html`;
       
       fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
