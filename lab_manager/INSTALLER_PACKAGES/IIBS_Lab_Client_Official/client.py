@@ -23,10 +23,9 @@ EXE_DIR = os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else 
 CONFIG_FILE = os.path.join(EXE_DIR, "client_config.json")
 LOCAL_DB_FILE = os.path.join(EXE_DIR, "local_users.db")
 
-PRIMARY_SERVER_5050 = "http://192.168.14.250:5050"
-FALLBACK_SERVER_5050 = "http://192.168.6.189:5050"
-PRIMARY_SERVER = "http://192.168.14.250:5050"
-FALLBACK_SERVER = "http://192.168.6.189:5050"
+PRIMARY_SERVER_5050 = "http://192.168.6.189:5050"
+FALLBACK_SERVER_5050 = "http://192.168.14.250:5050"
+LOCAL_SERVER_5050 = "http://127.0.0.1:5050"
 
 def get_hash(text):
     return hashlib.sha256(text.encode('utf-8')).hexdigest()
@@ -96,7 +95,7 @@ def test_reachability(url):
         return False
 
 def determine_server_url():
-    # 1. Custom config if present
+    # 1. Custom config if present and reachable
     if os.path.exists(CONFIG_FILE):
         try:
             with open(CONFIG_FILE, 'r') as f:
@@ -104,16 +103,13 @@ def determine_server_url():
                 custom = data.get("server_url")
                 if custom and test_reachability(custom):
                     return custom
-                elif custom:
-                    return custom
         except Exception:
             pass
 
-    # 2. Check Port 5050
-    if test_reachability(PRIMARY_SERVER_5050):
-        return PRIMARY_SERVER_5050
-    if test_reachability(FALLBACK_SERVER_5050):
-        return FALLBACK_SERVER_5050
+    # 2. Check candidate server URLs
+    for candidate in [PRIMARY_SERVER_5050, FALLBACK_SERVER_5050, LOCAL_SERVER_5050]:
+        if test_reachability(candidate):
+            return candidate
 
     return PRIMARY_SERVER_5050
 
@@ -129,8 +125,22 @@ def get_server_host():
 
 SERVER_HOST_IP = get_server_host()
 
+def get_actual_desktop():
+    """Resolves real Desktop folder even when redirected by OneDrive or Windows policy."""
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders") as k:
+            val, _ = winreg.QueryValueEx(k, "Desktop")
+            resolved = os.path.expandvars(val)
+            if os.path.exists(resolved):
+                return resolved
+    except Exception:
+        pass
+    d = os.path.join(os.path.expanduser("~"), "Desktop")
+    os.makedirs(d, exist_ok=True)
+    return d
+
 # Destination folder for broadcast files
-DESKTOP_PATH = os.path.join(os.path.expanduser("~"), "Desktop", "Lab_Shared_Files")
+DESKTOP_PATH = os.path.join(get_actual_desktop(), "Lab_Shared_Files")
 os.makedirs(DESKTOP_PATH, exist_ok=True)
 
 # ----------------- HARDWARE TELEMETRY ----------------- #
@@ -826,7 +836,7 @@ class LabClientApp:
         os.makedirs(private_vault_dir, exist_ok=True)
 
         # Temporary mount on Desktop while logged in
-        desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+        desktop = get_actual_desktop()
         desktop_mount = os.path.join(desktop, f"My_Saved_Files_{clean_name}")
         
         # Remove any stale junction link
@@ -907,7 +917,7 @@ class LabClientApp:
 
         # Clean up any leftover student work links on Desktop
         try:
-            desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+            desktop = get_actual_desktop()
             for item in os.listdir(desktop):
                 if item.startswith("My_Saved_Files_") or item.startswith("Student_Work_"):
                     item_path = os.path.join(desktop, item)
