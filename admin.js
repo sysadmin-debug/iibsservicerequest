@@ -145,6 +145,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         contact: row.contact,
         email: row.email,
         ticketType: row.ticket_type,
+        quantity: row.quantity || 1,
         otherRequest: row.other_request || '',
         status: row.status,
         resolution: row.resolution || '',
@@ -280,6 +281,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <span class="ticket-id">${t.id}</span>
               <span class="badge badge-${t.status}">${formatStatus(t.status)}</span>
               <span class="badge badge-category">${t.ticketType}</span>
+              <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color); font-weight: 600;">Qty: ${t.quantity || 1}</span>
               ${t.ticketType === 'CCTV Footage Checking' && t.approvalMailSent && t.status === 'open' ? `<span class="badge" style="background: #fef3c7; color: #b45309;">Pending Approval</span>` : ''}
             </div>
             <!-- Visual indicator that it's clickable -->
@@ -340,6 +342,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div style="margin-bottom: 1rem;">
         <span class="badge badge-${ticket.status}" style="margin-right: 0.5rem;">${formatStatus(ticket.status)}</span>
         <span class="badge badge-category">${ticket.ticketType}</span>
+        <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color); font-weight: 600;">Qty: ${ticket.quantity || 1}</span>
         ${ticket.ticketType === 'CCTV Footage Checking' && ticket.approvalMailSent ? 
           (ticket.status === 'approved' ? `<div style="background-color: #ecfdf5; color: #047857; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 4px solid #10b981; display: flex; align-items: center; gap: 8px;"><i data-lucide="check-circle" style="width: 18px; height: 18px;"></i> Approved by: <strong>${ticket.cctvApproverEmail || 'Approver'}</strong></div>` : 
            ticket.status === 'rejected' ? `<div style="background-color: #fef2f2; color: #b91c1c; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 4px solid #ef4444; display: flex; align-items: center; gap: 8px;"><i data-lucide="x-circle" style="width: 18px; height: 18px;"></i> Rejected by: <strong>${ticket.cctvApproverEmail || 'Approver'}</strong></div>` :
@@ -529,6 +532,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         contact: document.getElementById('userContact').value.trim(),
         email: document.getElementById('userEmail').value.trim(),
         ticket_type: document.getElementById('ticketType').value,
+        quantity: parseInt(document.getElementById('ticketQuantity')?.value, 10) || 1,
         other_request: document.getElementById('otherRequest')?.value.trim() || '',
         status: 'open',
         resolution: ''
@@ -559,7 +563,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const message = `🚨 New IT Service Request\n\n` +
                       `ID: ${tempId}\n` +
                       `From: ${newTicket.name} (${newTicket.department})\n` +
-                      `Type: ${newTicket.ticket_type}\n` +
+                      `Type: ${newTicket.ticket_type} (Qty: ${newTicket.quantity || 1})\n` +
                       `Contact: ${newTicket.contact}\n\n` +
                       `View Portal: https://iibsservicerequest.onrender.com/admin.html`;
       

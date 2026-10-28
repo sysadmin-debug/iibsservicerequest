@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="ticket-id">${data.ticket_id}</span>
                 <span class="badge badge-${data.status}">${formatStatus(data.status)}</span>
                 <span class="badge badge-category">${data.ticket_type}</span>
+                <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color); font-weight: 600;">Qty: ${data.quantity || 1}</span>
               </div>
             </div>
             <div class="ticket-subject">${data.other_request || data.ticket_type}</div>
@@ -237,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contact: document.getElementById('userContact').value.trim(),
         email: document.getElementById('userEmail').value.trim(),
         ticket_type: document.getElementById('ticketType').value,
+        quantity: parseInt(document.getElementById('ticketQuantity')?.value, 10) || 1,
         other_request: otherReqText,
         cctvApprover: cctvApproverEmail, // Added for backend to use
         status: 'open',
@@ -267,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const message = `🚨 New IT Service Request\n\n` +
                       `ID: ${tempId}\n` +
                       `From: ${newTicket.name} (${newTicket.department})\n` +
-                      `Type: ${newTicket.ticket_type}\n` +
+                      `Type: ${newTicket.ticket_type} (Qty: ${newTicket.quantity || 1})\n` +
                       `Contact: ${newTicket.contact}\n\n` +
                       `View Portal: https://iibsservicerequest.onrender.com/admin.html`;
       

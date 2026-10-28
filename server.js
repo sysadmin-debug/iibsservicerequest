@@ -264,6 +264,7 @@ const ticketSchema = new mongoose.Schema({
   contact: String,
   email: String,
   ticket_type: String,
+  quantity: { type: Number, default: 1 },
   other_request: String,
   status: { type: String, default: 'open' },
   resolution: String,
