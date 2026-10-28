@@ -757,6 +757,8 @@ class LabClientApp:
         tk.Label(login_tab, text="User ID / Username", font=("Segoe UI", 11, "bold"), bg="#1e293b", fg="#e2e8f0").pack(anchor=tk.W, pady=(5, 3))
         self.login_user = tk.Entry(login_tab, font=("Segoe UI", 12), bd=1, relief=tk.SOLID, bg="#0f172a", fg="#ffffff", insertbackground="#ffffff")
         self.login_user.pack(fill=tk.X, pady=(0, 15), ipady=5)
+        # Automatically focus cursor into username field on screen load
+        self.root.after(300, lambda: self.login_user.focus_force())
 
         tk.Label(login_tab, text="Password", font=("Segoe UI", 11, "bold"), bg="#1e293b", fg="#e2e8f0").pack(anchor=tk.W, pady=(5, 3))
         self.login_pass = tk.Entry(login_tab, font=("Segoe UI", 12), bd=1, relief=tk.SOLID, show="*", bg="#0f172a", fg="#ffffff", insertbackground="#ffffff")
