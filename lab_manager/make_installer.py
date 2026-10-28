@@ -106,13 +106,8 @@ echo If oneDrive ^<^> "" Then CreateLnk oneDrive ^& "\Desktop", exePath, args, w
 cscript //nologo "!VBS_HELPER!" >nul 2>&1
 del /f /q "!VBS_HELPER!" >nul 2>&1
 
-echo [4/4] Hardening student environment...
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoViewOnDrive" /t REG_DWORD /d 67108863 /f >nul 2>&1
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoDrives" /t REG_DWORD /d 67108863 /f >nul 2>&1
-reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoViewOnDrive" /t REG_DWORD /d 67108863 /f >nul 2>&1
-reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoDrives" /t REG_DWORD /d 67108863 /f >nul 2>&1
-reg add "HKCU\Software\Policies\Microsoft\Windows\System" /v "DisableCMD" /t REG_DWORD /d 1 /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\USBSTOR" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
+echo [4/4] Finalizing setup...
+:: Note: CMD/drive restrictions are dynamically managed by client.py during student sessions
 
 echo.
 echo Launching IIBS Lab Client...
