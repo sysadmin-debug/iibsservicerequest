@@ -498,7 +498,10 @@ ADMIN_HTML = """
 
             <div class="px-2">
                 <div class="small text-muted mb-2">MASTER ACTIONS</div>
-                <button class="btn btn-sm btn-outline-success w-100 mb-2 fw-bold" onclick="batchCommand('unlock_drives')">
+                <button class="btn btn-sm btn-outline-success w-100 mb-2 fw-bold" onclick="batchCommand('unlock_pc')">
+                    <i class="fa-solid fa-lock-open me-1"></i> Unlock User / Screen (All PCs)
+                </button>
+                <button class="btn btn-sm btn-outline-info w-100 mb-2 fw-bold" onclick="batchCommand('unlock_drives')">
                     <i class="fa-solid fa-unlock me-1"></i> Unlock Drives & Admin (All PCs)
                 </button>
                 <button class="btn btn-sm btn-outline-danger w-100 mb-2" onclick="batchCommand('lock')">
@@ -817,7 +820,8 @@ ADMIN_HTML = """
             </div>
             <div class="modal-footer border-secondary d-flex justify-content-between">
                 <div>
-                    <button class="btn btn-sm btn-outline-success fw-bold me-1" onclick="sendPcCommand('unlock_drives')"><i class="fa-solid fa-unlock me-1"></i>Unlock Drives</button>
+                    <button class="btn btn-sm btn-outline-success fw-bold me-1" onclick="sendPcCommand('unlock_pc')"><i class="fa-solid fa-lock-open me-1"></i>Unlock User Screen</button>
+                    <button class="btn btn-sm btn-outline-info fw-bold me-1" onclick="sendPcCommand('unlock_drives')"><i class="fa-solid fa-unlock me-1"></i>Unlock Drives</button>
                     <button class="btn btn-sm btn-outline-warning" onclick="sendPcCommand('lock')"><i class="fa-solid fa-lock me-1"></i>Lock</button>
                     <button class="btn btn-sm btn-outline-danger" onclick="sendPcCommand('logout')"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Log Out</button>
                     <button class="btn btn-sm btn-outline-danger" onclick="sendPcCommand('shutdown')"><i class="fa-solid fa-power-off me-1"></i>Shutdown</button>
