@@ -1183,7 +1183,14 @@ class LabClientApp:
 
     def execute_command(self, cmd):
         """Processes remote commands from Master Server."""
-        if cmd == "lock":
+        if cmd == "unlock_drives":
+            # Admin requested remote unlock of drives, CMD, and desktop
+            try:
+                enforce_student_explorer_lockdown(False)
+                restore_original_desktop()
+            except Exception as e:
+                print(f"[REMOTE UNLOCK ERROR] {e}")
+        elif cmd == "lock":
             if self.is_logged_in:
                 self.root.after(0, lambda: self.handle_logout("admin_lock"))
         elif cmd == "logout":
