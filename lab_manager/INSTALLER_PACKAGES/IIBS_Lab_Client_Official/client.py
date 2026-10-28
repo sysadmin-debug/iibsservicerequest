@@ -363,6 +363,106 @@ def set_start_menu_blocked(block=True):
     except Exception as e:
         print(f"[START MENU LOCK ERROR] {e}")
 
+# ----------------- DESKTOP ISOLATION (STUDENT DESKTOP SANDBOX) ----------------- #
+ORIGINAL_USER_DESKTOP = None
+
+def get_real_user_desktop_path():
+    """Reads the true original Windows desktop folder path."""
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders") as k:
+            val, _ = winreg.QueryValueEx(k, "Desktop")
+            resolved = os.path.expandvars(val)
+            if os.path.exists(resolved):
+                return resolved
+    except Exception:
+        pass
+    d = os.path.join(os.path.expanduser("~"), "Desktop")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+def activate_isolated_student_desktop(student_fullname, student_username):
+    """
+    Isolates desktop view so student ONLY sees:
+      1. Their personal folder: My_Saved_Files_<StudentName>
+      2. The lab share folder: Lab_Shared_Files
+    All other host icons, shortcuts, and personal files on Desktop are completely hidden.
+    """
+    global ORIGINAL_USER_DESKTOP
+    try:
+        if not ORIGINAL_USER_DESKTOP:
+            ORIGINAL_USER_DESKTOP = get_real_user_desktop_path()
+
+        clean_name = "".join([c for c in (student_fullname or "User") if c.isalnum() or c in (' ', '_')]).strip()
+        clean_user = "".join([c for c in (student_username or "Student") if c.isalnum() or c in (' ', '_')]).strip()
+
+        # Clean student workspace sandbox
+        sandbox_base = os.path.join(os.environ.get("LocalAppData", os.path.expanduser("~")), "IIBS_Student_Desktop_Env")
+        student_desk_dir = os.path.join(sandbox_base, f"{clean_user}_{clean_name}")
+        os.makedirs(student_desk_dir, exist_ok=True)
+
+        # Real persistent vault for student data
+        vault_base = os.path.join(os.environ.get("LocalAppData", os.path.expanduser("~")), "IIBS_Student_Vaults")
+        private_vault = os.path.join(vault_base, f"{clean_user}_{clean_name}")
+        os.makedirs(private_vault, exist_ok=True)
+
+        # 1. Mount personal folder in isolated desktop
+        personal_mount = os.path.join(student_desk_dir, f"My_Saved_Files_{clean_name}")
+        if os.path.exists(personal_mount):
+            try: os.rmdir(personal_mount)
+            except: pass
+        subprocess.run(f'cmd /c mklink /J "{personal_mount}" "{private_vault}"', shell=True, capture_output=True)
+
+        # 2. Shared lab files folder in isolated desktop
+        shared_folder = os.path.join(student_desk_dir, "Lab_Shared_Files")
+        os.makedirs(shared_folder, exist_ok=True)
+
+        # 3. Redirect Windows Desktop to this isolated folder in User Shell Folders
+        paths = [
+            r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders",
+            r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
+        ]
+        for p in paths:
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, p, 0, winreg.KEY_SET_VALUE) as k:
+                typ = winreg.REG_EXPAND_SZ if "User" in p else winreg.REG_SZ
+                winreg.SetValueEx(k, "Desktop", 0, typ, student_desk_dir)
+
+        # 4. Hide public desktop icons so only the student's 2 folders appear
+        try:
+            key_exp = winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer")
+            winreg.SetValueEx(key_exp, "NoCommonGroups", 0, winreg.REG_DWORD, 1)
+            winreg.CloseKey(key_exp)
+        except:
+            pass
+
+        return student_desk_dir, personal_mount, private_vault
+    except Exception as e:
+        print(f"[DESKTOP ISOLATION ERROR] {e}")
+        return get_real_user_desktop_path(), None, None
+
+def restore_original_desktop():
+    """Restores the original Windows desktop upon student logout or admin exit."""
+    global ORIGINAL_USER_DESKTOP
+    try:
+        orig = ORIGINAL_USER_DESKTOP or get_real_user_desktop_path()
+        paths = [
+            r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders",
+            r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
+        ]
+        for p in paths:
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, p, 0, winreg.KEY_SET_VALUE) as k:
+                typ = winreg.REG_EXPAND_SZ if "User" in p else winreg.REG_SZ
+                winreg.SetValueEx(k, "Desktop", 0, typ, orig)
+
+        # Restore common groups
+        try:
+            key_exp = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer", 0, winreg.KEY_SET_VALUE)
+            winreg.DeleteValue(key_exp, "NoCommonGroups")
+            winreg.CloseKey(key_exp)
+        except:
+            pass
+    except Exception as e:
+        print(f"[RESTORE DESKTOP ERROR] {e}")
+
 def refresh_windows_explorer():
     """Forces Windows Explorer shell to reload policies so drive hiding takes effect immediately without restart."""
     try:
@@ -944,31 +1044,30 @@ class LabClientApp:
         # Enforce file system lockdown for Student accounts
         if self.current_role != "admin":
             enforce_student_explorer_lockdown(True)
-
-        # Ensure student's dedicated private vault folder exists
-        vault_base = os.path.join(os.path.expanduser("~"), "AppData", "Local", "IIBS_Student_Vaults")
-        os.makedirs(vault_base, exist_ok=True)
-
-        clean_name = "".join([c for c in (self.current_fullname or "User") if c.isalnum() or c in (' ', '_')]).strip()
-        clean_user = "".join([c for c in (self.current_user or "Student") if c.isalnum() or c in (' ', '_')]).strip()
-        
-        # Real storage folder in hidden user vault
-        private_vault_dir = os.path.join(vault_base, f"{clean_user}_{clean_name}")
-        os.makedirs(private_vault_dir, exist_ok=True)
-
-        # Temporary mount on Desktop while logged in
-        desktop = get_actual_desktop()
-        desktop_mount = os.path.join(desktop, f"My_Saved_Files_{clean_name}")
-        
-        # Remove any stale junction link
-        if os.path.exists(desktop_mount):
-            try: os.rmdir(desktop_mount)
-            except: pass
-
-        # Create live junction mount on Desktop pointing to student's private vault
-        subprocess.run(f'cmd /c mklink /J "{desktop_mount}" "{private_vault_dir}"', capture_output=True, shell=True)
-        self.current_desktop_mount = desktop_mount
-        self.current_vault_dir = private_vault_dir
+            # Activate completely clean isolated desktop: ONLY user folder + shared folder
+            student_desk, desktop_mount, private_vault_dir = activate_isolated_student_desktop(
+                self.current_fullname, self.current_user
+            )
+            self.current_desktop_mount = desktop_mount
+            self.current_vault_dir = private_vault_dir
+            self.current_isolated_desktop = student_desk
+        else:
+            # Admin gets regular desktop
+            vault_base = os.path.join(os.path.expanduser("~"), "AppData", "Local", "IIBS_Student_Vaults")
+            os.makedirs(vault_base, exist_ok=True)
+            clean_name = "".join([c for c in (self.current_fullname or "User") if c.isalnum() or c in (' ', '_')]).strip()
+            clean_user = "".join([c for c in (self.current_user or "Student") if c.isalnum() or c in (' ', '_')]).strip()
+            private_vault_dir = os.path.join(vault_base, f"{clean_user}_{clean_name}")
+            os.makedirs(private_vault_dir, exist_ok=True)
+            desktop = get_real_user_desktop_path()
+            desktop_mount = os.path.join(desktop, f"My_Saved_Files_{clean_name}")
+            if os.path.exists(desktop_mount):
+                try: os.rmdir(desktop_mount)
+                except: pass
+            subprocess.run(f'cmd /c mklink /J "{desktop_mount}" "{private_vault_dir}"', capture_output=True, shell=True)
+            self.current_desktop_mount = desktop_mount
+            self.current_vault_dir = private_vault_dir
+            self.current_isolated_desktop = None
 
         bg_color = "#b91c1c" if self.exam_mode_active else "#0f172a"
         banner = tk.Frame(self.root, bg=bg_color, padx=12, pady=8)
@@ -1031,6 +1130,7 @@ class LabClientApp:
         # Restore normal explorer/start menu for admin or next session
         try:
             enforce_student_explorer_lockdown(False)
+            restore_original_desktop()
         except Exception:
             pass
 
@@ -1041,6 +1141,14 @@ class LabClientApp:
                     os.rmdir(self.current_desktop_mount)
             except Exception as e:
                 print(f"[UNMOUNT ERROR] {e}")
+
+        # Clean up isolated desktop directory if present
+        if hasattr(self, 'current_isolated_desktop') and self.current_isolated_desktop:
+            try:
+                import shutil
+                shutil.rmtree(self.current_isolated_desktop, ignore_errors=True)
+            except Exception:
+                pass
 
         # Clean up any leftover student work links on Desktop
         try:
