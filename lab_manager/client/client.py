@@ -363,29 +363,49 @@ def set_start_menu_blocked(block=True):
     except Exception as e:
         print(f"[START MENU LOCK ERROR] {e}")
 
+def refresh_windows_explorer():
+    """Forces Windows Explorer shell to reload policies so drive hiding takes effect immediately without restart."""
+    try:
+        # 1. SHChangeNotify broadcast (Standard shell notification)
+        SHCNE_ASSOCCHANGED = 0x08000000
+        SHCNF_IDLIST = 0
+        ctypes.windll.shell32.SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0)
+        
+        # 2. Restart explorer.exe process quietly so Explorer reads the new NoDrives / NoViewOnDrive policy immediately
+        subprocess.run(["taskkill", "/f", "/im", "explorer.exe"], capture_output=True)
+        time.sleep(0.5)
+        subprocess.Popen(["explorer.exe"])
+    except Exception as e:
+        print(f"[REFRESH EXPLORER ERROR] {e}")
+
 def enforce_student_explorer_lockdown(active=True):
     """Restricts access to Windows Start Menu, This PC drives, Windows Run, and Command Prompt in real-time."""
     # Start menu & Win key lock
     set_start_menu_blocked(active)
 
-    try:
-        # 1. Explorer Policies in HKCU
-        key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer")
-        if active:
-            # 67108863 = 0x3FFFFFF (Restricts all 26 drive letters from A: to Z:)
-            winreg.SetValueEx(key, 'NoViewOnDrive', 0, winreg.REG_DWORD, 67108863)
-            winreg.SetValueEx(key, 'NoDrives', 0, winreg.REG_DWORD, 67108863)
-            winreg.SetValueEx(key, 'NoRun', 0, winreg.REG_DWORD, 1)
-        else:
-            try: winreg.DeleteValue(key, 'NoViewOnDrive')
-            except: pass
-            try: winreg.DeleteValue(key, 'NoDrives')
-            except: pass
-            try: winreg.DeleteValue(key, 'NoRun')
-            except: pass
-        winreg.CloseKey(key)
+    policy_paths = [
+        r"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer",
+        r"Software\Policies\Microsoft\Windows\Explorer"
+    ]
 
-        # 2. Disable CMD / PowerShell
+    for p in policy_paths:
+        try:
+            key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, p)
+            if active:
+                # 67108863 = 0x3FFFFFF (Completely hides and blocks all 26 drive letters A: through Z:)
+                winreg.SetValueEx(key, 'NoViewOnDrive', 0, winreg.REG_DWORD, 67108863)
+                winreg.SetValueEx(key, 'NoDrives', 0, winreg.REG_DWORD, 67108863)
+                winreg.SetValueEx(key, 'NoRun', 0, winreg.REG_DWORD, 1)
+            else:
+                for val in ['NoViewOnDrive', 'NoDrives', 'NoRun']:
+                    try: winreg.DeleteValue(key, val)
+                    except: pass
+            winreg.CloseKey(key)
+        except Exception as e:
+            print(f"[EXPLORER POLICY ERROR] {e}")
+
+    # Disable / enable CMD & PowerShell
+    try:
         sys_key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"Software\Policies\Microsoft\Windows\System")
         if active:
             winreg.SetValueEx(sys_key, 'DisableCMD', 0, winreg.REG_DWORD, 1)
@@ -394,7 +414,10 @@ def enforce_student_explorer_lockdown(active=True):
             except: pass
         winreg.CloseKey(sys_key)
     except Exception as e:
-        print(f"[EXPLORER LOCKDOWN ERROR] {e}")
+        print(f"[DISABLE CMD ERROR] {e}")
+
+    # Immediately refresh shell so drives vanish/appear without logging out of Windows
+    threading.Thread(target=refresh_windows_explorer, daemon=True).start()
 
 def set_browser_internet_blocked(block=True):
     """Instantly kills HTTP/HTTPS browsing across Edge, Chrome, Firefox without needing Administrator privileges."""
