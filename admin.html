@@ -668,6 +668,162 @@
 
   </main>
 
+  <!-- Edit Ticket Details Modal -->
+  <div class="modal-overlay" id="editTicketModal">
+    <div class="modal-content" style="max-width: 700px; width: 95%; text-align: left; max-height: 90vh; overflow-y: auto; padding: 1.75rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+        <div>
+          <h2 style="margin: 0; font-size: 1.35rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="edit-3" style="color: var(--primary-color);"></i> Edit Service Ticket
+          </h2>
+          <p style="margin: 4px 0 0; font-size: 0.85rem; color: var(--text-secondary);" id="editTicketSubtitle">Update ticket info and requester details</p>
+        </div>
+        <button type="button" class="btn-secondary" id="editTicketModalCloseX" style="padding: 4px 8px;"><i data-lucide="x"></i></button>
+      </div>
+
+      <form id="editTicketForm">
+        <input type="hidden" id="editTicketDbId">
+
+        <!-- Requester Section -->
+        <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary-color); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px;">
+          <i data-lucide="user" style="width: 15px; height: 15px;"></i> Requester Information
+        </div>
+        <div class="form-grid" style="margin-bottom: 1rem;">
+          <div class="form-column">
+            <div class="form-group">
+              <label for="editTicketName">Full Name *</label>
+              <input type="text" id="editTicketName" required placeholder="Requester Name">
+            </div>
+            <div class="form-group">
+              <label for="editTicketIdNumber">ID Number *</label>
+              <input type="text" id="editTicketIdNumber" required placeholder="IIBS ID / Staff ID">
+            </div>
+            <div class="form-group">
+              <label for="editTicketRole">Role *</label>
+              <select id="editTicketRole" required>
+                <option value="Staff">Staff</option>
+                <option value="Student">Student</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-column">
+            <div class="form-group" id="editTicketDeptGroup">
+              <label for="editTicketDept">Department *</label>
+              <input type="text" id="editTicketDept" list="stockDepartmentList" placeholder="e.g. IT Department, Academics">
+            </div>
+            <div id="editTicketStudentGroup" style="display: none;">
+              <div class="form-group">
+                <label for="editTicketCourse">Course</label>
+                <input type="text" id="editTicketCourse" placeholder="e.g. MBA, BBA, BCA">
+              </div>
+              <div class="form-group">
+                <label for="editTicketClassroom">Classroom</label>
+                <input type="text" id="editTicketClassroom" placeholder="e.g. Room 101">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="editTicketContact">Contact Number *</label>
+              <input type="tel" id="editTicketContact" required placeholder="Phone Number">
+            </div>
+            <div class="form-group">
+              <label for="editTicketEmail">Email Address *</label>
+              <input type="email" id="editTicketEmail" required placeholder="email@iibs.org">
+            </div>
+          </div>
+        </div>
+
+        <!-- Ticket Request Section -->
+        <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary-color); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <i data-lucide="ticket" style="width: 15px; height: 15px;"></i> Request Details
+        </div>
+        <div class="form-grid" style="margin-bottom: 1rem;">
+          <div class="form-column">
+            <div class="form-group">
+              <label for="editTicketType">Service Request Type *</label>
+              <select id="editTicketType" required>
+                <option value="Laptop With Charger">Laptop With Charger</option>
+                <option value="DESKTOP not working">DESKTOP not working</option>
+                <option value="PANEL BOARD">PANEL BOARD</option>
+                <option value="WIFI not connecting">WIFI not connecting</option>
+                <option value="Network">Network</option>
+                <option value="Printer Not working">Printer Not working</option>
+                <option value="Colour Ink Refill">Colour Ink Refill</option>
+                <option value="Tonner Replacement">Tonner Replacement</option>
+                <option value="System not Working">System not Working</option>
+                <option value="HDMI cable request">HDMI cable request</option>
+                <option value="Laptop without Charger">Laptop without Charger</option>
+                <option value="Request for Keyboard and Mouse Replacement">Request for Keyboard and Mouse Replacement</option>
+                <option value="Request for Wireless Mouse">Request for Wireless Mouse</option>
+                <option value="System Not Powering ON">System Not Powering ON</option>
+                <option value="System Slow">System Slow</option>
+                <option value="CCTV Footage Checking">CCTV Footage Checking</option>
+                <option value="New Staff Biometric Request">New Staff Biometric Request</option>
+                <option value="Accounts department">Accounts department</option>
+                <option value="Request for Other">Request for Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="form-group">
+              <label for="editTicketQuantity">Quantity (Qty) *</label>
+              <input type="number" id="editTicketQuantity" min="1" max="100" value="1" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" id="editTicketOtherGroup" style="margin-bottom: 1rem;">
+          <label for="editTicketOtherRequest">Request Description / Remarks</label>
+          <textarea id="editTicketOtherRequest" rows="3" placeholder="Details about the issue or request..."></textarea>
+        </div>
+
+        <!-- Status & Resolution Section -->
+        <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary-color); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <i data-lucide="check-circle" style="width: 15px; height: 15px;"></i> Status & Assignment
+        </div>
+        <div class="form-grid" style="margin-bottom: 1rem;">
+          <div class="form-column">
+            <div class="form-group">
+              <label for="editTicketStatus">Status *</label>
+              <select id="editTicketStatus" required>
+                <option value="open">Open</option>
+                <option value="progress">In Progress</option>
+                <option value="resolved">Resolved</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="form-group">
+              <label for="editTicketAttendedBy">Attended By</label>
+              <select id="editTicketAttendedBy">
+                <option value="">Select IT Staff...</option>
+                <option value="RAMESH A S">RAMESH A S</option>
+                <option value="Atul Kumar">Atul Kumar</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label for="editTicketResolution">Work Details / Resolution Notes</label>
+          <textarea id="editTicketResolution" rows="3" placeholder="Enter resolution notes or troubleshooting steps..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <button type="button" class="btn-secondary" id="editTicketDeleteBtn" style="margin-right: auto; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.4);">
+            <i data-lucide="trash-2"></i> Delete Ticket
+          </button>
+          <button type="button" class="btn-secondary" id="editTicketModalCancelBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="editTicketSubmitBtn">
+            <i data-lucide="save"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Ticket Detail Modal -->
   <div class="modal-overlay" id="ticketDetailModal">
     <div class="modal-content" style="max-width: 600px; text-align: left;">
@@ -700,6 +856,7 @@
       </div>
       <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem;">
         <button class="btn-secondary" id="detailPrintBtn" style="margin-right: auto;"><i data-lucide="printer"></i> Print</button>
+        <button class="btn-secondary" id="detailEditBtn" style="color: var(--primary-color); border-color: var(--primary-color); font-weight: 600;"><i data-lucide="edit"></i> Edit Ticket</button>
         <button class="btn-secondary" id="detailCloseBtn">Close</button>
         <button class="btn-primary" id="detailSaveBtn">Save Updates</button>
       </div>

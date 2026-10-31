@@ -284,8 +284,12 @@ document.addEventListener('DOMContentLoaded', async () => {
               <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color); font-weight: 600;">Qty: ${t.quantity || 1}</span>
               ${t.ticketType === 'CCTV Footage Checking' && t.approvalMailSent && t.status === 'open' ? `<span class="badge" style="background: #fef3c7; color: #b45309;">Pending Approval</span>` : ''}
             </div>
-            <!-- Visual indicator that it's clickable -->
-            <i data-lucide="chevron-right" style="color: var(--text-secondary); width: 20px; height: 20px;"></i>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button type="button" class="btn-secondary btn-edit-ticket" data-id="${t.id}" style="padding: 0.28rem 0.65rem; font-size: 0.8rem; color: var(--primary-color); border-color: rgba(79, 70, 229, 0.4); font-weight: 600; background: rgba(79, 70, 229, 0.05); display: inline-flex; align-items: center; gap: 4px;" title="Edit Ticket Details">
+                <i data-lucide="edit-3" style="width: 13px; height: 13px;"></i> Edit
+              </button>
+              <i data-lucide="chevron-right" style="color: var(--text-secondary); width: 18px; height: 18px;"></i>
+            </div>
           </div>
           <div class="ticket-subject">${descriptionText}</div>
           
@@ -307,9 +311,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Attach event listeners for opening modals
     document.querySelectorAll('.ticket-item').forEach(card => {
-      card.addEventListener('click', () => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-edit-ticket')) {
+          e.stopPropagation();
+          const id = e.target.closest('.btn-edit-ticket').getAttribute('data-id');
+          openEditTicketModal(id);
+          return;
+        }
         const id = card.getAttribute('data-id');
         openTicketDetailModal(id);
+      });
+    });
+
+    document.querySelectorAll('.btn-edit-ticket').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        openEditTicketModal(id);
       });
     });
   }
@@ -437,6 +455,198 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         detailSaveBtn.textContent = 'Save Updates';
         detailSaveBtn.disabled = false;
+      }
+    });
+  }
+
+
+  // ===== Full Service Ticket Edit Modal Handling =====
+  const editTicketModal = document.getElementById('editTicketModal');
+  const editTicketForm = document.getElementById('editTicketForm');
+  const editTicketModalCloseX = document.getElementById('editTicketModalCloseX');
+  const editTicketModalCancelBtn = document.getElementById('editTicketModalCancelBtn');
+  const editTicketDeleteBtn = document.getElementById('editTicketDeleteBtn');
+  const editTicketRoleSelect = document.getElementById('editTicketRole');
+  const editTicketDeptGroup = document.getElementById('editTicketDeptGroup');
+  const editTicketStudentGroup = document.getElementById('editTicketStudentGroup');
+  const detailEditBtn = document.getElementById('detailEditBtn');
+
+  function toggleEditTicketRole(role) {
+    if (role === 'Student') {
+      if (editTicketDeptGroup) editTicketDeptGroup.style.display = 'none';
+      if (editTicketStudentGroup) editTicketStudentGroup.style.display = 'block';
+    } else {
+      if (editTicketDeptGroup) editTicketDeptGroup.style.display = 'block';
+      if (editTicketStudentGroup) editTicketStudentGroup.style.display = 'none';
+    }
+  }
+
+  if (editTicketRoleSelect) {
+    editTicketRoleSelect.addEventListener('change', (e) => {
+      toggleEditTicketRole(e.target.value);
+    });
+  }
+
+  window.openEditTicketModal = function(id) {
+    const ticket = tickets.find(t => t.id === id || t.dbId === id);
+    if (!ticket) return;
+
+    if (detailModal) detailModal.classList.remove('visible');
+
+    document.getElementById('editTicketDbId').value = ticket.dbId;
+    document.getElementById('editTicketSubtitle').textContent = `Ticket ${ticket.id} • Created: ${new Date(ticket.date).toLocaleString('en-IN')}`;
+    
+    document.getElementById('editTicketName').value = ticket.name || '';
+    document.getElementById('editTicketIdNumber').value = ticket.iibsId || '';
+    document.getElementById('editTicketRole').value = ticket.role || 'Staff';
+    toggleEditTicketRole(ticket.role || 'Staff');
+
+    document.getElementById('editTicketDept').value = ticket.department || '';
+    document.getElementById('editTicketCourse').value = ticket.course || '';
+    document.getElementById('editTicketClassroom').value = ticket.classroom || '';
+    document.getElementById('editTicketContact').value = ticket.contact || '';
+    document.getElementById('editTicketEmail').value = ticket.email || '';
+
+    document.getElementById('editTicketType').value = ticket.ticketType || 'Laptop With Charger';
+    document.getElementById('editTicketQuantity').value = ticket.quantity || 1;
+    document.getElementById('editTicketOtherRequest').value = ticket.otherRequest || '';
+
+    document.getElementById('editTicketStatus').value = ticket.status || 'open';
+    document.getElementById('editTicketAttendedBy').value = ticket.attendedBy || '';
+    document.getElementById('editTicketResolution').value = ticket.resolution || '';
+
+    if (editTicketModal) {
+      editTicketModal.classList.add('visible');
+      if (window.lucide) lucide.createIcons();
+    }
+  };
+
+  function closeEditTicketModal() {
+    if (editTicketModal) editTicketModal.classList.remove('visible');
+  }
+
+  if (editTicketModalCloseX) editTicketModalCloseX.addEventListener('click', closeEditTicketModal);
+  if (editTicketModalCancelBtn) editTicketModalCancelBtn.addEventListener('click', closeEditTicketModal);
+  if (editTicketModal) {
+    editTicketModal.addEventListener('click', (e) => {
+      if (e.target === editTicketModal) closeEditTicketModal();
+    });
+  }
+
+  if (detailEditBtn) {
+    detailEditBtn.addEventListener('click', () => {
+      if (currentEditingTicketId) {
+        openEditTicketModal(currentEditingTicketId);
+      }
+    });
+  }
+
+  if (editTicketDeleteBtn) {
+    editTicketDeleteBtn.addEventListener('click', async () => {
+      const ticketId = document.getElementById('editTicketDbId').value;
+      if (!ticketId) return;
+
+      if (!confirm(`Are you sure you want to permanently delete ticket "${ticketId}"? This cannot be undone.`)) {
+        return;
+      }
+
+      editTicketDeleteBtn.disabled = true;
+      editTicketDeleteBtn.textContent = 'Deleting...';
+
+      try {
+        const res = await fetch(`/api/tickets/${ticketId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete ticket');
+
+        // Remove from local list
+        tickets = tickets.filter(t => t.id !== ticketId && t.dbId !== ticketId);
+        renderStats();
+        renderRecentList();
+        renderTickets();
+        closeEditTicketModal();
+        alert('Ticket deleted successfully.');
+      } catch (err) {
+        console.error('Delete ticket error:', err);
+        alert('Failed to delete ticket. Please try again.');
+      } finally {
+        editTicketDeleteBtn.disabled = false;
+        editTicketDeleteBtn.innerHTML = '<i data-lucide="trash-2"></i> Delete Ticket';
+        if (window.lucide) lucide.createIcons();
+      }
+    });
+  }
+
+  if (editTicketForm) {
+    editTicketForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ticketId = document.getElementById('editTicketDbId').value;
+      if (!ticketId) return;
+
+      const submitBtn = document.getElementById('editTicketSubmitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving...';
+
+      const role = document.getElementById('editTicketRole').value;
+      const dept = role === 'Student' ? '' : document.getElementById('editTicketDept').value.trim();
+      const course = role === 'Student' ? document.getElementById('editTicketCourse').value.trim() : '';
+      const classroom = role === 'Student' ? document.getElementById('editTicketClassroom').value.trim() : '';
+
+      const updateData = {
+        name: document.getElementById('editTicketName').value.trim(),
+        iibs_id: document.getElementById('editTicketIdNumber').value.trim(),
+        role: role,
+        department: dept,
+        course: course,
+        classroom: classroom,
+        contact: document.getElementById('editTicketContact').value.trim(),
+        email: document.getElementById('editTicketEmail').value.trim(),
+        ticket_type: document.getElementById('editTicketType').value,
+        quantity: parseInt(document.getElementById('editTicketQuantity').value, 10) || 1,
+        other_request: document.getElementById('editTicketOtherRequest').value.trim(),
+        status: document.getElementById('editTicketStatus').value,
+        attended_by: document.getElementById('editTicketAttendedBy').value,
+        resolution: document.getElementById('editTicketResolution').value.trim()
+      };
+
+      try {
+        const res = await fetch(`/api/tickets/${ticketId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updateData)
+        });
+
+        if (!res.ok) throw new Error('Failed to update ticket');
+
+        // Update local object
+        const ticket = tickets.find(t => t.id === ticketId || t.dbId === ticketId);
+        if (ticket) {
+          ticket.name = updateData.name;
+          ticket.iibsId = updateData.iibs_id;
+          ticket.role = updateData.role;
+          ticket.department = updateData.department;
+          ticket.course = updateData.course;
+          ticket.classroom = updateData.classroom;
+          ticket.contact = updateData.contact;
+          ticket.email = updateData.email;
+          ticket.ticketType = updateData.ticket_type;
+          ticket.quantity = updateData.quantity;
+          ticket.otherRequest = updateData.other_request;
+          ticket.status = updateData.status;
+          ticket.attendedBy = updateData.attended_by;
+          ticket.resolution = updateData.resolution;
+        }
+
+        renderStats();
+        renderRecentList();
+        renderTickets();
+        closeEditTicketModal();
+        alert('Ticket updated successfully!');
+      } catch (err) {
+        console.error('Update ticket error:', err);
+        alert('Failed to update ticket. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i data-lucide="save"></i> Save Changes';
+        if (window.lucide) lucide.createIcons();
       }
     });
   }

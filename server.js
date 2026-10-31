@@ -612,6 +612,18 @@ app.put(['/api/tickets/:ticket_id', '/tickets/:ticket_id'], requireAuth, async (
   }
 });
 
+app.delete(['/api/tickets/:ticket_id', '/tickets/:ticket_id'], requireAuth, async (req, res) => {
+  try {
+    const deleted = await Ticket.findOneAndDelete({ ticket_id: req.params.ticket_id });
+    if (!deleted) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    res.json({ success: true, message: 'Ticket deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // --- INVENTORY ---
 
 app.post('/api/inventory/import', requireAuth, async (req, res) => {
