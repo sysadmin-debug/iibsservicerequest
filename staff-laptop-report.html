@@ -491,6 +491,9 @@
       });
 
       content.innerHTML = html;
+      if (window.lucide) {
+        lucide.createIcons();
+      }
     }
 
     function showToast(msg, isError = false) {
