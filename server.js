@@ -1796,7 +1796,7 @@ const INITIAL_BUNK_STAFF = [
   { emp_id: 26, name: "Vikas", role: "Marshal", shiftCode: "SUPP", shift: "12H Day Shift", time: "06:00 - 18:00", in: "--:--", out: "--:--", hours: "--", status: "Scheduled" }
 ];
 
-app.get('/api/bunk-staff', async (req, res) => {
+app.get('/api/bunk-staff', requireAuth, async (req, res) => {
   try {
     let count = await BunkStaff.countDocuments();
     if (count === 0) {
@@ -1810,7 +1810,7 @@ app.get('/api/bunk-staff', async (req, res) => {
   }
 });
 
-app.post('/api/bunk-staff', async (req, res) => {
+app.post('/api/bunk-staff', requireAuth, async (req, res) => {
   try {
     let emp_id = req.body.emp_id;
     if (!emp_id) {
@@ -1828,7 +1828,7 @@ app.post('/api/bunk-staff', async (req, res) => {
   }
 });
 
-app.put('/api/bunk-staff/:id', async (req, res) => {
+app.put('/api/bunk-staff/:id', requireAuth, async (req, res) => {
   try {
     const updated = await BunkStaff.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updated);
@@ -1837,7 +1837,7 @@ app.put('/api/bunk-staff/:id', async (req, res) => {
   }
 });
 
-app.post('/api/bunk-staff/rotate-all', async (req, res) => {
+app.post('/api/bunk-staff/rotate-all', requireAuth, async (req, res) => {
   try {
     const staffMembers = await BunkStaff.find();
     for (const s of staffMembers) {
@@ -1871,7 +1871,7 @@ app.post('/api/bunk-staff/rotate-all', async (req, res) => {
   }
 });
 
-app.delete('/api/bunk-staff/:id', async (req, res) => {
+app.delete('/api/bunk-staff/:id', requireAuth, async (req, res) => {
   try {
     await BunkStaff.findByIdAndDelete(req.params.id);
     res.json({ success: true });
@@ -1884,7 +1884,7 @@ app.delete('/api/bunk-staff/:id', async (req, res) => {
 const quotationHelper = require('./quotation_helper');
 
 // Read directly from Excel file (Mangala It, GDS Techno Service, etc.)
-app.get('/api/quotations/read-excel', async (req, res) => {
+app.get('/api/quotations/read-excel', requireAuth, async (req, res) => {
   try {
     const data = quotationHelper.parseQuotationExcel();
     res.json({ success: true, count: data.length, sheets: data });
@@ -1894,7 +1894,7 @@ app.get('/api/quotations/read-excel', async (req, res) => {
 });
 
 // Sync from Excel to Quotation collection
-app.post('/api/quotations/sync-excel', async (req, res) => {
+app.post('/api/quotations/sync-excel', requireAuth, async (req, res) => {
   try {
     const excelSheets = quotationHelper.parseQuotationExcel();
     const synced = [];
@@ -1936,7 +1936,7 @@ app.post('/api/quotations/sync-excel', async (req, res) => {
 });
 
 // List all quotations (from DB or fallback to Excel)
-app.get('/api/quotations', async (req, res) => {
+app.get('/api/quotations', requireAuth, async (req, res) => {
   try {
     let list = await Quotation.find().sort({ created_at: -1 });
     if (list.length === 0) {
@@ -1972,7 +1972,7 @@ app.get('/api/quotations', async (req, res) => {
 });
 
 // Create new quotation (in same format) and optionally append to Excel
-app.post('/api/quotations', async (req, res) => {
+app.post('/api/quotations', requireAuth, async (req, res) => {
   try {
     const {
       edit_id,
@@ -2085,7 +2085,7 @@ app.post('/api/quotations', async (req, res) => {
 });
 
 // Generate quotation PDF
-app.get('/api/quotations/:id/pdf', async (req, res) => {
+app.get('/api/quotations/:id/pdf', requireAuth, async (req, res) => {
   try {
     const q = await Quotation.findById(req.params.id);
     if (!q) return res.status(404).json({ error: 'Quotation not found' });
@@ -2108,7 +2108,7 @@ app.get('/api/quotations/:id/pdf', async (req, res) => {
 });
 
 // Delete quotation
-app.delete('/api/quotations/:id', async (req, res) => {
+app.delete('/api/quotations/:id', requireAuth, async (req, res) => {
   try {
     await Quotation.findByIdAndDelete(req.params.id);
     res.json({ success: true });
