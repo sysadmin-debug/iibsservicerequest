@@ -791,8 +791,15 @@ app.post('/api/laptop/add', requireAuth, async (req, res) => {
       finalStatus = 'Received';
       if (!finalGivenDate) finalGivenDate = new Date().toLocaleDateString('en-GB');
     }
+    // Calculate next slNo for this course if not provided
+    let finalSlNo = slNo;
+    if (finalSlNo === undefined || finalSlNo === null || finalSlNo === 0) {
+      const maxRecord = await LaptopEligibility.findOne({ course }).sort({ slNo: -1 });
+      finalSlNo = (maxRecord && maxRecord.slNo ? maxRecord.slNo : 0) + 1;
+    }
+
     const newRecord = new LaptopEligibility({
-      slNo: slNo || 0, name, course, status: finalStatus, serialNo, laptopModel, mobile: mobile || '', givenDate: finalGivenDate, returnDate,
+      slNo: finalSlNo, name, course, status: finalStatus, serialNo, laptopModel, mobile: mobile || '', givenDate: finalGivenDate, returnDate,
       letter_file_url: req.body.letter_file_url || ''
     });
     await newRecord.save();

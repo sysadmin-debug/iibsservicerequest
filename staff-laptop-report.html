@@ -393,6 +393,16 @@
         const students = grouped[courseKey];
         if (!students || students.length === 0) return;
 
+        // Sort records so items with slNo > 0 are ordered ascending, followed by any unassigned records ordered by creation (_id)
+        students.sort((a, b) => {
+          const slA = Number(a.slNo) || 0;
+          const slB = Number(b.slNo) || 0;
+          if (slA > 0 && slB > 0) return slA - slB;
+          if (slA > 0) return -1;
+          if (slB > 0) return 1;
+          return (a._id || '').localeCompare(b._id || '');
+        });
+
         const title = courseLabels[courseKey] || courseKey;
 
         html += `
@@ -562,10 +572,14 @@
       }
 
       try {
+        const staffRecords = allData.filter(s => s.course === 'Faculty');
+        const nextSlNo = staffRecords.reduce((max, s) => Math.max(max, Number(s.slNo) || 0), 0) + 1;
+
         const response = await fetch('/api/laptop/add', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
+            slNo: nextSlNo,
             name, 
             mobile,
             laptopModel, 
