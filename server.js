@@ -384,6 +384,14 @@ const laptopEligibilitySchema = new mongoose.Schema({
   letter_file_url: { type: String, default: '' },
   updatedAt: { type: Date, default: Date.now }
 });
+
+laptopEligibilitySchema.pre('save', async function() {
+  if (!this.slNo || this.slNo === 0) {
+    const maxDoc = await this.constructor.findOne({ course: this.course }).sort({ slNo: -1 });
+    this.slNo = (maxDoc && maxDoc.slNo ? maxDoc.slNo : 0) + 1;
+  }
+});
+
 const LaptopEligibility = mongoose.models.LaptopEligibility || mongoose.model('LaptopEligibility', laptopEligibilitySchema);
 
 const vendorReportSchema = new mongoose.Schema({
@@ -771,7 +779,27 @@ app.get('/api/laptop/search', async (req, res) => {
 
 app.get('/api/laptop/list', requireAuth, async (req, res) => {
   try {
-    const laptops = await LaptopEligibility.find({}).sort({ course: 1, slNo: 1, _id: 1 });
+    // Sort so items with valid slNo > 0 come in ascending numerical order, and any legacy/unassigned records come last
+    const laptops = await LaptopEligibility.aggregate([
+      {
+        $addFields: {
+          sortPriority: {
+            $cond: [{ $and: [{ $ne: ['$slNo', null] }, { $gt: ['$slNo', 0] }] }, 1, 2]
+          }
+        }
+      },
+      {
+        $sort: {
+          course: 1,
+          sortPriority: 1,
+          slNo: 1,
+          _id: 1
+        }
+      },
+      {
+        $project: { sortPriority: 0 }
+      }
+    ]);
     res.json(laptops);
   } catch (error) {
     res.status(500).json({ error: error.message });
