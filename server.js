@@ -12,20 +12,34 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Email Configuration (Dynamically handles Gmail and Office365)
-const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER || '';
-const isGmail = emailUser.toLowerCase().includes('@gmail.com');
-const smtpHost = isGmail ? 'smtp.gmail.com' : 'smtp.office365.com';
+function getTransporter() {
+  const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER || '';
+  const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS || '';
+  const isGmail = emailUser.toLowerCase().includes('@gmail.com');
 
-const transporter = nodemailer.createTransport({
-  host: smtpHost,
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  auth: {
-    user: emailUser,
-    pass: process.env.EMAIL_PASS || process.env.GMAIL_PASS
+  if (isGmail) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: emailUser,
+        pass: emailPass
+      }
+    });
   }
-});
+
+  return nodemailer.createTransport({
+    host: 'smtp.office365.com',
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: emailUser,
+      pass: emailPass
+    }
+  });
+}
+
+const transporter = getTransporter();
 
 // Function to send resolution email
 async function sendResolutionEmail(ticket) {
