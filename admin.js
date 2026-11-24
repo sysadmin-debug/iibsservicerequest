@@ -651,19 +651,72 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // ===== "Other Request" toggle =====
+  // ===== "Other Request" & "CCTV" toggle =====
   const ticketTypeSelect = document.getElementById('ticketType');
   const otherRequestGroup = document.getElementById('otherRequestGroup');
+  const cctvGroup = document.getElementById('cctvGroup');
 
   if (ticketTypeSelect) {
     ticketTypeSelect.addEventListener('change', () => {
+      // Toggle Other
       if (ticketTypeSelect.value === 'Request for Other') {
-        otherRequestGroup.style.display = 'block';
+        if (otherRequestGroup) otherRequestGroup.style.display = 'block';
       } else {
-        otherRequestGroup.style.display = 'none';
+        if (otherRequestGroup) otherRequestGroup.style.display = 'none';
+      }
+
+      // Toggle CCTV
+      if (ticketTypeSelect.value === 'CCTV Footage Checking') {
+        if (cctvGroup) cctvGroup.style.display = 'block';
+        const t = document.getElementById('cctvTime');
+        const d = document.getElementById('cctvDate');
+        const p = document.getElementById('cctvPlace');
+        const b = document.getElementById('cctvBatch');
+        const a = document.getElementById('cctvApprover');
+        if (t) t.required = true;
+        if (d) d.required = true;
+        if (p) p.required = true;
+        if (b) b.required = true;
+        if (a) a.required = true;
+      } else {
+        if (cctvGroup) cctvGroup.style.display = 'none';
+        const t = document.getElementById('cctvTime');
+        const d = document.getElementById('cctvDate');
+        const p = document.getElementById('cctvPlace');
+        const b = document.getElementById('cctvBatch');
+        const a = document.getElementById('cctvApprover');
+        if (t) t.required = false;
+        if (d) d.required = false;
+        if (p) p.required = false;
+        if (b) b.required = false;
+        if (a) a.required = false;
       }
     });
   }
+
+  // ===== CCTV Approvers Update =====
+  window.updateCctvApprovers = function() {
+    const batch = document.getElementById('cctvBatch')?.value;
+    const approverSelect = document.getElementById('cctvApprover');
+    if (!approverSelect) return;
+    approverSelect.innerHTML = '<option value="" disabled selected>-- Select Approver --</option>';
+    
+    if (!batch) return;
+    
+    let emails = [];
+    if (batch === 'UG') {
+      emails = ['drakshayini@iibsonline.com', 'hajira@iibsonline.com', 'rakesh@iibsonline.com', 'sysadmin@iibsonline.com', 'Kethan Manyam'];
+    } else if (batch === 'PGDM' || batch === 'MBA') {
+      emails = ['prof.arun.k@iibsonline.com', 'b.charith@iibsonline.com', 'prof.robby@iibsonline.com', 'saketh.k@iibsonline.com', 'sysadmin@iibsonline.com', 'Kethan Manyam'];
+    }
+    
+    emails.forEach(email => {
+      const opt = document.createElement('option');
+      opt.value = email;
+      opt.textContent = email;
+      approverSelect.appendChild(opt);
+    });
+  };
 
   // ===== Department Toggle Based on Role =====
   const userRoleEl = document.getElementById('userRole');
@@ -743,7 +796,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         email: document.getElementById('userEmail').value.trim(),
         ticket_type: document.getElementById('ticketType').value,
         quantity: parseInt(document.getElementById('ticketQuantity')?.value, 10) || 1,
-        other_request: document.getElementById('otherRequest')?.value.trim() || '',
+        other_request: (() => {
+          if (document.getElementById('ticketType').value === 'CCTV Footage Checking') {
+            const cTime = document.getElementById('cctvTime')?.value || 'N/A';
+            const cDate = document.getElementById('cctvDate')?.value || 'N/A';
+            const cPlace = document.getElementById('cctvPlace')?.value || 'N/A';
+            const cBatch = document.getElementById('cctvBatch')?.value || 'N/A';
+            const cRemarks = document.getElementById('cctvRemarks')?.value || 'N/A';
+            const cApprover = document.getElementById('cctvApprover')?.value || '';
+            return `Date: ${cDate} | Time: ${cTime} | Place: ${cPlace} | Batch: ${cBatch} | Approver: ${cApprover} | Remarks: ${cRemarks}`;
+          }
+          return document.getElementById('otherRequest')?.value.trim() || '';
+        })(),
+        cctvApprover: document.getElementById('ticketType').value === 'CCTV Footage Checking' ? (document.getElementById('cctvApprover')?.value || '') : '',
         status: 'open',
         resolution: ''
       };
