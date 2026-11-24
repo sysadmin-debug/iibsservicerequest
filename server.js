@@ -11,7 +11,69 @@ const PDFDocument = require('pdfkit');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Email Configuration (Dynamically handles Gmail and Office365)
+// Email Configuration (Dynamically handles Brevo HTTP API, Gmail, and Office365)
+const https = require('https');
+
+function sendBrevoEmail({ to, subject, htmlContent, senderName, senderEmail, attachments }) {
+  return new Promise((resolve, reject) => {
+    const apiKey = process.env.BREVO_API_KEY;
+    const sEmail = senderEmail || process.env.EMAIL_USER || process.env.GMAIL_USER || 'iibshelpdesktest@gmail.com';
+    const sName = senderName || 'IIBS IT Helpdesk';
+
+    const toArray = Array.isArray(to) ? to.map(e => (typeof e === 'string' ? { email: e } : e)) : [{ email: to }];
+
+    const payload = {
+      sender: { name: sName, email: sEmail },
+      to: toArray,
+      subject: subject,
+      htmlContent: htmlContent
+    };
+
+    if (attachments && Array.isArray(attachments) && attachments.length > 0) {
+      payload.attachment = attachments.map(att => ({
+        name: att.filename,
+        content: att.content ? (Buffer.isBuffer(att.content) ? att.content.toString('base64') : Buffer.from(att.content).toString('base64')) : undefined
+      })).filter(a => a.content);
+    }
+
+    const payloadStr = JSON.stringify(payload);
+
+    const req = https.request('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': apiKey,
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'Content-Length': Buffer.byteLength(payloadStr)
+      },
+      timeout: 10000
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            resolve({ success: true });
+          }
+        } else {
+          reject(new Error(`Brevo API error ${res.statusCode}: ${data}`));
+        }
+      });
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('Brevo API request timed out'));
+    });
+
+    req.on('error', (err) => reject(err));
+    req.write(payloadStr);
+    req.end();
+  });
+}
+
 function getTransporter() {
   const emailUser = (process.env.EMAIL_USER || process.env.GMAIL_USER || '').trim();
   const emailPass = (process.env.EMAIL_PASS || process.env.GMAIL_PASS || '').trim().replace(/\s+/g, '');
@@ -49,21 +111,34 @@ function getTransporter() {
 
 const transporter = getTransporter();
 
+// Unified mail sender that prefers Brevo HTTP API (never blocked by Render) and falls back to nodemailer
+async function dispatchEmail(mailOptions) {
+  const hasBrevo = !!process.env.BREVO_API_KEY;
+  if (hasBrevo) {
+    try {
+      return await sendBrevoEmail({
+        to: mailOptions.to,
+        subject: mailOptions.subject,
+        htmlContent: mailOptions.html || mailOptions.text,
+        senderName: 'IIBS IT Helpdesk',
+        senderEmail: process.env.EMAIL_USER || process.env.GMAIL_USER || 'iibshelpdesktest@gmail.com',
+        attachments: mailOptions.attachments
+      });
+    } catch (brevoErr) {
+      console.warn('Brevo API send failed, trying SMTP fallback:', brevoErr.message);
+    }
+  }
+  return await transporter.sendMail(mailOptions);
+}
+
 // Function to send resolution email
 async function sendResolutionEmail(ticket) {
-  const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
-  const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
-
-  if (!emailUser || !emailPass) {
-    console.warn('Email credentials not set. Skipping email notification.');
-    return;
-  }
-  
   if (!ticket.email) {
     console.warn('Ticket has no email address. Skipping email notification.');
     return;
   }
 
+  const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER || 'no-reply@iibs.edu.in';
   const mailOptions = {
     from: `"IIBS IT Helpdesk" <${emailUser}>`,
     to: ticket.email,
@@ -97,7 +172,7 @@ async function sendResolutionEmail(ticket) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await dispatchEmail(mailOptions);
     console.log(`Resolution email sent to ${ticket.email} for ticket ${ticket.ticket_id}`);
   } catch (err) {
     console.error('Error sending resolution email:', err);
@@ -495,22 +570,14 @@ app.post(['/api/tickets', '/tickets'], async (req, res) => {
         `
       };
       
-      const emailCredUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
-      const emailCredPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
-
-      if (emailCredUser && emailCredPass) {
-        try {
-          await transporter.sendMail(mailOptions);
-          newTicket.cctv_approver_email = req.body.cctvApprover;
-          newTicket.approval_mail_sent = true;
-          await newTicket.save();
-        } catch (err) {
-          console.error('Error sending CCTV approval email:', err);
-          newTicket.resolution = `[System Error: Failed to send email to ${req.body.cctvApprover} - ${err.message}]\n` + (newTicket.resolution || '');
-          await newTicket.save();
-        }
-      } else {
-        newTicket.resolution = `[System Error: Email environment variables (EMAIL_USER / EMAIL_PASS or GMAIL_USER / GMAIL_PASS) are NOT set in Render environment. Email was not sent.]\n` + (newTicket.resolution || '');
+      try {
+        await dispatchEmail(mailOptions);
+        newTicket.cctv_approver_email = req.body.cctvApprover;
+        newTicket.approval_mail_sent = true;
+        await newTicket.save();
+      } catch (err) {
+        console.error('Error sending CCTV approval email:', err);
+        newTicket.resolution = `[System Error: Failed to send email to ${req.body.cctvApprover} - ${err.message}]\n` + (newTicket.resolution || '');
         await newTicket.save();
       }
     }
@@ -1252,7 +1319,7 @@ app.post('/api/vendor-report', requireAuth, async (req, res) => {
       
       let emailError = null;
       try {
-        await transporter.sendMail(mailOptions);
+        await dispatchEmail(mailOptions);
         console.log(`Vendor report email sent to ${vendor_email}`);
       } catch (err) {
         console.error('Error sending vendor report email:', err);
@@ -1367,7 +1434,7 @@ app.post('/api/vendor-report/:id/resend-email', requireAuth, async (req, res) =>
       ]
     };
     
-    await transporter.sendMail(mailOptions);
+    await dispatchEmail(mailOptions);
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -1648,7 +1715,7 @@ app.post('/api/procurement', requireAuth, async (req, res) => {
         }]
       };
       try {
-        await transporter.sendMail(mailOptions);
+        await dispatchEmail(mailOptions);
         procRecord.status = 'Sent';
         await procRecord.save();
       } catch (err) {
