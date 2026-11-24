@@ -13,17 +13,22 @@ const port = process.env.PORT || 3000;
 
 // Email Configuration (Dynamically handles Gmail and Office365)
 function getTransporter() {
-  const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER || '';
-  const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS || '';
+  const emailUser = (process.env.EMAIL_USER || process.env.GMAIL_USER || '').trim();
+  const emailPass = (process.env.EMAIL_PASS || process.env.GMAIL_PASS || '').trim().replace(/\s+/g, '');
   const isGmail = emailUser.toLowerCase().includes('@gmail.com');
 
   if (isGmail) {
     return nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
       auth: {
         user: emailUser,
         pass: emailPass
-      }
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000
     });
   }
 
@@ -35,7 +40,10 @@ function getTransporter() {
     auth: {
       user: emailUser,
       pass: emailPass
-    }
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000
   });
 }
 
