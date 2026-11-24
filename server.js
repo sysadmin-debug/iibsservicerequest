@@ -17,8 +17,8 @@ const https = require('https');
 function sendBrevoEmail({ to, subject, htmlContent, senderName, senderEmail, attachments }) {
   return new Promise((resolve, reject) => {
     const apiKey = process.env.BREVO_API_KEY;
-    const sEmail = senderEmail || process.env.EMAIL_USER || process.env.GMAIL_USER || 'iibshelpdesktest@gmail.com';
-    const sName = senderName || 'IIBS IT Helpdesk';
+    const sEmail = process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_USER || process.env.GMAIL_USER || 'rameshas2105@gmail.com';
+    const sName = senderName || 'IIBS IT Department';
 
     const toArray = Array.isArray(to) ? to.map(e => (typeof e === 'string' ? { email: e } : e)) : [{ email: to }];
 
@@ -121,8 +121,8 @@ async function dispatchEmail(mailOptions) {
         to: mailOptions.to,
         subject: mailOptions.subject,
         htmlContent: mailOptions.html || mailOptions.text,
-        senderName: 'IIBS IT Helpdesk',
-        senderEmail: process.env.EMAIL_USER || process.env.GMAIL_USER || 'iibshelpdesktest@gmail.com',
+        senderName: 'IIBS IT Department',
+        senderEmail: process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_USER || process.env.GMAIL_USER || 'rameshas2105@gmail.com',
         attachments: mailOptions.attachments
       });
       console.log('Email successfully sent via Brevo:', result.messageId || 'OK');
