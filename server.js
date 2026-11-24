@@ -113,10 +113,11 @@ const transporter = getTransporter();
 
 // Unified mail sender that prefers Brevo HTTP API (never blocked by Render) and falls back to nodemailer
 async function dispatchEmail(mailOptions) {
-  const hasBrevo = !!process.env.BREVO_API_KEY;
-  if (hasBrevo) {
+  const brevoApiKey = (process.env.BREVO_API_KEY || '').trim();
+  if (brevoApiKey) {
     try {
-      return await sendBrevoEmail({
+      console.log('Dispatching email via Brevo HTTPS API...');
+      const result = await sendBrevoEmail({
         to: mailOptions.to,
         subject: mailOptions.subject,
         htmlContent: mailOptions.html || mailOptions.text,
@@ -124,10 +125,15 @@ async function dispatchEmail(mailOptions) {
         senderEmail: process.env.EMAIL_USER || process.env.GMAIL_USER || 'iibshelpdesktest@gmail.com',
         attachments: mailOptions.attachments
       });
+      console.log('Email successfully sent via Brevo:', result.messageId || 'OK');
+      return result;
     } catch (brevoErr) {
-      console.warn('Brevo API send failed, trying SMTP fallback:', brevoErr.message);
+      console.error('Brevo API send failed:', brevoErr.message);
+      throw new Error(`Brevo API Error: ${brevoErr.message}`);
     }
   }
+
+  console.log('BREVO_API_KEY not found in environment. Falling back to SMTP transporter...');
   return await transporter.sendMail(mailOptions);
 }
 
