@@ -450,9 +450,12 @@ app.post(['/api/tickets', '/tickets'], async (req, res) => {
     
     // --- CCTV APPROVAL EMAIL ---
     if (req.body.ticket_type === 'CCTV Footage Checking' && req.body.cctvApprover) {
-      const approveUrl = `https://${req.headers.host || 'iibsservicerequest.vercel.app'}/api/tickets/approve/${newTicket.ticket_id}`;
+      const host = req.headers.host || 'iibsservicerequest.onrender.com';
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const approveUrl = `${protocol}://${host}/api/tickets/approve/${newTicket.ticket_id}`;
+      const senderEmail = process.env.EMAIL_USER || process.env.GMAIL_USER || 'no-reply@iibs.edu.in';
       const mailOptions = {
-        from: `"IIBS IT Helpdesk" <${process.env.GMAIL_USER}>`,
+        from: `"IIBS IT Helpdesk" <${senderEmail}>`,
         to: req.body.cctvApprover,
         subject: `ACTION REQUIRED: CCTV Footage Approval - ${newTicket.ticket_id}`,
         html: `
@@ -470,7 +473,10 @@ app.post(['/api/tickets', '/tickets'], async (req, res) => {
         `
       };
       
-      if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+      const emailCredUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
+      const emailCredPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
+
+      if (emailCredUser && emailCredPass) {
         try {
           await transporter.sendMail(mailOptions);
           newTicket.cctv_approver_email = req.body.cctvApprover;
@@ -482,7 +488,7 @@ app.post(['/api/tickets', '/tickets'], async (req, res) => {
           await newTicket.save();
         }
       } else {
-        newTicket.resolution = `[System Error: GMAIL_USER or GMAIL_PASS environment variables are NOT set on Vercel. Email was not sent.]\n` + (newTicket.resolution || '');
+        newTicket.resolution = `[System Error: Email environment variables (EMAIL_USER / EMAIL_PASS or GMAIL_USER / GMAIL_PASS) are NOT set in Render environment. Email was not sent.]\n` + (newTicket.resolution || '');
         await newTicket.save();
       }
     }
