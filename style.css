@@ -1434,6 +1434,8 @@ footer {
 
 /* --- Stock Register & Inventory Table Design System --- */
 .inventory-table-card {
+  width: 100%;
+  box-sizing: border-box;
   background: var(--bg-secondary, #ffffff);
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
   border-radius: 12px;
@@ -1723,3 +1725,200 @@ footer {
 }
 
 
+
+
+/* ===== Admin Page Professional Sidebar & Alignment ===== */
+@media (min-width: 961px) {
+  body.admin-page header#mainHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: auto;
+    width: 260px;
+    padding: 1.25rem 0.9rem;
+    background: rgba(255, 255, 255, 0.96);
+    border-right: 1px solid var(--border-color);
+    border-bottom: none;
+    box-shadow: 4px 0 24px rgba(15, 23, 42, 0.04);
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  body.admin-page .nav-container {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    height: 100%;
+    gap: 1.25rem;
+  }
+
+  body.admin-page .logo {
+    padding: 0.25rem 0.5rem 0.85rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  body.admin-page nav#navLinks {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  body.admin-page nav#navLinks a {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.875rem;
+    border-radius: 10px;
+    justify-content: flex-start;
+    gap: 0.65rem;
+  }
+
+  body.admin-page nav#navLinks a svg,
+  body.admin-page nav#navLinks a .nav-icon {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+  }
+
+  body.admin-page nav#navLinks a.active {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(124, 58, 237, 0.08));
+    color: var(--accent-primary);
+    font-weight: 600;
+  }
+
+  body.admin-page nav#navLinks a:hover {
+    background: rgba(15, 23, 42, 0.04);
+    color: var(--text-primary);
+  }
+
+  body.admin-page main {
+    margin-left: 260px;
+    max-width: calc(100% - 260px);
+    padding: 2rem 2.5rem 3rem;
+  }
+
+  body.admin-page .hero {
+    padding: 2.25rem 2rem;
+    margin-bottom: 1.75rem;
+    text-align: left;
+  }
+
+  body.admin-page .hero-subtitle {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  body.admin-page .hero-actions {
+    justify-content: flex-start;
+  }
+
+  body.admin-page .stats-bar {
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+}
+
+body.admin-page .table-container,
+body.admin-page .card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+}
+
+/* ===== Stock Register (#inventory) Professional Alignment ===== */
+#inventory .track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+#inventory .track-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+#inventory .filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+#inventory .search-box {
+  display: flex;
+  align-items: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0 0.9rem;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+#inventory .search-box input {
+  border: none;
+  background: transparent;
+  padding: 0.75rem 0.5rem;
+  width: 100%;
+  outline: none;
+}
+
+#inventory #inventoryList {
+  overflow-x: auto;
+}
+
+/* ===== Full-width & Compact Table Fit for Stock Register ===== */
+@media (min-width: 961px) {
+  body.admin-page main {
+    width: calc(100% - 260px);
+    max-width: none;
+    padding: 1.5rem 1.75rem 3rem;
+  }
+}
+
+#inventory #inventoryList table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+#inventory #inventoryList th,
+#inventory #inventoryList td {
+  padding: 0.65rem 0.75rem;
+  vertical-align: middle;
+}
+
+/* ===== Sticky Header & Always-Visible Scrollbar for Stock Register ===== */
+#inventory #inventoryList {
+  max-height: calc(100vh - 230px);
+  overflow: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+}
+
+#inventory #inventoryList thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #F8FAFC;
+  box-shadow: 0 1px 0 var(--border-color);
+  white-space: nowrap;
+}
+
+#inventory #inventoryList table {
+  font-size: 0.8rem;
+}
+
+#inventory #inventoryList th,
+#inventory #inventoryList td {
+  padding: 0.5rem 0.55rem;
+}

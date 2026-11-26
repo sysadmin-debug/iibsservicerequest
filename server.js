@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -233,7 +235,20 @@ app.use((req, res, next) => {
 });
 
 // Middleware
-app.use(cors());
+app.use(helmet({ contentSecurityPolicy: false }));
+const allowedOrigins = [
+  'https://iibsservicerequest.onrender.com',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000'
+];
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  }
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Added for HTML form submissions
 app.use(express.static(__dirname)); // Static public files
@@ -242,6 +257,17 @@ app.use(express.static(__dirname)); // Static public files
 const AUTH_SECRET = process.env.AUTH_SECRET || process.env.ADMIN_PASSWORD || 'iibs_secure_auth_session_secret_2025';
 const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'admin123';
 const STAFF_PASS = process.env.STAFF_PASSWORD || 'iibs@2025';
+if (!process.env.AUTH_SECRET || !process.env.ADMIN_PASSWORD || !process.env.STAFF_PASSWORD) {
+  console.warn('[SECURITY WARNING] Using default fallback auth credentials/secret. Set AUTH_SECRET, ADMIN_PASSWORD, and STAFF_PASSWORD in environment variables.');
+}
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 login requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts. Please try again after 15 minutes.' }
+});
 
 function generateAuthToken(role) {
   const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days validity
@@ -292,7 +318,7 @@ function requireAuth(req, res, next) {
 }
 
 // Auth API Endpoints
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', loginLimiter, (req, res) => {
   const { password } = req.body;
   if (!password) {
     return res.status(400).json({ error: 'Password is required' });
@@ -325,7 +351,10 @@ app.get('/api/auth/verify', (req, res) => {
 // Vercel serverless functions cannot write to the local disk permanently.
 // We use memory storage and encode to Base64 to save directly in MongoDB.
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB max file size
+});
 
 // MongoDB Connection (Force Google DNS locally to bypass Windows SRV bug)
 if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
